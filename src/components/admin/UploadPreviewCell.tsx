@@ -69,7 +69,7 @@ export function UploadPreviewCell({ cellData, field }: DefaultCellComponentProps
   }
 
   const fileIsImage = isImage(row.mimeType || '')
-  let fileSrc = fileIsImage ? row.thumbnailURL || row.url : row.thumbnailURL
+  let fileSrc: string | undefined = fileIsImage ? row.thumbnailURL || row.url : row.thumbnailURL
   if (fileIsImage) {
     fileSrc = getBestFitFromSizes({
       sizes: row.sizes as never,
