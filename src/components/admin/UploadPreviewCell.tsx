@@ -73,8 +73,8 @@ export function UploadPreviewCell({ cellData, field }: DefaultCellComponentProps
   if (fileIsImage) {
     fileSrc = getBestFitFromSizes({
       sizes: row.sizes as never,
-      thumbnailURL: row.thumbnailURL,
-      url: row.url,
+      thumbnailURL: row.thumbnailURL || '',
+      url: row.url || '',
       width: row.width,
     })
   }
