@@ -1,31 +1,7 @@
-# Production-oriented stack for a VPS.
-# CMS content lives in Postgres; editor uploads live in the `media` volume (not in git).
-#
-# Usage (on server, after clone + .env):
-#   docker compose -f docker-compose.prod.yml up -d --build
-#
-# Persist:
-#   - pgdata  → database (all admin/editor document data)
-#   - media   → /app/media uploads
+# Postgres only — app runs on host Node (same pattern as /opt/splitshit).
+# App connects via 127.0.0.1:5433
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - '${APP_PORT:-3000}:3000'
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: production
-    volumes:
-      - media:/app/media
-    depends_on:
-      postgres:
-        condition: service_healthy
-
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -33,6 +9,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-nazemi}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    ports:
+      - '127.0.0.1:5433:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -43,4 +21,3 @@ services:
 
 volumes:
   pgdata:
-  media:

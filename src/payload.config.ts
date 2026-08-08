@@ -31,6 +31,8 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  // Public URL in production (cookies / absolute URLs). Local: leave unset.
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || undefined,
   admin: {
     dateFormat: 'd. M. yyyy, HH:mm',
     user: Users.slug,
