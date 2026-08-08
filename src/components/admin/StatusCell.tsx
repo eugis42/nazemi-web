@@ -25,7 +25,7 @@ export function StatusCell({ cellData, field }: DefaultCellComponentProps) {
         : opt === value,
     )
     if (match && typeof match === 'object' && 'label' in match) {
-      label = getTranslation(match.label as Parameters<typeof getTranslation>[0], i18n)
+      label = String(getTranslation(match.label as Parameters<typeof getTranslation>[0], i18n))
     } else if (value === 'changed') {
       label = t('version:draftHasPublishedVersion')
     }

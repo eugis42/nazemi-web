@@ -40,7 +40,7 @@ export function UploadPreviewCell({ cellData, field }: DefaultCellComponentProps
   }, [cellData])
 
   if (id == null || typeof relationTo !== 'string') {
-    return <div className="nazemi-upload-preview" ref={intersectionRef} />
+    return <div className="nazemi-upload-preview" ref={intersectionRef as React.RefCallback<HTMLDivElement>} />
   }
 
   const related = getEntityConfig({ collectionSlug: relationTo })
@@ -52,7 +52,7 @@ export function UploadPreviewCell({ cellData, field }: DefaultCellComponentProps
 
   if (!doc) {
     return (
-      <div className="nazemi-upload-preview" ref={intersectionRef}>
+      <div className="nazemi-upload-preview" ref={intersectionRef as React.RefCallback<HTMLDivElement>}>
         {documents?.[relationTo]?.[id] === false ? null : '…'}
       </div>
     )
@@ -68,7 +68,7 @@ export function UploadPreviewCell({ cellData, field }: DefaultCellComponentProps
     width?: number
   }
 
-  const fileIsImage = isImage(row.mimeType)
+  const fileIsImage = isImage(row.mimeType || '')
   let fileSrc = fileIsImage ? row.thumbnailURL || row.url : row.thumbnailURL
   if (fileIsImage) {
     fileSrc = getBestFitFromSizes({
@@ -86,12 +86,12 @@ export function UploadPreviewCell({ cellData, field }: DefaultCellComponentProps
       : undefined
 
   return (
-    <div className="nazemi-upload-preview" ref={intersectionRef}>
+    <div className="nazemi-upload-preview" ref={intersectionRef as React.RefCallback<HTMLDivElement>}>
       <Thumbnail
         className="nazemi-upload-preview__thumb"
         collectionSlug={related?.slug}
         doc={{ ...row, filename: row.filename }}
-        fileSrc={fileSrc}
+        fileSrc={fileSrc || undefined}
         imageCacheTag={imageCacheTag}
         size="small"
         uploadConfig={typeof uploadConfig === 'object' ? uploadConfig : undefined}

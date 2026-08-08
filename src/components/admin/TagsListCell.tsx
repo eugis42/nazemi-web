@@ -96,18 +96,18 @@ export function TagsListCell({ cellData, field }: DefaultCellComponentProps) {
 
   if (!items.length) {
     return (
-      <div className="nazemi-tags-cell" ref={intersectionRef}>
+      <div className="nazemi-tags-cell" ref={intersectionRef as React.RefCallback<HTMLDivElement>}>
         {t('general:noLabel', { label: fieldLabel })}
       </div>
     )
   }
 
   if (typeof relationTo !== 'string') {
-    return <div className="nazemi-tags-cell" ref={intersectionRef} />
+    return <div className="nazemi-tags-cell" ref={intersectionRef as React.RefCallback<HTMLDivElement>} />
   }
 
   return (
-    <div className="nazemi-tags-cell" ref={intersectionRef}>
+    <div className="nazemi-tags-cell" ref={intersectionRef as React.RefCallback<HTMLDivElement>}>
       {items.map((item, index) => {
         const id = asId(item)
         if (id == null) return null
