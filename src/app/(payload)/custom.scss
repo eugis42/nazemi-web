@@ -1,0 +1,170 @@
+/*
+ * Date & time (dayAndTime): time list below the calendar (Payload default is side-by-side).
+ * In the document sidebar, cap size and scroll inside the panel so nothing spills past
+ * the sticky column’s overflow.
+ */
+.template-default .date-time-picker__appearance--dayAndTime .react-datepicker {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.template-default .date-time-picker__appearance--dayAndTime .react-datepicker__month-container {
+  border-bottom: 1px solid var(--theme-elevation-150);
+  border-right: none;
+  float: none;
+  width: 100%;
+}
+
+.template-default .date-time-picker__appearance--dayAndTime .react-datepicker__time-container {
+  border-left: none;
+  border-top: none;
+  float: none;
+  width: 100%;
+}
+
+.template-default
+  .date-time-picker__appearance--dayAndTime
+  .react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box {
+  height: 120px;
+  width: 100%;
+}
+
+.template-default
+  .date-time-picker__appearance--dayAndTime
+  .react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box
+  > ul {
+  height: 120px;
+}
+
+.template-default .date-time-picker__appearance--dayAndTime .react-datepicker__header--time {
+  background-color: var(--theme-elevation-100);
+  border-bottom: none;
+  padding: 8px 0;
+}
+
+.template-default
+  .date-time-picker__appearance--dayAndTime
+  .react-datepicker__navigation--next--with-time:not(
+    .react-datepicker__navigation--next--with-today-button
+  ) {
+  right: 0.5rem;
+}
+
+.template-default .document-fields__sidebar .date-time-picker__appearance--dayAndTime {
+  position: relative;
+  z-index: 1;
+}
+
+.template-default .document-fields__sidebar .date-time-picker__appearance--dayAndTime .react-datepicker-popper {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  z-index: 30;
+}
+
+.template-default .document-fields__sidebar .date-time-picker__appearance--dayAndTime .react-datepicker {
+  max-height: min(28rem, calc(100vh - var(--doc-controls-height) - var(--base) * 8));
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Prominent document title (main column) — class set on `title` fields in content collections. */
+.field-type.text.nazemi-admin-document-title .field-type__wrap input {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  min-height: 2.5rem;
+  padding-block: 0.4rem;
+}
+
+/* Full-width line between site-scoped nav group and shared settings (sidebar inner edge to edge). */
+.nav__wrap > .nav-group + .nav-group {
+  border-top: 0;
+  margin-top: calc(var(--base) * 0.5);
+  padding-top: calc(var(--base) * 0.5);
+  position: relative;
+
+  &::before {
+    background: var(--theme-elevation-150);
+    content: '';
+    height: 1px;
+    inset-inline-start: calc(-1 * var(--nav-padding-inline-start));
+    position: absolute;
+    top: 0;
+    width: calc(100% + var(--nav-padding-inline-start) + var(--nav-padding-inline-end));
+  }
+}
+
+/*
+ * Payload theme-success is cyan/blue — force real green for published list pills.
+ */
+.pill.nazemi-status-pill--published {
+  background: rgb(220, 242, 224);
+  color: rgb(22, 101, 52);
+}
+
+.pill.nazemi-status-pill--changed {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-800);
+}
+
+/* Taxonomy tags in list: same pill shape as Stav, outline only, wrap per tag. */
+.nazemi-tags-cell {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  max-width: 18rem;
+}
+
+.nazemi-upload-preview {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.nazemi-upload-preview__thumb {
+  border-radius: var(--style-radius-s);
+  display: inline-block;
+  height: calc(var(--base) * 2);
+  max-width: calc(var(--base) * 2);
+}
+
+.pill.nazemi-tag-pill {
+  background: transparent;
+  border: 1px solid var(--theme-elevation-250);
+  color: var(--theme-text);
+  flex: 0 1 auto;
+  max-width: 100%;
+  white-space: normal;
+}
+
+html[data-theme='dark'] {
+  .pill.nazemi-status-pill--published {
+    background: rgb(20, 83, 45);
+    color: rgb(187, 247, 208);
+  }
+
+  .pill.nazemi-status-pill--changed {
+    background: var(--theme-elevation-150);
+    color: var(--theme-elevation-800);
+  }
+
+  .pill.nazemi-status-pill--draft.pill--style-warning {
+    background: var(--theme-warning-250);
+    color: var(--theme-warning-900);
+  }
+
+  .pill.nazemi-tag-pill {
+    background: transparent;
+    border-color: var(--theme-elevation-400);
+    color: var(--theme-text);
+  }
+}
