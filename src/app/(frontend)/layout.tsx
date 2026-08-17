@@ -3,7 +3,6 @@ import React from 'react'
 
 import './styles.css'
 
-import { DevPerfMeasurePatch } from '@/components/frontend/DevPerfMeasurePatch'
 import { buildPageMetadata } from '@/lib/metadata'
 import { resolveSiteFromCurrentRequest } from '@/lib/frontend'
 
@@ -32,10 +31,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="cs">
-      <body>
-        <DevPerfMeasurePatch />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

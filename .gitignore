@@ -71,7 +71,7 @@ scripts/.*-backup*.json
 /blob-report/
 /playwright/.cache/
 
-# Cursor / editor local
+# Editor local
 .cursor/
 .vscode/
 *.swp

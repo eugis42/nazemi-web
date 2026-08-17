@@ -42,7 +42,7 @@ function ensureIndicator(el: HTMLElement | null, on: boolean) {
  * Settings edits live under `/collections/sites/:id?siteSettings=…`, so Payload
  * marks Weby active. Move the nav indicator to Navigace / Kontakt / Patička.
  *
- * No `next/navigation` hooks — Payload `beforeNav` + Turbopack break on those.
+ * No `next/navigation` hooks — Payload `beforeNav` client islands avoid those hooks.
  */
 export function SiteSettingsNavActiveSync() {
   useEffect(() => {

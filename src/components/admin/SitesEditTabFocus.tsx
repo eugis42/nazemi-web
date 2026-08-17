@@ -44,7 +44,7 @@ function setDisplay(button: HTMLElement, display: '' | 'none') {
  * - With param: show + force that field tab (retry — Payload tab prefs load async)
  * - Without: hide settings tabs; if prefs restored one, snap back to Obecné
  *
- * No `next/navigation` hooks — keeps admin client islands Turbopack-safe.
+ * No `next/navigation` hooks — keeps admin client islands stable in dev.
  */
 export function SitesEditTabFocus() {
   useEffect(() => {
