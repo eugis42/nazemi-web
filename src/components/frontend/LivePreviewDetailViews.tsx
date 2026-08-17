@@ -6,6 +6,7 @@ import type { Aktuality, Kalendar, Projekty, Publikace, Stranky, Workshopy } fro
 
 import { PageBlocks, WorkshopContentBlocks } from '@/components/frontend/BlockRenderers'
 import { PageIntro } from '@/components/frontend/cards'
+import { mediaFocalStyle, mediaSizeURL } from '@/lib/content'
 import {
   EventBody,
   NewsArticle,
@@ -37,7 +38,8 @@ export function StrankaLivePreview({
       <PageIntro
         color={page.headerColor}
         coverAlt={cover?.alt || page.title}
-        coverUrl={cover?.url}
+        coverStyle={mediaFocalStyle(cover)}
+        coverUrl={cover ? mediaSizeURL(cover, 'hero') : null}
         description={page.excerpt}
         title={page.title}
       />
@@ -83,7 +85,7 @@ export function KalendarLivePreview({
   const { data: item } = useDocLivePreview(initialData)
 
   // Overview lives in SiteShell `beforeMain` on the public page.
-  return <EventBody item={item} siteSlug={currentSiteSlug} />
+  return <EventBody item={item} />
 }
 
 export function ProjektLivePreview({ initialData }: { initialData: Projekty }) {

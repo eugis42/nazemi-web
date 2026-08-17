@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Fragment, type ReactNode } from 'react'
+import { Fragment } from 'react'
 
 import {
   BreadcrumbSiblingSelect,
@@ -7,6 +7,8 @@ import {
 } from '@/components/frontend/BreadcrumbSiblings'
 
 export type { BreadcrumbSibling }
+export type { FilterChip, FilterSection } from '@/components/frontend/FilterBar'
+export { FilterBar } from '@/components/frontend/FilterBar'
 
 export type BreadcrumbItem = {
   href: string
@@ -54,99 +56,6 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
         </ol>
       </div>
     </nav>
-  )
-}
-
-export type FilterChip = {
-  active?: boolean
-  /** Topic chips are multi-select: an active chip clears itself and shows the ✕ affordance. */
-  clearable?: boolean
-  href: string
-  /** Optional leading mark (e.g. collection color dot in search filters). */
-  icon?: ReactNode
-  label: string
-  solid?: boolean
-  source?: boolean
-}
-
-function FilterChipClearIcon() {
-  return (
-    <span aria-hidden="true" className="filter-chip-clear">
-      <svg
-        aria-hidden="true"
-        className="filter-chip-clear-icon"
-        fill="none"
-        viewBox="0 0 10 10"
-      >
-        <path
-          d="M2.5 2.5 7.5 7.5M7.5 2.5 2.5 7.5"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeWidth="1.25"
-        />
-      </svg>
-    </span>
-  )
-}
-
-export function FilterBar({
-  ariaLabel = 'Filtrovat',
-  groups,
-}: {
-  ariaLabel?: string
-  groups: FilterChip[][]
-}) {
-  const visible = groups.filter((group) => group.length)
-  if (!visible.length) return null
-
-  const renderChip = (chip: FilterChip, index: number) => {
-    const showClear = Boolean(chip.active && chip.clearable)
-    const modifier = chip.source ? ' btn-filter-source' : chip.solid ? ' btn-filter-solid' : ''
-
-    return (
-      <Link
-        aria-pressed={chip.active ? 'true' : 'false'}
-        className={`${chip.active ? 'btn-filter-active' : 'btn-filter'}${modifier}${
-          chip.icon ? ' gap-1.5' : ''
-        }${showClear ? ' relative group overflow-visible' : ''}`}
-        data-filter-kind={chip.source ? 'source' : undefined}
-        href={chip.href}
-        key={`${chip.label}-${index}`}
-      >
-        {chip.icon ? (
-          <span aria-hidden="true" className="inline-flex shrink-0 items-center">
-            {chip.icon}
-          </span>
-        ) : null}
-        {chip.label}
-        {showClear ? <FilterChipClearIcon /> : null}
-      </Link>
-    )
-  }
-
-  return (
-    <div aria-label={ariaLabel} data-component="event-filter-bar" role="toolbar">
-      <div className="flex flex-col gap-2 py-2 lg:hidden" data-filter-layout="mobile">
-        {visible.map((group, groupIndex) => (
-          <div key={`m-${groupIndex}`}>
-            {groupIndex > 0 ? (
-              <span aria-hidden="true" className="filter-bar-divider-horizontal" />
-            ) : null}
-            <div className="flex flex-wrap items-center gap-2" data-component="filter-bar-stack">
-              {group.map(renderChip)}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="hidden flex-wrap items-center gap-2 py-2 lg:flex" data-filter-layout="desktop">
-        {visible.map((group, groupIndex) => (
-          <div className="contents" key={`d-${groupIndex}`}>
-            {groupIndex > 0 ? <span aria-hidden="true" className="filter-bar-divider" /> : null}
-            {group.map(renderChip)}
-          </div>
-        ))}
-      </div>
-    </div>
   )
 }
 

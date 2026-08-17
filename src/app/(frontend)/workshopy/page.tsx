@@ -144,7 +144,11 @@ export default async function WorkshopsPage({
           <h1 className="text-display">Workshopy</h1>
           <FilterBar
             ariaLabel="Filtrovat workshopy"
-            groups={[allChip, audienceChips, topicChips]}
+            primary={allChip}
+            sections={[
+              { label: 'Cílová skupina', chips: audienceChips },
+              { label: 'Téma', chips: topicChips },
+            ]}
           />
           {workshops.docs.length ? (
             <div className="grid grid-cols-1 items-start gap-grid lg:grid-cols-2 lg:items-stretch">

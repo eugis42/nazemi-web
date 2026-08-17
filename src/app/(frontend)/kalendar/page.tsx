@@ -179,10 +179,14 @@ export default async function EventsPage({
           ) : null}
           <FilterBar
             ariaLabel="Filtrovat události"
-            groups={[timeChips, tagChips, sourceChips]}
+            primary={timeChips}
+            sections={[
+              { label: 'Téma', chips: tagChips },
+              { label: 'Zdroj', chips: sourceChips },
+            ]}
           />
           {events.docs.length ? (
-            <div className="grid grid-cols-1 gap-grid lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-grid md:grid-cols-2 lg:grid-cols-3">
               {events.docs.map((item) => (
                 <EventCard item={item} key={item.id} siteSlug={site.slug} />
               ))}

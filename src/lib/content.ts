@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react'
+
 import type { Media, Site } from '@/payload-types'
 
 import { resolveMenuItem } from '@/lib/menu'
@@ -5,15 +7,45 @@ import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
 export type MediaLike = Media | number | null | undefined
 
+/** Named Payload upload sizes — see `src/collections/Media.ts`. */
+export type MediaSizeName =
+  | 'thumb'
+  | 'square'
+  | 'card'
+  | 'landscape'
+  | 'portrait'
+  | 'hero'
+  | 'large'
+
 export function mediaURL(media: MediaLike): string | null {
   if (!media || typeof media === 'number') return null
   return media.url || null
 }
 
+/** Prefer named size; fall back to `large`, then original. */
+export function mediaSizeURL(media: MediaLike, size: MediaSizeName): string | null {
+  if (!media || typeof media === 'number') return null
+  const sized = media.sizes?.[size]?.url
+  if (typeof sized === 'string' && sized) return sized
+  if (size !== 'large') {
+    const large = media.sizes?.large?.url
+    if (typeof large === 'string' && large) return large
+  }
+  return media.url || null
+}
+
 /** Prefer upload `card` size for listing thumbs when available. */
 export function mediaCardURL(media: MediaLike): string | null {
-  if (!media || typeof media === 'number') return null
-  return media.sizes?.card?.url || media.url || null
+  return mediaSizeURL(media, 'card')
+}
+
+/** CSS `object-position` from Payload focal point (0–100). */
+export function mediaFocalStyle(media: MediaLike): CSSProperties | undefined {
+  if (!media || typeof media === 'number') return undefined
+  const x = media.focalX
+  const y = media.focalY
+  if (x == null && y == null) return undefined
+  return { objectPosition: `${x ?? 50}% ${y ?? 50}%` }
 }
 
 export function mediaAlt(media: MediaLike, fallback = ''): string {

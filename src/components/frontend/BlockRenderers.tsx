@@ -1,6 +1,6 @@
-import { Children, Fragment, type ReactNode } from 'react'
+import { Fragment } from 'react'
 
-import type { Aktuality, Kalendar, Projekty } from '@/payload-types'
+import type { Aktuality, Kalendar, Media, Projekty } from '@/payload-types'
 import { EventCard, NewsCard, PageIntro, ProjectRow } from '@/components/frontend/cards'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { EmptyState } from '@/components/frontend/listing'
@@ -8,6 +8,7 @@ import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { BlockHeader } from '@/components/frontend/ui'
 import { resolveBlockActions } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
+import { mediaAlt, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
 
 export const BG: Record<string, string> = {
@@ -106,28 +107,6 @@ export function HeroBlock({ block }: { block: ContentBlock }) {
   )
 }
 
-/** Tile width as if N columns; wrap + center (1–2 items don’t stretch full width). */
-function ItemTileGrid({
-  children,
-  columns,
-}: {
-  children: ReactNode
-  columns: 3 | 4
-}) {
-  const tileClass =
-    columns === 4
-      ? 'w-full lg:w-[calc((100%-3*var(--spacing-grid))/4)]'
-      : 'w-full lg:w-[calc((100%-2*var(--spacing-grid))/3)]'
-
-  return (
-    <div className="flex flex-col gap-grid lg:flex-row lg:flex-wrap lg:justify-center">
-      {Children.map(children, (child) => (
-        <div className={tileClass}>{child}</div>
-      ))}
-    </div>
-  )
-}
-
 export function EventsGrid({
   actions,
   items,
@@ -142,11 +121,11 @@ export function EventsGrid({
   return (
     <section className="flex flex-col" data-block="events">
       <BlockHeader actions={actions} title={title} />
-      <ItemTileGrid columns={3}>
+      <div className="grid grid-cols-1 items-stretch gap-grid md:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
           <EventCard item={item} key={item.id} siteSlug={siteSlug} />
         ))}
-      </ItemTileGrid>
+      </div>
       {items.length ? null : <EmptyState>Zatím nemáme naplánované žádné události.</EmptyState>}
     </section>
   )
@@ -166,11 +145,11 @@ export function NewsGrid({
   return (
     <section className="flex flex-col" data-block="news">
       <BlockHeader actions={actions} title={title} />
-      <ItemTileGrid columns={4}>
+      <div className="grid min-w-0 grid-cols-1 items-stretch gap-grid lg:grid-cols-2">
         {items.map((item) => (
           <NewsCard item={item} key={item.id} siteSlug={siteSlug} />
         ))}
-      </ItemTileGrid>
+      </div>
       {items.length ? null : <EmptyState>Zatím nemáme žádné aktuality.</EmptyState>}
     </section>
   )
@@ -204,10 +183,8 @@ export function ProjectsBlock({ block, siteSlug }: { block: ContentBlock; siteSl
 }
 
 export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug: string }) {
-  const image =
-    block.image && typeof block.image === 'object'
-      ? (block.image as { url?: string; alt?: string })
-      : null
+  const image = block.image && typeof block.image === 'object' ? (block.image as Media) : null
+  const imageUrl = image ? mediaSizeURL(image, 'large') : null
   const columns = ((block.columns as { title?: string; body?: string }[]) || []).slice(0, 3)
   const colCount = Math.max(columns.length, 1)
   const gridCols =
@@ -227,14 +204,14 @@ export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug:
         actions={actions}
         title={(block.title as string) || 'NaZemi'}
       />
-      {image?.url ? (
+      {imageUrl ? (
         <div className="overflow-hidden border-x-2 border-t-2 border-x-ground border-t-ground">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            alt={image.alt || 'Tým NaZemi'}
+            alt={mediaAlt(image, 'Tým NaZemi')}
             className="block h-auto w-full"
             loading="lazy"
-            src={image.url}
+            src={imageUrl}
           />
         </div>
       ) : null}
@@ -277,14 +254,16 @@ export function PageBlocks({
           if (skipPageIntro) return null
           const cover =
             block.coverImage && typeof block.coverImage === 'object'
-              ? (block.coverImage as { url?: string; alt?: string })
+              ? (block.coverImage as Media)
               : null
-          if (!block.lead && !cover?.url) return null
+          const coverUrl = cover ? mediaSizeURL(cover, 'hero') : null
+          if (!block.lead && !coverUrl) return null
           return (
             <PageIntro
               color={(block.headerColor as string) || null}
-              coverAlt={cover?.alt}
-              coverUrl={cover?.url}
+              coverAlt={mediaAlt(cover, '')}
+              coverStyle={mediaFocalStyle(cover)}
+              coverUrl={coverUrl}
               description={block.lead ? String(block.lead) : null}
               key={key}
             />
@@ -346,15 +325,16 @@ export function WorkshopContentBlocks({
               ? block.title
               : 'Lektoři a facilitátoři'
           return (
-            <div className="container" key={key}>
+            <div className="container max-lg:px-card" key={key}>
               <section className="flex flex-col gap-grid" data-block="workshop-speakers">
                 <h2 className="text-section-title text-ground">{title}</h2>
                 <div className="grid grid-cols-1 gap-grid sm:grid-cols-2 lg:grid-cols-3">
                   {people.map((person, personIndex) => {
                     const img =
                       person.image && typeof person.image === 'object'
-                        ? (person.image as { url?: string; alt?: string })
+                        ? (person.image as Media)
                         : null
+                    const imgUrl = img ? mediaSizeURL(img, 'thumb') : null
                     const initials = (person.name || '')
                       .split(/\s+/)
                       .map((part) => part[0])
@@ -366,13 +346,14 @@ export function WorkshopContentBlocks({
                         data-component="workshop-speaker"
                         key={`${person.name}-${personIndex}`}
                       >
-                        {img?.url ? (
+                        {imgUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
-                            alt={img.alt || person.name || ''}
+                            alt={mediaAlt(img, person.name || '')}
                             className="size-20 shrink-0 rounded-full border-2 border-ground object-cover"
                             loading="lazy"
-                            src={img.url}
+                            src={imgUrl}
+                            style={mediaFocalStyle(img)}
                           />
                         ) : (
                           <div
@@ -405,7 +386,7 @@ export function WorkshopContentBlocks({
               ? block.title
               : 'Co o workshopu říkají'
           return (
-            <div className="container" key={key}>
+            <div className="container max-lg:px-card" key={key}>
               <section className="flex flex-col gap-grid" data-block="workshop-testimonials">
                 <h2 className="text-section-title text-ground">{title}</h2>
                 <div className="grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2 lg:gap-10 xl:grid-cols-4">

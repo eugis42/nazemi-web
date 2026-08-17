@@ -56,13 +56,20 @@ export function SiteFooter({ site }: { site: Site }) {
               >
                 <div className="flex flex-1 flex-col justify-between gap-6">
                   <div className="flex flex-col gap-2.5">
-                    <h3 className="text-card-title">{item.title}</h3>
+                    <h3 className="text-section-title">{item.title}</h3>
                     {item.description ? (
-                      <p className="text-body-inter">{item.description}</p>
+                      <p className="font-inter text-sm font-medium leading-snug text-ground">
+                        {item.description}
+                      </p>
                     ) : null}
                   </div>
                   {item.subscribeUrl ? (
-                    <Button href={item.subscribeUrl} newTab variant="outline-ground">
+                    <Button
+                      className="!text-[14px]"
+                      href={item.subscribeUrl}
+                      newTab
+                      variant="outline-ground"
+                    >
                       {item.subscribeLabel || 'Přihlásit se k odběru'}
                     </Button>
                   ) : null}
@@ -96,7 +103,7 @@ export function SiteFooter({ site }: { site: Site }) {
                 width={116}
               />
             ) : (
-              <span className="font-saans text-xl text-ground">{site.name}</span>
+              <span className="font-saans text-lg text-ground">{site.name}</span>
             )}
           </Link>
           {contacts.map((block, index) => {
@@ -114,7 +121,10 @@ export function SiteFooter({ site }: { site: Site }) {
                 : addressLines.filter((line) => line !== block.title)
 
             return (
-              <div className="text-body-inter" key={`${block.title}-${index}`}>
+              <div
+                className="font-inter text-sm font-medium leading-snug text-ground"
+                key={`${block.title}-${index}`}
+              >
                 <p className="m-0">
                   {heading}
                   {rest.length ? (
@@ -126,13 +136,20 @@ export function SiteFooter({ site }: { site: Site }) {
                   {block.email ? (
                     <>
                       <br />
-                      {block.email}
+                      <a className="text-inherit no-underline" href={`mailto:${block.email}`}>
+                        {block.email}
+                      </a>
                     </>
                   ) : null}
                   {block.phone ? (
                     <>
                       <br />
-                      {block.phone}
+                      <a
+                        className="text-inherit no-underline"
+                        href={`tel:${block.phone.replace(/[^\d+]/g, '')}`}
+                      >
+                        {block.phone}
+                      </a>
                     </>
                   ) : null}
                 </p>
@@ -140,7 +157,7 @@ export function SiteFooter({ site }: { site: Site }) {
             )
           })}
         </div>
-        <div className="text-body-inter text-left lg:text-right">
+        <div className="font-inter text-left text-sm font-medium leading-snug text-ground lg:text-right">
           {(site.socialLinks || []).length ? (
             <p className="m-0 mb-2 flex flex-wrap gap-x-3 gap-y-1 lg:justify-end" data-component="footer-social">
               {(site.socialLinks || [])

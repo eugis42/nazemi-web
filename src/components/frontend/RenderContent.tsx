@@ -1,20 +1,23 @@
 import { PageBlocks } from '@/components/frontend/BlockRenderers'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { Tag } from '@/components/frontend/ui'
-import { crossPostSiteName } from '@/lib/content'
+import { crossPostSiteName, mediaAlt, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
 
 type MediaValue = {
   alt?: null | string
   url?: null | string
+  focalX?: number | null
+  focalY?: number | null
+  sizes?: Record<string, { url?: string | null } | null | undefined>
 }
 
 const MediaFigure = ({ media }: { media?: MediaValue | null }) => {
-  if (!media?.url) {
-    return null
-  }
+  if (!media) return null
+  const src = mediaSizeURL(media as never, 'large')
+  if (!src) return null
 
   // eslint-disable-next-line @next/next/no-img-element
-  return <img alt={media.alt || ''} src={media.url} />
+  return <img alt={mediaAlt(media as never, '')} src={src} style={mediaFocalStyle(media as never)} />
 }
 
 export const RenderBlocks = ({ blocks }: { blocks?: any[] | null }) => {

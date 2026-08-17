@@ -63,36 +63,22 @@ export default async function PublikaceDetailPage({
     includeCrossPosted: site.slug === 'nazemi',
     siteId: site.id,
   })
-  const [result, siblings] = await Promise.all([
-    payload.find({
-      collection: 'publikace',
-      depth: 2,
-      limit: 1,
-      pagination: false,
-      ...(await draftFindOptions()),
-      where: {
-        and: [listingWhere, { slug: { equals: slug } }],
-      },
-    }),
-    payload.find({
-      collection: 'publikace',
-      depth: 0,
-      limit: 100,
-      pagination: false,
-      sort: 'title',
-      where: listingWhere,
-    }),
-  ])
+  const result = await payload.find({
+    collection: 'publikace',
+    depth: 2,
+    limit: 1,
+    pagination: false,
+    ...(await draftFindOptions()),
+    where: {
+      and: [listingWhere, { slug: { equals: slug } }],
+    },
+  })
 
   const doc = result.docs[0]
   if (!doc) notFound()
 
   const listingHref = '/publikace'
   const menuMatch = menuParentForHref(site.mainMenu, listingHref)
-  const pubSiblings = siblings.docs.map((item) => ({
-    href: withSiteQuery(`/publikace/${item.slug}`, site.slug),
-    label: item.title,
-  }))
 
   const breadcrumbs = menuMatch
     ? [
@@ -105,7 +91,6 @@ export default async function PublikaceDetailPage({
         {
           href: withSiteQuery(`/publikace/${doc.slug}`, site.slug),
           label: doc.title,
-          siblings: pubSiblings,
         },
       ]
     : [
@@ -114,7 +99,6 @@ export default async function PublikaceDetailPage({
         {
           href: withSiteQuery(`/publikace/${doc.slug}`, site.slug),
           label: doc.title,
-          siblings: pubSiblings,
         },
       ]
 

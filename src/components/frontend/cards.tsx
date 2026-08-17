@@ -5,7 +5,13 @@ import type { Aktuality, Kalendar, Lide, Projekty, Publikace, Site, Workshopy } 
 import { Button, Divider, MetaLine, TagGroup } from '@/components/frontend/ui'
 import { mapCtaVariant } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
-import { crossPostSiteName, mediaAlt, mediaCardURL, withSiteQuery } from '@/lib/content'
+import {
+  crossPostSiteName,
+  mediaAlt,
+  mediaFocalStyle,
+  mediaSizeURL,
+  withSiteQuery,
+} from '@/lib/content'
 import { formatDate, formatDateRange } from '@/lib/format'
 import { isExternalHref } from '@/lib/links'
 
@@ -98,7 +104,7 @@ export function EventCard({ item, siteSlug }: { item: Kalendar; siteSlug: string
   return (
     <CardLink
       ariaLabel={`${item.title}. ${buttonLabel}`}
-      className="card-tile flex flex-1 flex-col border-2 border-ground bg-ground"
+      className="card-tile flex h-full flex-1 flex-col border-2 border-ground bg-ground"
       component="event-card"
       href={withSiteQuery(`/kalendar/${item.slug}`, siteSlug)}
     >
@@ -109,14 +115,17 @@ export function EventCard({ item, siteSlug }: { item: Kalendar; siteSlug: string
             alt=""
             className="absolute inset-0 size-full object-cover"
             loading="lazy"
-            src={mediaCardURL(cover) || cover.url || ''}
+            src={mediaSizeURL(cover, 'square') || ''}
+            style={mediaFocalStyle(cover)}
           />
         ) : null}
       </div>
       <div className="flex flex-1 flex-col justify-between gap-6 p-card">
         <div className="flex flex-col gap-2.5">
           <MetaLine inverted text={meta} />
-          <h3 className="text-card-title text-sky">{item.title}</h3>
+          <h3 className="text-card-title text-sky lg:[font-size:var(--text-section-title)] lg:leading-none lg:tracking-[-0.48px]">
+            {item.title}
+          </h3>
           <TagGroup tags={tagTitles(item.tags)} variant="sky" />
         </div>
         <Button tag="span" variant="outline-sky">
@@ -139,7 +148,7 @@ export function NewsCard({ item, siteSlug }: { item: Aktuality; siteSlug: string
   return (
     <CardLink
       ariaLabel={`${item.title}. ${external ? '↗ ' : ''}${buttonLabel}`}
-      className="card-tile flex min-w-0 flex-1 flex-col self-stretch overflow-hidden border-2 border-ground bg-sky"
+      className="card-tile flex h-full min-w-0 flex-1 flex-col self-stretch overflow-hidden border-2 border-ground bg-sky"
       component="news-card"
       external={external}
       href={item.externalUrl || withSiteQuery(`/aktuality/${item.slug}`, siteSlug)}
@@ -150,8 +159,11 @@ export function NewsCard({ item, siteSlug }: { item: Aktuality; siteSlug: string
         data-part="media"
         role="img"
         style={
-          cover && mediaCardURL(cover)
-            ? { backgroundImage: `url('${mediaCardURL(cover)}')` }
+          cover && mediaSizeURL(cover, 'card')
+            ? {
+                backgroundImage: `url('${mediaSizeURL(cover, 'card')}')`,
+                backgroundPosition: mediaFocalStyle(cover)?.objectPosition || 'top',
+              }
             : undefined
         }
       />
@@ -187,7 +199,8 @@ export function WorkshopCard({ item, siteSlug }: { item: Workshopy; siteSlug: st
             alt={mediaAlt(cover, item.title)}
             className="size-full object-cover"
             loading="lazy"
-            src={mediaCardURL(cover) || cover.url || ''}
+            src={mediaSizeURL(cover, 'landscape') || ''}
+            style={mediaFocalStyle(cover)}
           />
         ) : null}
       </div>
@@ -219,13 +232,14 @@ export function BookCard({ item, siteSlug }: { item: Publikace; siteSlug: string
       href={withSiteQuery(`/publikace/${item.slug}`, siteSlug)}
     >
       <div className="relative mb-2 aspect-[2/3] w-1/2 shrink-0 overflow-hidden bg-ground/5">
-        {cover?.url ? (
+        {cover && mediaSizeURL(cover, 'portrait') ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={mediaAlt(cover, item.title)}
             className="absolute inset-0 size-full object-cover object-center"
             loading="lazy"
-            src={cover.url}
+            src={mediaSizeURL(cover, 'portrait') || ''}
+            style={mediaFocalStyle(cover)}
           />
         ) : null}
       </div>
@@ -517,13 +531,14 @@ export function TeamMemberCard({ person }: { person: Lide }) {
       data-component="team-member-card"
     >
       <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-ground bg-green/30 lg:size-24">
-        {image?.url ? (
+        {image && mediaSizeURL(image, 'thumb') ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={mediaAlt(image, person.name)}
             className="size-full object-cover"
             loading="lazy"
-            src={image.url}
+            src={mediaSizeURL(image, 'thumb') || ''}
+            style={mediaFocalStyle(image)}
           />
         ) : (
           <span aria-hidden="true" className="font-saans text-lg leading-none text-ground">
@@ -557,12 +572,14 @@ export function TeamMemberCard({ person }: { person: Lide }) {
 export function PageIntro({
   color,
   coverAlt,
+  coverStyle,
   coverUrl,
   description,
   title,
 }: {
   color?: string | null
   coverAlt?: string
+  coverStyle?: CSSProperties
   coverUrl?: string | null
   description?: string | null
   title?: string | null
@@ -581,7 +598,12 @@ export function PageIntro({
       >
         <div aria-hidden="true" className="absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt={coverAlt || ''} className="size-full object-cover" src={coverUrl} />
+          <img
+            alt={coverAlt || ''}
+            className="size-full object-cover"
+            src={coverUrl}
+            style={coverStyle}
+          />
           <div className="absolute inset-0 bg-ground/33" />
         </div>
         <div className="container relative z-10 flex min-h-[66vh] flex-col justify-end py-card max-lg:px-card lg:pt-8 lg:pb-card">

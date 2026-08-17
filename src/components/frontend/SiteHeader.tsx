@@ -12,8 +12,8 @@ import { resolveMenuItem } from '@/lib/menu'
 type MenuItem = NonNullable<Site['mainMenu']>[number]
 type SecondaryItem = NonNullable<Site['secondaryMenu']>[number]
 
-const MENU_ANIM_MS = 250
-const SUBMENU_ANIM_MS = 200
+const MENU_ANIM_MS = 220
+const SUBMENU_ANIM_MS = 220
 /** Matches the `gap-x-5` between nav items — the wrap math needs it in pixels. */
 const NAV_GAP_PX = 20
 const NAV_ROW_ATTR = 'data-nav-row'
@@ -195,28 +195,19 @@ export function SiteHeader({
 
     const mobile = window.matchMedia('(max-width: 1023px)').matches
     const menubar = header.querySelector<HTMLElement>('[data-component="mobile-menubar"]')
-    const navOpen =
-      header.hasAttribute('data-nav-open') ||
-      header.hasAttribute('data-nav-opening') ||
-      header.hasAttribute('data-nav-closing')
 
-    // Closed: full header (includes mobile pb-3) so breadcrumbs clear the fixed bar.
-    // Open: menubar only — expanded nav must not inflate --site-header-offset.
+    // Mobile: always menubar height — menu open/close must never move page content.
     let offset = header.offsetHeight
-    if (mobile && menubar && navOpen) {
-      const pb = Number.parseFloat(getComputedStyle(header).paddingBottom) || 0
-      offset = menubar.offsetHeight + pb
-    }
-
-    document.documentElement.style.setProperty('--site-header-offset', `${offset}px`)
-
-    if (menubar && mobile) {
+    if (mobile && menubar) {
+      offset = menubar.offsetHeight
       const headerRect = header.getBoundingClientRect()
       const menubarRect = menubar.getBoundingClientRect()
       header.style.setProperty('--mobile-menubar-bottom', `${menubarRect.bottom - headerRect.top}px`)
     } else {
       header.style.removeProperty('--mobile-menubar-bottom')
     }
+
+    document.documentElement.style.setProperty('--site-header-offset', `${offset}px`)
   }, [])
 
 
@@ -406,15 +397,15 @@ export function SiteHeader({
 
   return (
     <header
-      className="border-ground fixed inset-x-0 top-0 z-50 border-0 border-b-2 border-b-ground bg-sky max-lg:pt-0 max-lg:pb-3 lg:overflow-visible lg:py-0"
+      className="border-ground fixed inset-x-0 top-0 z-50 border-0 border-b-ground bg-sky max-lg:border-b-0 max-lg:pt-0 max-lg:pb-0 lg:border-b-2 lg:overflow-visible lg:py-0"
       data-component="site-header"
       ref={headerRef}
       {...headerAttrs}
     >
       <div className="container">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-x-0 pl-2.5 pr-[15px] lg:items-stretch lg:border-x-2 lg:border-x-ground">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-x-0 pl-2.5 pr-[15px] max-lg:gap-y-0 lg:items-stretch lg:border-x-2 lg:border-x-ground">
           <div
-            className="max-lg:relative max-lg:z-30 max-lg:flex max-lg:w-full max-lg:items-center max-lg:gap-x-5 max-lg:bg-sky max-lg:pt-3 lg:contents"
+            className="max-lg:relative max-lg:z-30 max-lg:flex max-lg:w-full max-lg:items-center max-lg:gap-x-5 max-lg:bg-sky max-lg:pt-3 max-lg:pb-3 lg:contents"
             data-component="mobile-menubar"
           >
             <div className="flex shrink-0 items-center gap-2.5 lg:self-stretch">
@@ -463,65 +454,62 @@ export function SiteHeader({
                 }}
                 type="button"
               >
-                <span
-                  aria-hidden="true"
-                  className="block h-0.5 w-5 bg-sky shadow-[0_-6px_0_0_#f3ffff,0_6px_0_0_#f3ffff] transition-[background-color,box-shadow] duration-150 ease-out"
-                />
+                <span aria-hidden="true" className="btn-nav-toggle-icon" />
               </button>
             </div>
           </div>
 
-          <div
-            className={`mobile-nav-shell max-lg:w-full lg:contents ${isOpen ? 'is-active' : ''} ${expanded ? 'is-expanded' : ''} ${navState === 'closing' ? 'is-closing' : ''}`}
-            data-component="mobile-nav-shell"
-          >
-            <nav
-              aria-label="Hlavní navigace"
-              className={`${
-                navState === 'closed' ? 'hidden' : 'flex'
-              } w-full flex-col gap-4 max-lg:py-4 lg:flex lg:min-w-0 lg:flex-1 lg:flex-row lg:flex-nowrap lg:items-stretch lg:justify-end lg:gap-x-5 lg:overflow-visible lg:py-0`}
-              data-nav-panel
-              id="site-nav"
+            <div
+              className={`mobile-nav-shell max-lg:w-full lg:contents ${isOpen ? 'is-active' : ''} ${expanded ? 'is-expanded' : ''}`}
+              data-component="mobile-nav-shell"
             >
-              <div
-                className="flex w-full flex-col gap-4 lg:w-auto lg:min-w-0 lg:flex-1 lg:flex-row lg:flex-wrap lg:items-center lg:justify-end lg:gap-x-5 lg:gap-y-1"
-                data-component="main-menu"
-                ref={mainMenuRef}
+            <div className="mobile-nav-shell-inner max-lg:min-h-0 max-lg:overflow-hidden lg:contents">
+              <nav
+                aria-label="Hlavní navigace"
+                className="flex w-full flex-col gap-4 max-lg:py-4 lg:min-w-0 lg:flex-1 lg:flex-row lg:flex-nowrap lg:items-stretch lg:justify-end lg:gap-x-5 lg:overflow-visible lg:py-0"
+                data-nav-panel
+                id="site-nav"
               >
-                {renderMainItems(items)}
-              </div>
-              <div
-                aria-hidden="true"
-                className="w-[2px] shrink-0 self-stretch bg-ground max-lg:hidden"
-                data-component="nav-menu-separator"
-              />
-              <div
-                className="flex w-full gap-4 max-lg:flex-col lg:w-auto lg:shrink-0 lg:gap-x-5 lg:gap-y-1"
-                data-component="secondary-menu"
-              >
-                {secondaryMenu?.map((item, index) => {
-                  const resolved = resolveMenuItem(item)
-                  if (!resolved) return null
-                  const { external, href, label } = resolved
-                  const active = !external && isActiveHref(pathname, href)
-                  return (
-                    <a
-                      className=""
-                      data-component="nav-link"
-                      data-variant={external ? 'external' : 'default'}
-                      href={external ? href : withSiteQuery(href, siteSlug)}
-                      key={`${href}-${index}`}
-                      onClick={closeNav}
-                      rel={external ? 'noopener noreferrer' : undefined}
-                      target={external ? '_blank' : undefined}
-                      {...navLinkAttrs(active)}
-                    >
-                      {external ? `↗ ${label}` : label}
-                    </a>
-                  )
-                })}
-              </div>
-            </nav>
+                <div
+                  className="flex w-full flex-col gap-4 lg:w-auto lg:min-w-0 lg:flex-1 lg:flex-row lg:flex-wrap lg:items-center lg:justify-end lg:gap-x-5 lg:gap-y-1"
+                  data-component="main-menu"
+                  ref={mainMenuRef}
+                >
+                  {renderMainItems(items)}
+                </div>
+                <div
+                  aria-hidden="true"
+                  className="w-[2px] shrink-0 self-stretch bg-ground max-lg:hidden"
+                  data-component="nav-menu-separator"
+                />
+                <div
+                  className="flex w-full gap-4 max-lg:flex-col lg:w-auto lg:shrink-0 lg:gap-x-5 lg:gap-y-1"
+                  data-component="secondary-menu"
+                >
+                  {secondaryMenu?.map((item, index) => {
+                    const resolved = resolveMenuItem(item)
+                    if (!resolved) return null
+                    const { external, href, label } = resolved
+                    const active = !external && isActiveHref(pathname, href)
+                    return (
+                      <a
+                        className=""
+                        data-component="nav-link"
+                        data-variant={external ? 'external' : 'default'}
+                        href={external ? href : withSiteQuery(href, siteSlug)}
+                        key={`${href}-${index}`}
+                        onClick={closeNav}
+                        rel={external ? 'noopener noreferrer' : undefined}
+                        target={external ? '_blank' : undefined}
+                        {...navLinkAttrs(active)}
+                      >
+                        {external ? `↗ ${label}` : label}
+                      </a>
+                    )
+                  })}
+                </div>
+              </nav>
+            </div>
           </div>
 
           <div className="hidden shrink-0 lg:flex lg:items-center" data-component="header-search">
@@ -529,11 +517,6 @@ export function SiteHeader({
           </div>
         </div>
       </div>
-      <div
-        aria-hidden="true"
-        className="mobile-nav-divider lg:hidden"
-        data-component="mobile-nav-divider"
-      />
     </header>
   )
 }
@@ -563,28 +546,35 @@ function NavItem({
   if (!resolved) return null
   const href = withSiteQuery(resolved.href, siteSlug)
   const activeAttrs = navLinkAttrs(isActive)
-  const children = (item.children || [])
+  const childItems = (item.children || [])
     .map((child, childIndex) => {
       const childResolved = resolveMenuItem(child)
       if (!childResolved) return null
-      const childActive = isActiveHref(pathname, childResolved.href)
-      return (
-        <Link
-          className="nav-submenu-link"
-          data-component="nav-link"
-          data-nav-level="2"
-          href={withSiteQuery(childResolved.href, siteSlug)}
-          key={`${childResolved.href}-${childIndex}`}
-          onClick={onCloseNav}
-          {...navLinkAttrs(childActive)}
-        >
-          {childResolved.label}
-        </Link>
-      )
+      return {
+        active: isActiveHref(pathname, childResolved.href),
+        href: withSiteQuery(childResolved.href, siteSlug),
+        key: `${childResolved.href}-${childIndex}`,
+        label: childResolved.label,
+      }
     })
-    .filter(Boolean)
+    .filter(Boolean) as { active: boolean; href: string; key: string; label: string }[]
 
-  if (!children.length) {
+  const renderChildLinks = (className: string) =>
+    childItems.map((child) => (
+      <Link
+        className={className}
+        data-component="nav-link"
+        data-nav-level="2"
+        href={child.href}
+        key={child.key}
+        onClick={onCloseNav}
+        {...navLinkAttrs(child.active)}
+      >
+        {child.label}
+      </Link>
+    ))
+
+  if (!childItems.length) {
     return (
       <Link
         className=""
@@ -628,7 +618,7 @@ function NavItem({
       </a>
 
       <div className="nav-item-panel max-lg:hidden" data-component="nav-item-panel">
-        <div data-component="nav-submenu">{children}</div>
+        <div data-component="nav-submenu">{renderChildLinks('nav-submenu-link')}</div>
       </div>
 
       {panelOpen ? (
@@ -641,7 +631,21 @@ function NavItem({
             <button className="nav-mobile-back" data-nav-back onClick={onCloseSubmenu} type="button">
               ← Zpět
             </button>
-            <div data-component="nav-submenu">{children}</div>
+            <div className="nav-mobile-level">
+              <Link
+                className="nav-mobile-parent"
+                data-component="nav-link"
+                data-nav-level="1"
+                href={href}
+                onClick={onCloseNav}
+                {...activeAttrs}
+              >
+                {resolved.label}
+              </Link>
+              <div className="nav-mobile-submenu" data-component="nav-submenu">
+                {renderChildLinks('nav-submenu-link')}
+              </div>
+            </div>
           </div>
         </div>
       ) : null}

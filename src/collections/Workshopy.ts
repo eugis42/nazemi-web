@@ -33,6 +33,8 @@ export const Workshopy = {
     useAsTitle: 'title',
   },
   defaultPopulate: {
+    slug: true,
+    title: true,
     site: true,
     topics: true,
   },

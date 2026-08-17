@@ -76,6 +76,9 @@ const MEDIA_ALT: Record<string, string> = {
   'event-body.jpg': 'Fotografie z předchozího ročníku Nerůstové akademie',
   'logo-nazemi.svg': 'Logo NaZemi',
   'logo-subsite.svg': 'Logo NaZemi Brno',
+  'favicon.svg': 'Favicon NaZemi (SVG)',
+  'apple-touch-icon.png': 'Apple Touch Icon NaZemi',
+  'icon-32.png': 'Favicon NaZemi 32×32',
   'svg/hero-backdrop.svg': 'Pozadí homepage — vlna',
   'news-1.jpg': 'Nová kniha z dílny Nerůstu',
   'news-2.jpg': 'Redakce NaZemi u nového webu',
@@ -148,7 +151,7 @@ const seed = async () => {
   ).docs[0]?.id
 
   // -------------------------------------------------------------------- sites
-  const [mainLogo, subLogo, aboutTeamImage, brnoSharing, demoProseImage, heroBackdrop] =
+  const [mainLogo, subLogo, aboutTeamImage, brnoSharing, demoProseImage, heroBackdrop, faviconSvg, appleTouchIcon] =
     await Promise.all([
       mediaFor('logo-nazemi.svg'),
       mediaFor('logo-subsite.svg'),
@@ -156,6 +159,8 @@ const seed = async () => {
       mediaFor('news-2.jpg'),
       mediaFor('event-body.jpg'),
       mediaFor('svg/hero-backdrop.svg'),
+      mediaFor('favicon.svg'),
+      mediaFor('apple-touch-icon.png'),
     ])
 
   const demoProseOptions = { uploadId: demoProseImage.id }
@@ -231,6 +236,10 @@ const seed = async () => {
       fullAddress: richText('NaZemi, Kounicova 42, 602 00 Brno'),
       homepageBackground: heroBackdrop.id,
       logo: mainLogo.id,
+      favicon: {
+        appleTouchIcon: appleTouchIcon.id,
+        icon: faviconSvg.id,
+      },
       mainMenu,
       metaTitle: 'NaZemi',
       name: 'NaZemi',

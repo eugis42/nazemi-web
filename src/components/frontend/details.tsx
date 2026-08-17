@@ -8,12 +8,19 @@ import { CalendarIcon, ClockIcon, PinIcon } from '@/components/frontend/icons'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { Button, TagGroup } from '@/components/frontend/ui'
 import { WorkshopHeaderMotion } from '@/components/frontend/WorkshopHeaderMotion'
-import { crossPostSiteName, mediaAlt, withSiteQuery } from '@/lib/content'
+import { crossPostSiteName, mediaAlt, mediaFocalStyle, mediaSizeURL, withSiteQuery } from '@/lib/content'
 import { formatDate, formatDateRange, formatTimeRange } from '@/lib/format'
 
 /** Full-bleed container + 874px prose column — matches the design content rhythm. */
 export const CONTENT_WRAPPER_CLASS = 'container max-lg:px-card'
 export const CONTENT_INNER_CLASS = 'mx-auto w-full max-w-[874px]'
+
+/** Sticky on-scroll banner title — shared by workshop + calendar. */
+const STICKY_BANNER_TITLE_CLASS =
+  'min-w-0 line-clamp-2 font-saans text-lg leading-snug tracking-[-0.36px] text-pretty lg:text-[26px] lg:leading-tight lg:tracking-[-0.52px]'
+const STICKY_BANNER_INNER_CLASS = 'container py-3 max-lg:px-card lg:py-4'
+const STICKY_BANNER_ROW_CLASS =
+  'flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-8'
 
 function tagTitles(items?: (number | { title?: string | null })[] | null) {
   if (!items?.length) return []
@@ -47,29 +54,42 @@ export function Prose({ data }: { data?: unknown }) {
 }
 
 const META_ICON_CLASS =
-  'inline-flex size-[1.125rem] shrink-0 items-center justify-center opacity-50 lg:size-[22px] [&_svg]:block [&_svg]:size-full'
-const META_TEXT_CLASS =
-  'font-saans text-lg leading-none tracking-[-0.36px] lg:text-[22px] lg:tracking-[-0.44px]'
+  'inline-flex size-[1.125rem] shrink-0 items-center justify-center opacity-50 [&_svg]:block [&_svg]:size-full'
+const META_TEXT_CLASS = 'font-saans text-lg leading-none tracking-[-0.36px]'
 
 function EventMeta({
   href,
   icon,
   text,
+  wrapMobile = false,
 }: {
   href?: string | null
   icon: ReactNode
   text?: string | null
+  /** Mobile: full text, multi-line. Desktop: single-line truncate/nowrap. */
+  wrapMobile?: boolean
 }) {
   if (!text) return null
 
+  const textClass = wrapMobile
+    ? `${META_TEXT_CLASS} min-w-0 whitespace-normal leading-snug lg:truncate lg:leading-none`
+    : `${META_TEXT_CLASS} whitespace-nowrap`
+
   return (
-    <div className="flex min-w-0 items-center gap-2.5">
-      <span aria-hidden="true" className={`${META_ICON_CLASS} text-sky`}>
+    <div
+      className={`flex gap-2.5 ${
+        wrapMobile ? 'min-w-0 items-start lg:items-center' : 'shrink-0 items-center'
+      }`}
+    >
+      <span
+        aria-hidden="true"
+        className={`${META_ICON_CLASS} text-sky ${wrapMobile ? 'mt-0.5 lg:mt-0' : ''}`}
+      >
         {icon}
       </span>
       {href ? (
         <a
-          className={`truncate ${META_TEXT_CLASS} text-sky underline underline-offset-2`}
+          className={`${textClass} text-sky underline underline-offset-2`}
           href={href}
           rel="noopener noreferrer"
           target="_blank"
@@ -77,7 +97,7 @@ function EventMeta({
           {text}
         </a>
       ) : (
-        <span className={`${META_TEXT_CLASS} whitespace-nowrap text-sky`}>{text}</span>
+        <span className={`${textClass} text-sky`}>{text}</span>
       )}
     </div>
   )
@@ -91,6 +111,7 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
   })
   const address = item.location?.address || null
   const placeText = address || [item.location?.name, item.location?.city].filter(Boolean).join(', ')
+  const stickyCity = item.location?.city || null
   const primaryCta = item.ctas?.find((cta) => cta.url && cta.title)
 
   const dateMeta = (
@@ -98,8 +119,12 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
   )
   const timeMeta = <EventMeta icon={<ClockIcon />} text={formatTimeRange(item.startDate, item.endDate)} />
   const placeMeta = (
-    <EventMeta href={item.location?.mapsLink} icon={<PinIcon />} text={placeText} />
+    <EventMeta href={item.location?.mapsLink} icon={<PinIcon />} text={placeText} wrapMobile />
   )
+  const stickyPlaceMeta = stickyCity ? (
+    <EventMeta href={item.location?.mapsLink} icon={<PinIcon />} text={stickyCity} />
+  ) : null
+  const workshop = item.workshop && typeof item.workshop === 'object' ? item.workshop : null
   const signup = primaryCta ? (
     <Button
       className="shrink-0"
@@ -124,24 +149,32 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
   return (
     <EventOverviewMotion>
       <div data-block="event-overview" data-component="event-overview">
-        <section aria-label="Přehled události" className="container" data-event-overview-hero>
-          <div className="flex flex-col border-x-2 border-b-2 border-solid border-ground lg:flex-row lg:items-stretch">
+        <section
+          aria-label="Přehled události"
+          className="container max-sm:px-0"
+          data-event-overview-hero
+        >
+          <div className="flex flex-col border-x-2 border-b-2 border-solid border-ground max-sm:border-x-0 lg:flex-row lg:items-stretch">
             <div className="event-overview-media">
-              {cover?.url ? (
+              {cover && mediaSizeURL(cover, 'hero') ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img alt={mediaAlt(cover, item.title)} src={cover.url} />
+                <img
+                  alt={mediaAlt(cover, item.title)}
+                  src={mediaSizeURL(cover, 'hero') || ''}
+                  style={mediaFocalStyle(cover)}
+                />
               ) : null}
             </div>
             <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-ground p-card">
               <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-2.5">
-                  <h1 className="text-display text-sky lg:max-w-[583px]">{item.title}</h1>
+                <div className="flex flex-col gap-2.5 lg:gap-6">
                   <TagGroup
                     tagClassName="text-[10px] lg:text-tag"
                     tags={[...tagTitles(item.tags), origin]}
                     variant="sky"
                   />
-                  <div className="mt-3 flex flex-col gap-4 lg:mt-4 lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-[30px] lg:gap-y-2">
+                  <h1 className="text-display text-balance text-sky">{item.title}</h1>
+                  <div className="mt-3 flex flex-col gap-4 lg:mt-0 lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-[30px] lg:gap-y-2">
                     {dateMeta}
                     {timeMeta}
                     {placeMeta}
@@ -151,6 +184,32 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
               </div>
             </div>
           </div>
+
+          {workshop?.slug ? (
+            <aside
+              aria-label="Workshop na zakázku"
+              className="flex flex-col gap-4 border-x-2 border-b-2 border-solid border-ground bg-sky p-card max-sm:border-x-0 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+              data-component="event-workshop-cta"
+            >
+              <p className="m-0 font-inter text-lg font-medium leading-snug text-ground">
+                Workshopy jako tento pořádáme pravidelně a také na zakázku.
+              </p>
+              <div className="flex flex-wrap justify-start gap-3 sm:justify-end">
+                <Button
+                  href={withSiteQuery(`/kalendar?workshop=${workshop.slug}`, siteSlug)}
+                  variant="outline-ground"
+                >
+                  Aktuální termíny
+                </Button>
+                <Button
+                  href={withSiteQuery(`/workshopy/${workshop.slug}`, siteSlug)}
+                  variant="outline-ground"
+                >
+                  Více o workshopu
+                </Button>
+              </div>
+            </aside>
+          ) : null}
         </section>
 
         <div
@@ -160,17 +219,17 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
           data-event-overview-sticky
         >
           <div className="bg-ground">
-            <div className="container py-card">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8">
-                <p className="min-w-0 line-clamp-2 font-saans text-xl leading-snug tracking-[-0.4px] text-sky lg:max-w-[30%] lg:shrink-0 lg:text-[30px] lg:leading-tight lg:tracking-[-0.6px]">
+            <div className={STICKY_BANNER_INNER_CLASS}>
+              <div className={STICKY_BANNER_ROW_CLASS}>
+                <p
+                  className={`${STICKY_BANNER_TITLE_CLASS} min-w-0 flex-1 text-sky lg:line-clamp-none`}
+                >
                   {item.title}
                 </p>
-                <div className="hidden min-w-0 shrink flex-1 flex-col items-start justify-center gap-y-2 lg:flex">
-                  <div className="flex items-center gap-x-[30px]">
-                    {dateMeta}
-                    {timeMeta}
-                  </div>
-                  {placeMeta}
+                <div className="hidden max-w-[min(28rem,42%)] flex-wrap items-center justify-end gap-x-[30px] gap-y-2 lg:flex">
+                  {dateMeta}
+                  {timeMeta}
+                  {stickyPlaceMeta}
                 </div>
                 {stickySignup}
               </div>
@@ -182,23 +241,10 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
   )
 }
 
-export function EventBody({ item, siteSlug }: { item: Kalendar; siteSlug: string }) {
-  const workshop = item.workshop && typeof item.workshop === 'object' ? item.workshop : null
-
+export function EventBody({ item }: { item: Kalendar }) {
   return (
     <div className="flex flex-col gap-content">
       <Prose data={item.content} />
-
-      {workshop?.slug ? (
-        <ContentColumn>
-          <Button
-            href={withSiteQuery(`/workshopy/${workshop.slug}`, siteSlug)}
-            variant="outline-ground"
-          >
-            Více o workshopu {workshop.title}
-          </Button>
-        </ContentColumn>
-      ) : null}
     </div>
   )
 }
@@ -208,7 +254,7 @@ export function EventDetail({ item, siteSlug }: { item: Kalendar; siteSlug: stri
     <article>
       <EventOverview item={item} siteSlug={siteSlug} />
       <div className="pt-content-top">
-        <EventBody item={item} siteSlug={siteSlug} />
+        <EventBody item={item} />
       </div>
     </article>
   )
@@ -216,7 +262,8 @@ export function EventDetail({ item, siteSlug }: { item: Kalendar; siteSlug: stri
 
 export function NewsArticleHero({ item }: { item: Aktuality }) {
   const cover = item.coverImage && typeof item.coverImage === 'object' ? item.coverImage : null
-  if (!cover?.url || item.layout === 'small') return null
+  const heroUrl = cover ? mediaSizeURL(cover, 'hero') : null
+  if (!heroUrl || item.layout === 'small') return null
 
   return (
     <div
@@ -226,7 +273,12 @@ export function NewsArticleHero({ item }: { item: Aktuality }) {
       data-variant="big"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt="" className="size-full object-cover" src={cover.url} />
+      <img
+        alt=""
+        className="size-full object-cover"
+        src={heroUrl}
+        style={mediaFocalStyle(cover)}
+      />
     </div>
   )
 }
@@ -259,10 +311,12 @@ export function NewsArticle({
   ]
     .filter(Boolean)
     .join(' · ')
+  const heroUrl = cover ? mediaSizeURL(cover, 'hero') : null
+  const cardUrl = cover ? mediaSizeURL(cover, 'card') : null
 
   return (
     <article data-component="news-article" data-layout={small ? 'small' : 'big'}>
-      {cover?.url && !small && !skipBigHero ? (
+      {heroUrl && !small && !skipBigHero ? (
         <div
           aria-hidden="true"
           className="article-hero-big border-b-2 border-b-ground"
@@ -270,7 +324,12 @@ export function NewsArticle({
           data-variant="big"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="" className="size-full object-cover" src={cover.url} />
+          <img
+            alt=""
+            className="size-full object-cover"
+            src={heroUrl}
+            style={mediaFocalStyle(cover)}
+          />
         </div>
       ) : null}
 
@@ -283,7 +342,7 @@ export function NewsArticle({
           </header>
         </ContentColumn>
 
-        {cover?.url && small ? (
+        {cardUrl && small ? (
           <div
             aria-hidden="true"
             className="article-hero-small mx-auto w-full max-w-[1094px] overflow-hidden border-2 border-ground"
@@ -291,7 +350,12 @@ export function NewsArticle({
             data-variant="small"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="" className="size-full object-cover" src={cover.url} />
+            <img
+              alt=""
+              className="size-full object-cover"
+              src={cardUrl}
+              style={mediaFocalStyle(cover)}
+            />
           </div>
         ) : null}
 
@@ -306,20 +370,6 @@ function WorkshopSpec({ label, value }: { label: string; value?: string | null }
     <div className="flex flex-col gap-1 p-card" data-component="workshop-spec">
       <span className="font-saans text-body text-ground/70">{label}</span>
       <span className="font-saans text-section-title leading-none text-ground">{value || '\u00a0'}</span>
-    </div>
-  )
-}
-
-/** Compact spec for the sticky bar — label above value, event-meta rhythm. */
-function WorkshopStickySpec({ label, value }: { label: string; value?: string | null }) {
-  if (!value) return null
-
-  return (
-    <div className="flex min-w-0 flex-col gap-0.5" data-component="workshop-sticky-spec">
-      <span className="font-saans text-sm leading-none text-ground/70">{label}</span>
-      <span className="font-saans text-lg leading-none tracking-[-0.36px] text-ground lg:text-[22px] lg:tracking-[-0.44px]">
-        {value}
-      </span>
     </div>
   )
 }
@@ -355,13 +405,22 @@ export function WorkshopHeader({
   return (
     <WorkshopHeaderMotion>
       <div data-block="workshop-header" data-component="workshop-header">
-      <header aria-label="Přehled workshopu" className="container" data-workshop-header-hero>
-        <div className="overflow-hidden border-x-2 border-b-2 border-solid border-ground bg-sky">
+      <header
+        aria-label="Přehled workshopu"
+        className="container max-sm:px-0"
+        data-workshop-header-hero
+      >
+        <div className="overflow-hidden border-x-2 border-b-2 border-solid border-ground bg-sky max-sm:border-x-0">
           <div className="relative">
             <div className="relative aspect-4/3 overflow-hidden bg-ground lg:absolute lg:inset-y-0 lg:left-0 lg:z-0 lg:aspect-auto lg:w-[min(42%,480px)]">
-              {cover?.url ? (
+              {cover && mediaSizeURL(cover, 'landscape') ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img alt="" className="absolute inset-0 size-full object-cover object-center" src={cover.url} />
+                <img
+                  alt=""
+                  className="absolute inset-0 size-full object-cover object-center"
+                  src={mediaSizeURL(cover, 'landscape') || ''}
+                  style={mediaFocalStyle(cover)}
+                />
               ) : null}
             </div>
             <div className="relative z-10 flex flex-col divide-y-2 divide-ground shadow-[inset_0_2px_0_0_var(--color-ground)] lg:ml-[min(42%,480px)] lg:shadow-[inset_2px_0_0_0_var(--color-ground)]">
@@ -415,16 +474,11 @@ export function WorkshopHeader({
         data-workshop-header-sticky
       >
         <div className="border-b-2 border-b-ground bg-sky">
-          <div className="container py-card">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8">
-              <p className="min-w-0 line-clamp-2 font-saans text-xl leading-snug tracking-[-0.4px] text-ground lg:max-w-[30%] lg:shrink-0 lg:text-[30px] lg:leading-tight lg:tracking-[-0.6px]">
+          <div className={STICKY_BANNER_INNER_CLASS}>
+            <div className={STICKY_BANNER_ROW_CLASS}>
+              <p className={`${STICKY_BANNER_TITLE_CLASS} flex-1 text-ground`}>
                 {item.title}
               </p>
-              <div className="flex min-w-0 flex-1 flex-wrap items-end gap-x-[30px] gap-y-3">
-                <WorkshopStickySpec label="Délka" value={duration} />
-                <WorkshopStickySpec label="Velikost skupiny" value={item.groupSize} />
-                <WorkshopStickySpec label="Cena" value={price} />
-              </div>
               <div className="flex shrink-0 flex-wrap items-center gap-3 self-start lg:self-center">
                 {datesButton}
                 {orderButton}
@@ -447,16 +501,16 @@ export function PublicationHeader({ item }: { item: Publikace }) {
   const primaryCta = (item.ctas || []).find((c) => c.url && c.title)
 
   return (
-    <header className="w-full" data-block="publication-header" data-component="publication-header">
+    <header className="w-full pt-content-top" data-block="publication-header" data-component="publication-header">
       <ContentColumn>
         <div className="flex flex-col gap-grid lg:flex-row lg:items-start lg:gap-8">
           <div className="flex h-[min(280px,45vh)] w-full max-w-[200px] shrink-0 items-start justify-start sm:h-[min(220px,32vh)] sm:max-w-[140px] lg:h-[min(260px,35vh)] lg:max-w-[160px]">
-            {cover?.url ? (
+            {cover && mediaSizeURL(cover, 'large') ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 alt={mediaAlt(cover, item.title)}
                 className="max-h-full max-w-full object-contain object-left"
-                src={cover.url}
+                src={mediaSizeURL(cover, 'large') || ''}
               />
             ) : null}
           </div>

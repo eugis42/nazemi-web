@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { cs } from '@payloadcms/translations/languages/cs'
@@ -25,14 +26,32 @@ import { Workshopy } from './collections/Workshopy'
 import { searchBeforeSync } from './search/beforeSync'
 import { searchExtraFields } from './search/fields'
 import { searchDefaultPriorities } from './search/priorities'
-import { ADMIN_NAV_SHARED_SETTINGS } from './lib/admin-nav-groups'
+import { SiteKontakt, SiteNavigace, SitePaticka } from './collections/SiteSettingsNav'
+import { searchIndexAccess } from './access/roles'
+import { ADMIN_NAV_ADMINISTRATION } from './lib/admin-nav-groups'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const smtpHost = process.env.SMTP_HOST?.trim()
+const smtpPort = Number(process.env.SMTP_PORT || 587)
+
 export default buildConfig({
   // Public URL in production (cookies / absolute URLs). Local: leave unset.
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || undefined,
+  email: smtpHost
+    ? nodemailerAdapter({
+        defaultFromAddress: process.env.SMTP_FROM || 'web@nazemi.cz',
+        defaultFromName: process.env.SMTP_FROM_NAME || 'NaZemi',
+        transportOptions: {
+          host: smtpHost,
+          port: smtpPort,
+          // 465 = implicit TLS; 587 = STARTTLS. No auth — Gmail relay allowlists the server IP.
+          requireTLS: smtpPort !== 465,
+          secure: smtpPort === 465,
+        },
+      })
+    : undefined,
   admin: {
     dateFormat: 'd. M. yyyy, HH:mm',
     user: Users.slug,
@@ -44,6 +63,7 @@ export default buildConfig({
     },
   },
   collections: [
+    // 1. Obsah webu [site]
     Stranky,
     Aktuality,
     Kalendar,
@@ -51,12 +71,19 @@ export default buildConfig({
     Workshopy,
     Publikace,
     Lide,
+    // 2. Nastavení webu [site]
+    SiteNavigace,
+    SiteKontakt,
+    SitePaticka,
+    // 3. Média (global)
+    Media,
+    // 4. Kategorizace obsahu (global)
     Tags,
     WorkshopAudiences,
     PublicationTypes,
+    // 5. Administrace (global)
     Sites,
     Users,
-    Media,
   ],
   editor: lexicalEditor(),
   i18n: {
@@ -85,8 +112,9 @@ export default buildConfig({
       defaultPriorities: searchDefaultPriorities,
       deleteDrafts: true,
       searchOverrides: {
+        access: searchIndexAccess,
         admin: {
-          group: ADMIN_NAV_SHARED_SETTINGS,
+          group: ADMIN_NAV_ADMINISTRATION,
         },
         fields: ({ defaultFields }) => searchExtraFields(defaultFields),
         labels: {

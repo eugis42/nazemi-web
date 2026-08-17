@@ -6,7 +6,7 @@ import { HeroBackdrop } from '@/components/frontend/BlockRenderers'
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/frontend/listing'
 import { SiteFooter } from '@/components/frontend/SiteFooter'
 import { SiteHeader } from '@/components/frontend/SiteHeader'
-import { mediaAlt, mediaURL } from '@/lib/content'
+import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
 import { filterMenuByEnabledCollections } from '@/lib/enabled-collections'
 
 export function SiteShell({
@@ -61,7 +61,7 @@ export function SiteShell({
       />
       {breadcrumbs?.length ? <Breadcrumbs items={breadcrumbs} /> : null}
       {beforeMain}
-      {backdrop ? <HeroBackdrop src={mediaURL(homepageBackground)} /> : null}
+      {backdrop ? <HeroBackdrop src={mediaSizeURL(homepageBackground, 'hero') || mediaURL(homepageBackground)} /> : null}
       <main className={`relative z-10 pb-section ${mainClassName}`}>
         {stacked ? <div className="section-stack">{children}</div> : children}
         <div className="container mt-section">

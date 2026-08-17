@@ -3,9 +3,12 @@ import { getPayload } from 'payload'
 
 import config from '@payload-config'
 
+import { HideAdministrationNav } from './HideAdministrationNav'
 import { HideProjektyNavForSubsite } from './HideProjektyNavForSubsite'
+import { KeepAdminNavOpen } from './KeepAdminNavOpen'
 import { SiteContextSelector } from './SiteContextSelector'
 import { SiteNavGroupSiteLabelSync } from './SiteNavGroupSiteLabelSync'
+import { SiteSettingsNavActiveSync } from './SiteSettingsNavActiveSync'
 import { ADMIN_SITE_COOKIE, MAIN_SITE_SLUG } from '@/lib/site-context'
 
 export async function SiteContextNav() {
@@ -60,8 +63,11 @@ export async function SiteContextNav() {
         marginBottom: 'calc(var(--base) * 0.5)',
       }}
     >
+      <KeepAdminNavOpen />
+      <HideAdministrationNav />
       <HideProjektyNavForSubsite />
       <SiteNavGroupSiteLabelSync siteName={activeSiteName} />
+      <SiteSettingsNavActiveSync />
       <SiteContextSelector
         activeSiteSlug={activeSiteSlug}
         sites={siteList}

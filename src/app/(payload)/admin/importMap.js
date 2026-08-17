@@ -28,7 +28,11 @@ import { StatusCell as StatusCell_4da1f90de99340c8531cff72a46c36b2 } from '../..
 import { TagsListCell as TagsListCell_5e5b7a5167e2f886afb9fc368ad1f9d4 } from '../../../components/admin/TagsListCell'
 import { ShowOnMainSiteField as ShowOnMainSiteField_d07fa496e44502b22ce68006b8169c4f } from '../../../components/admin/ShowOnMainSiteField'
 import { UploadPreviewCell as UploadPreviewCell_010a4787e181865d3ff8fbabde563dcf } from '../../../components/admin/UploadPreviewCell'
+import { RedirectToSiteSettings_navigace as RedirectToSiteSettings_navigace_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
+import { RedirectToSiteSettings_kontakt as RedirectToSiteSettings_kontakt_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
+import { RedirectToSiteSettings_paticka as RedirectToSiteSettings_paticka_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
 import { MenuItemRowLabel as MenuItemRowLabel_9473bef4688bd9e672a3684ab91560da } from '../../../components/admin/MenuItemRowLabel'
+import { SitesEditTabFocus as SitesEditTabFocus_dfeeb06dce6155f560469ce716013bac } from '../../../components/admin/SitesEditTabFocus'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { SiteContextNav as SiteContextNav_793846094abe2715c1f0d78d8e6b23d7 } from '../../../components/admin/SiteContextNav'
@@ -66,7 +70,11 @@ export const importMap = {
   "/components/admin/TagsListCell#TagsListCell": TagsListCell_5e5b7a5167e2f886afb9fc368ad1f9d4,
   "/components/admin/ShowOnMainSiteField#ShowOnMainSiteField": ShowOnMainSiteField_d07fa496e44502b22ce68006b8169c4f,
   "/components/admin/UploadPreviewCell#UploadPreviewCell": UploadPreviewCell_010a4787e181865d3ff8fbabde563dcf,
+  "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_navigace": RedirectToSiteSettings_navigace_36effb95c4f0c3009c59ec855b0d94d5,
+  "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_kontakt": RedirectToSiteSettings_kontakt_36effb95c4f0c3009c59ec855b0d94d5,
+  "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_paticka": RedirectToSiteSettings_paticka_36effb95c4f0c3009c59ec855b0d94d5,
   "/components/admin/MenuItemRowLabel#MenuItemRowLabel": MenuItemRowLabel_9473bef4688bd9e672a3684ab91560da,
+  "/components/admin/SitesEditTabFocus#SitesEditTabFocus": SitesEditTabFocus_dfeeb06dce6155f560469ce716013bac,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "/components/admin/SiteContextNav#SiteContextNav": SiteContextNav_793846094abe2715c1f0d78d8e6b23d7,

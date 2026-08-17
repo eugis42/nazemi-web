@@ -45,7 +45,7 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
   const slides: SlideImage[] = useMemo(
     () =>
       images.map((img) => ({
-        src: img.url,
+        src: img.fullUrl || img.url,
         alt: img.alt || '',
       })),
     [images],

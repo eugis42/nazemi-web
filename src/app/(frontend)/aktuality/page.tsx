@@ -133,9 +133,16 @@ export default async function NewsListingPage({
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="news">
           <h1 className="text-display">Aktuality</h1>
-          <FilterBar ariaLabel="Filtrovat aktuality" groups={[allChip, tagChips, sourceChips]} />
+          <FilterBar
+            ariaLabel="Filtrovat aktuality"
+            primary={allChip}
+            sections={[
+              { label: 'Téma', chips: tagChips },
+              { label: 'Zdroj', chips: sourceChips },
+            ]}
+          />
           {news.docs.length ? (
-            <div className="grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2 xl:grid-cols-4">
+            <div className="grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2">
               {news.docs.map((item) => (
                 <NewsCard item={item} key={item.id} siteSlug={site.slug} />
               ))}

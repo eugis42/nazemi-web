@@ -1,6 +1,6 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
-import { adminSettingsAccess } from '@/access/roles'
+import { sitesAccess } from '@/access/roles'
 import { menuArrayAdmin, menuItemFields } from '@/fields/menu'
 import { draftStatusListCellField, socialLinkField } from '@/fields/shared'
 import {
@@ -10,7 +10,7 @@ import {
   validateRequiredHref,
 } from '@/fields/validateHref'
 import { normaliseSiteSlug } from '@/hooks/content-hooks'
-import { ADMIN_NAV_SHARED_SETTINGS } from '@/lib/admin-nav-groups'
+import { ADMIN_NAV_ADMINISTRATION } from '@/lib/admin-nav-groups'
 import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
 /**
@@ -79,11 +79,16 @@ const ensureSingleMainSite: CollectionBeforeChangeHook = async ({ data, original
 
 export const Sites: CollectionConfig = {
   slug: 'sites',
-  access: adminSettingsAccess,
+  access: sitesAccess,
   admin: {
     defaultColumns: ['name', 'slug', 'siteType', '_status'],
-    group: ADMIN_NAV_SHARED_SETTINGS,
+    group: ADMIN_NAV_ADMINISTRATION,
     useAsTitle: 'name',
+    components: {
+      edit: {
+        beforeDocumentControls: ['/components/admin/SitesEditTabFocus#SitesEditTabFocus'],
+      },
+    },
   },
   // `main` sorts before `subsite` alphabetically → main web always first.
   defaultSort: ['siteType', 'name'],
@@ -146,6 +151,37 @@ export const Sites: CollectionConfig = {
               type: 'upload',
               label: 'Logo',
               relationTo: 'media',
+            },
+            {
+              name: 'favicon',
+              type: 'group',
+              label: 'Favicon',
+              admin: {
+                description:
+                  'Ikona v záložce prohlížeče a na ploše iOS. SVG + Apple Touch PNG 180×180 (čtverec, sky pozadí, značka beze změny tvaru).',
+              },
+              fields: [
+                {
+                  name: 'icon',
+                  type: 'upload',
+                  label: 'Favicon (SVG)',
+                  relationTo: 'media',
+                  admin: {
+                    description:
+                      'Primární ikona — SVG se sky pozadím. Propojí se do <head> jako rel="icon".',
+                  },
+                },
+                {
+                  name: 'appleTouchIcon',
+                  type: 'upload',
+                  label: 'Apple Touch Icon',
+                  relationTo: 'media',
+                  admin: {
+                    description:
+                      'PNG 180×180 (sky pozadí) pro iOS. Propojí se jako rel="apple-touch-icon".',
+                  },
+                },
+              ],
             },
             {
               name: 'homepageBackground',

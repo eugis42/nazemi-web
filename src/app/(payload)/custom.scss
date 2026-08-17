@@ -85,15 +85,31 @@
   padding-block: 0.4rem;
 }
 
-/* Full-width line between site-scoped nav group and shared settings (sidebar inner edge to edge). */
-.nav__wrap > .nav-group + .nav-group {
+/* Site-scoped block (Obsah + Nastavení) — subtle shared surface */
+.nav__wrap > .nav-group.nazemi-nav-group--site-scoped {
+  position: relative;
+}
+
+.nav__wrap > .nav-group.nazemi-nav-group--site-scoped:first-of-type {
+  margin-top: calc(var(--base) * 0.25);
+  padding-top: calc(var(--base) * 0.35);
+}
+
+/* Divider: end of current website → global sections (match sidebar `--theme-border-color`) */
+.nav__wrap > .nav-group.nazemi-nav-hidden,
+.collections__group.nazemi-nav-hidden {
+  display: none;
+}
+
+.nav__wrap > .nav-group.nazemi-nav-group--site-end + .nav-group,
+.nav__wrap > .nav-group.nazemi-nav-group--site-end + .nav-group.nazemi-nav-hidden + .nav-group {
   border-top: 0;
-  margin-top: calc(var(--base) * 0.5);
-  padding-top: calc(var(--base) * 0.5);
+  margin-top: calc(var(--base) * 1);
+  padding-top: calc(var(--base) * 0.85);
   position: relative;
 
   &::before {
-    background: var(--theme-elevation-150);
+    background: var(--theme-border-color);
     content: '';
     height: 1px;
     inset-inline-start: calc(-1 * var(--nav-padding-inline-start));

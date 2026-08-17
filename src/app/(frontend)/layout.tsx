@@ -3,12 +3,21 @@ import React from 'react'
 
 import './styles.css'
 
+import { DevPerfMeasurePatch } from '@/components/frontend/DevPerfMeasurePatch'
 import { buildPageMetadata } from '@/lib/metadata'
 import { resolveSiteFromCurrentRequest } from '@/lib/frontend'
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await resolveSiteFromCurrentRequest()
-  return buildPageMetadata({ site })
+  return {
+    ...buildPageMetadata({ root: true, site }),
+    // Stop Safari/iOS from rewriting plain phone/email text into <a> before hydrate.
+    formatDetection: {
+      address: false,
+      email: false,
+      telephone: false,
+    },
+  }
 }
 
 export async function generateViewport(): Promise<Viewport> {
@@ -23,7 +32,10 @@ export default function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="cs">
-      <body>{children}</body>
+      <body>
+        <DevPerfMeasurePatch />
+        {children}
+      </body>
     </html>
   )
 }

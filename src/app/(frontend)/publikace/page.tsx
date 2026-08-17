@@ -169,7 +169,14 @@ export default async function PublikacePage({
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="publications">
           <h1 className="text-display">{heading}</h1>
-          <FilterBar ariaLabel="Filtrovat publikace" groups={[allChip, typeChips, topicChips]} />
+          <FilterBar
+            ariaLabel="Filtrovat publikace"
+            primary={allChip}
+            sections={[
+              { label: 'Typ publikace', chips: typeChips },
+              { label: 'Téma', chips: topicChips },
+            ]}
+          />
           {publications.docs.length ? (
             <div className="grid min-w-0 grid-cols-1 items-start gap-x-8 gap-y-20 sm:grid-cols-2 sm:items-stretch lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-10 xl:gap-y-24">
               {publications.docs.map((item) => (

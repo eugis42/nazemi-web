@@ -74,12 +74,15 @@ export interface Config {
     workshopy: Workshopy;
     publikace: Publikace;
     lide: Lide;
+    'site-navigace': SiteNavigace;
+    'site-kontakt': SiteKontakt;
+    'site-paticka': SitePaticka;
+    media: Media;
     tags: Tag;
     'workshop-audiences': WorkshopAudience;
     'publication-types': PublicationType;
     sites: Site;
     users: User;
-    media: Media;
     search: Search;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -99,12 +102,15 @@ export interface Config {
     workshopy: WorkshopySelect<false> | WorkshopySelect<true>;
     publikace: PublikaceSelect<false> | PublikaceSelect<true>;
     lide: LideSelect<false> | LideSelect<true>;
+    'site-navigace': SiteNavigaceSelect<false> | SiteNavigaceSelect<true>;
+    'site-kontakt': SiteKontaktSelect<false> | SiteKontaktSelect<true>;
+    'site-paticka': SitePatickaSelect<false> | SitePatickaSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     'workshop-audiences': WorkshopAudiencesSelect<false> | WorkshopAudiencesSelect<true>;
     'publication-types': PublicationTypesSelect<false> | PublicationTypesSelect<true>;
     sites: SitesSelect<false> | SitesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -698,7 +704,55 @@ export interface Media {
   focalX?: number | null;
   focalY?: number | null;
   sizes?: {
+    thumb?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    square?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
     card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    landscape?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    portrait?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    large?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -1254,7 +1308,7 @@ export interface User {
   id: number;
   name: string;
   /**
-   * Administrátor spravuje weby a uživatele; editor spravuje obsah.
+   * Administrátor = weby, nastavení webu, uživatelé, vyhledávání. Editor = obsah, média, kategorizace. Víc administrátorů je v pořádku.
    */
   role: 'admin' | 'editor';
   updatedAt: string;
@@ -1290,6 +1344,19 @@ export interface Site {
    */
   subdomain?: string | null;
   logo?: (number | null) | Media;
+  /**
+   * Ikona v záložce prohlížeče a na ploše iOS. SVG + Apple Touch PNG 180×180 (čtverec, sky pozadí, značka beze změny tvaru).
+   */
+  favicon?: {
+    /**
+     * Primární ikona — SVG se sky pozadím. Propojí se do <head> jako rel="icon".
+     */
+    icon?: (number | null) | Media;
+    /**
+     * PNG 180×180 (sky pozadí) pro iOS. Propojí se jako rel="apple-touch-icon".
+     */
+    appleTouchIcon?: (number | null) | Media;
+  };
   /**
    * Ilustrace / obrázek za hero blokem na domovské stránce. Bez výběru se použije výchozí vlna.
    */
@@ -2020,6 +2087,30 @@ export interface Lide {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-navigace".
+ */
+export interface SiteNavigace {
+  id: number;
+  title?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-kontakt".
+ */
+export interface SiteKontakt {
+  id: number;
+  title?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-paticka".
+ */
+export interface SitePaticka {
+  id: number;
+  title?: string | null;
+}
+/**
  * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2126,6 +2217,22 @@ export interface PayloadLockedDocument {
         value: number | Lide;
       } | null)
     | ({
+        relationTo: 'site-navigace';
+        value: number | SiteNavigace;
+      } | null)
+    | ({
+        relationTo: 'site-kontakt';
+        value: number | SiteKontakt;
+      } | null)
+    | ({
+        relationTo: 'site-paticka';
+        value: number | SitePaticka;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
         relationTo: 'tags';
         value: number | Tag;
       } | null)
@@ -2144,10 +2251,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
       } | null)
     | ({
         relationTo: 'search';
@@ -3094,6 +3197,120 @@ export interface LideSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-navigace_select".
+ */
+export interface SiteNavigaceSelect<T extends boolean = true> {
+  title?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-kontakt_select".
+ */
+export interface SiteKontaktSelect<T extends boolean = true> {
+  title?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-paticka_select".
+ */
+export interface SitePatickaSelect<T extends boolean = true> {
+  title?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumb?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        square?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        landscape?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        portrait?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        large?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tags_select".
  */
 export interface TagsSelect<T extends boolean = true> {
@@ -3132,6 +3349,12 @@ export interface SitesSelect<T extends boolean = true> {
   siteType?: T;
   subdomain?: T;
   logo?: T;
+  favicon?:
+    | T
+    | {
+        icon?: T;
+        appleTouchIcon?: T;
+      };
   homepageBackground?: T;
   primaryColor?: T;
   primaryBackgroundColor?: T;
@@ -3267,39 +3490,6 @@ export interface UsersSelect<T extends boolean = true> {
         id?: T;
         createdAt?: T;
         expiresAt?: T;
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  caption?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        card?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
       };
 }
 /**

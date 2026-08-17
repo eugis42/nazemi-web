@@ -41,14 +41,16 @@ test.env
 *.tsbuildinfo
 next-env.d.ts
 
-# ---------------------------------------------------------------------------
 # Runtime / CMS editor data (lives on VPS, not in git)
 # Admins & editors change these via Payload admin in production.
 # ---------------------------------------------------------------------------
 
-# Uploaded media (Payload Media collection → disk)
+# Uploaded media (Payload Media collection → cwd/media)
 /media/*
 !/media/.gitkeep
+
+# Docker Postgres named volume exports if copied into project root
+/pgdata/
 
 # Local DB dumps / exports editors or ops may create on the server
 *.sql
