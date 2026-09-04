@@ -141,7 +141,7 @@ export default async function WorkshopsPage({
     >
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="workshops">
-          <h1 className="text-display">Workshopy</h1>
+          <h1 className="text-display text-ground">Workshopy</h1>
           <FilterBar
             ariaLabel="Filtrovat workshopy"
             primary={allChip}

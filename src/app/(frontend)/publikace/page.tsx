@@ -168,7 +168,7 @@ export default async function PublikacePage({
     <SiteShell breadcrumbs={breadcrumbs} mainClassName="pt-12 lg:pt-20" site={site} stacked={false}>
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="publications">
-          <h1 className="text-display">{heading}</h1>
+          <h1 className="text-display text-ground">{heading}</h1>
           <FilterBar
             ariaLabel="Filtrovat publikace"
             primary={allChip}

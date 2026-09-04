@@ -132,8 +132,8 @@ export const resolveSiteFromCurrentRequest = async (querySiteSlug?: null | strin
 }
 
 /**
- * Sub-sites whose cross-posted content shows on the main site — rendered as the
- * "external sources" filter group (design `CALENDAR_FILTER_GROUPS` third group).
+ * Main + published sub-sites for the “Zdroj” filter on the main web
+ * (own content + cross-posts). Empty on sub-sites.
  */
 export const getSourceSites = async (currentSiteSlug: string) => {
   if (currentSiteSlug !== MAIN_SITE_SLUG) return []
@@ -148,12 +148,9 @@ export const getSourceSites = async (currentSiteSlug: string) => {
     pagination: false,
     sort: ['siteType', 'name'],
     where: draft
-      ? { siteType: { equals: 'subsite' } }
+      ? undefined
       : {
-          and: [
-            { siteType: { equals: 'subsite' } },
-            { _status: { equals: 'published' } },
-          ],
+          _status: { equals: 'published' },
         },
   })
 

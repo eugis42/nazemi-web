@@ -2,14 +2,16 @@ import {
   LinkJSXConverter,
   RichText as PayloadRichText,
 } from '@payloadcms/richtext-lexical/react'
-import type { SerializedLinkNode } from '@payloadcms/richtext-lexical'
+import type { SerializedLinkNode, SerializedRelationshipNode } from '@payloadcms/richtext-lexical'
 import type { ComponentProps } from 'react'
 
+import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import { isExternalHref } from '@/lib/links'
 
 type RichTextProps = {
   className?: string
   data?: ComponentProps<typeof PayloadRichText>['data'] | null
+  siteSlug?: string
 } & Omit<ComponentProps<typeof PayloadRichText>, 'data' | 'converters'>
 
 function internalDocToHref({ linkNode }: { linkNode: SerializedLinkNode }) {
@@ -39,10 +41,10 @@ function internalDocToHref({ linkNode }: { linkNode: SerializedLinkNode }) {
 }
 
 /**
- * Lexical rich text with auto external links (new tab).
+ * Lexical rich text with auto external links (new tab) + relationship embeds.
  * ↗ prefix via `.prose-nazemi` CSS for http(s)/mailto/tel.
  */
-export function NazemiRichText({ className, data, ...rest }: RichTextProps) {
+export function NazemiRichText({ className, data, siteSlug = '', ...rest }: RichTextProps) {
   if (!data) return null
 
   return (
@@ -52,6 +54,13 @@ export function NazemiRichText({ className, data, ...rest }: RichTextProps) {
       converters={({ defaultConverters }) => ({
         ...defaultConverters,
         ...LinkJSXConverter({ internalDocToHref }),
+        relationship: ({ node }: { node: SerializedRelationshipNode }) => (
+          <RichTextRelation
+            relationTo={node.relationTo}
+            siteSlug={siteSlug}
+            value={node.value}
+          />
+        ),
         link: ({ node, nodesToJSX }) => {
           const children = nodesToJSX({ nodes: node.children })
           let href = node.fields.url ?? ''

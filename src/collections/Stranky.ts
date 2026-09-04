@@ -94,6 +94,14 @@ export const Stranky = {
     useAsTitle: 'title',
   },
   defaultSort: ['-isHomepage', 'title'],
+  defaultPopulate: {
+    slug: true,
+    title: true,
+    excerpt: true,
+    coverImage: true,
+    isHomepage: true,
+    site: true,
+  },
   fields: [
     {
       name: 'coverImage',

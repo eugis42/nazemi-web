@@ -1,6 +1,11 @@
 import type { Block } from 'payload'
 
+import {
+  BLOCK_GROUP_PAGE,
+  blockPickerAdmin,
+} from '@/blocks/blockMeta'
 import { additionalColorField } from '@/fields/additionalColor'
+import { columnCallToActionField } from '@/fields/cta'
 
 export const RichTextBlock: Block = {
   slug: 'richText',
@@ -8,6 +13,10 @@ export const RichTextBlock: Block = {
     plural: 'Textové bloky',
     singular: 'Textový blok',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_PAGE,
+    thumb: 'richText',
+  }),
   fields: [
     {
       name: 'content',
@@ -24,6 +33,10 @@ export const GalleryBlock: Block = {
     plural: 'Galerie',
     singular: 'Galerie',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_PAGE,
+    thumb: 'gallery',
+  }),
   fields: [
     {
       name: 'images',
@@ -70,6 +83,10 @@ export const PageIntroBlock: Block = {
     plural: 'Úvodní hlavičky',
     singular: 'Úvodní hlavička',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_PAGE,
+    thumb: 'pageIntro',
+  }),
   fields: [
     additionalColorField({
       allowNone: true,
@@ -93,4 +110,141 @@ export const PageIntroBlock: Block = {
   ],
 }
 
-export const pageBlocks = [PageIntroBlock, RichTextBlock, GalleryBlock]
+export const ThreeColumnsBlock: Block = {
+  slug: 'threeColumns',
+  labels: {
+    plural: '3 sloupce',
+    singular: '3 sloupce',
+  },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_PAGE,
+    thumb: 'threeColumns',
+  }),
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      label: 'Nadpis',
+      required: true,
+    },
+    {
+      name: 'columns',
+      type: 'array',
+      label: 'Sloupce',
+      maxRows: 3,
+      minRows: 1,
+      labels: {
+        plural: 'Sloupce',
+        singular: 'Sloupec',
+      },
+      admin: {
+        components: {
+          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+        },
+        description: 'Max. 3 sloupce.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'headline',
+              type: 'text',
+              label: 'Velký nadpis (1. řádek)',
+              required: true,
+              admin: {
+                description: 'Akcentová barva — např. 150+.',
+                width: '50%',
+              },
+            },
+            {
+              name: 'title',
+              type: 'text',
+              label: 'Nadpis (2. řádek)',
+              required: true,
+              admin: { width: '50%' },
+            },
+          ],
+        },
+        {
+          name: 'body',
+          type: 'textarea',
+          label: 'Text',
+          required: true,
+        },
+        columnCallToActionField(),
+      ],
+    },
+  ],
+}
+
+export const ThreeCardsBlock: Block = {
+  slug: 'threeCards',
+  labels: {
+    plural: '3 karty',
+    singular: '3 karty',
+  },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_PAGE,
+    thumb: 'threeCards',
+  }),
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      label: 'Nadpis',
+      required: true,
+    },
+    {
+      name: 'columns',
+      type: 'array',
+      label: 'Karty',
+      maxRows: 3,
+      minRows: 1,
+      labels: {
+        plural: 'Karty',
+        singular: 'Karta',
+      },
+      admin: {
+        components: {
+          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+        },
+        description: 'Max. 3 karty.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'prefix',
+              type: 'text',
+              label: 'Prefix (1. řádek)',
+              admin: {
+                description: 'Akcentová barva — např. Co:',
+                width: '35%',
+              },
+            },
+            {
+              name: 'title',
+              type: 'text',
+              label: 'Nadpis (2. řádek)',
+              required: true,
+              admin: { width: '65%' },
+            },
+          ],
+        },
+        {
+          name: 'body',
+          type: 'textarea',
+          label: 'Text',
+          required: true,
+        },
+        columnCallToActionField(),
+      ],
+    },
+  ],
+}
+
+export const pageBlocks = [PageIntroBlock, RichTextBlock, GalleryBlock, ThreeColumnsBlock, ThreeCardsBlock]

@@ -1,37 +1,72 @@
 import Link from 'next/link'
+import type { CSSProperties } from 'react'
 
 import type { Site } from '@/payload-types'
 
 import { Button, Divider } from '@/components/frontend/ui'
+import { isColorToken, resolveColor } from '@/lib/colors'
 import { mediaAlt, mediaURL, withSiteQuery } from '@/lib/content'
+
+const DONATE_BG_CLASS: Record<string, string> = {
+  sky: 'bg-sky',
+  green: 'bg-green',
+  violet: 'bg-violet',
+  orange: 'bg-orange',
+  turquoise: 'bg-turquoise',
+  blue: 'bg-blue',
+  nerust: 'bg-nerust',
+  pink: 'bg-pink',
+  brown: 'bg-brown',
+  gray: 'bg-gray',
+}
+
+function donateBannerSurface(color?: string | null): {
+  className: string
+  style?: CSSProperties
+} {
+  const value = color?.trim() || 'violet'
+  if (isColorToken(value) && DONATE_BG_CLASS[value]) {
+    return { className: DONATE_BG_CLASS[value] }
+  }
+  const resolved = resolveColor(value)
+  if (resolved) return { className: '', style: { backgroundColor: resolved } }
+  return { className: 'bg-violet' }
+}
 
 export function SiteFooter({ site }: { site: Site }) {
   const donate = site.donateCta
+  const showDonate = Boolean(
+    donate?.title?.trim() || donate?.body?.trim() || donate?.buttonLabel?.trim() || donate?.href?.trim(),
+  )
   const newsletters = site.newsletters || []
   /** Design footer stays compact — only the two primary contacts. */
   const contacts = (site.contactDetails || []).slice(0, 2)
   const logo = site.logo && typeof site.logo === 'object' ? site.logo : null
   const logoUrl = mediaURL(logo)
+  const donateSurface = donateBannerSurface(donate?.backgroundColor)
 
   return (
     <footer className="border-2 border-ground bg-sky" data-component="site-footer">
-      <section
-        className="blend-multiply bg-violet"
-        data-block="donate-cta"
-        data-component="donate-banner"
-      >
-        <div className="flex flex-col gap-2.5 p-card">
-          <h2 className="text-card-title">{donate?.title || 'Podpořte NaZemi'}</h2>
-          {donate?.body ? <p className="text-body-inter">{donate.body}</p> : null}
-          {donate?.href ? (
-            <Button href={donate.href} newTab variant="filled-sky">
-              {donate?.buttonLabel || 'Podpořit'}
-            </Button>
-          ) : null}
-        </div>
-      </section>
+      {showDonate ? (
+        <section
+          className={`blend-multiply ${donateSurface.className}`.trim()}
+          data-block="donate-cta"
+          data-component="donate-banner"
+          style={donateSurface.style}
+        >
+          <div className="flex flex-col gap-2.5 p-card text-ground">
+            {donate?.title ? <h2 className="text-card-title text-ground">{donate.title}</h2> : null}
+            {donate?.body ? <p className="text-body-inter text-ground">{donate.body}</p> : null}
+            {donate?.href ? (
+              <Button href={donate.href} newTab variant="filled-sky">
+                {donate?.buttonLabel || 'Podpořit'}
+              </Button>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
-      {newsletters.length ? <Divider /> : null}
+      {showDonate && newsletters.length ? <Divider /> : null}
 
       {newsletters.length ? (
         <section
@@ -56,7 +91,7 @@ export function SiteFooter({ site }: { site: Site }) {
               >
                 <div className="flex flex-1 flex-col justify-between gap-6">
                   <div className="flex flex-col gap-2.5">
-                    <h3 className="text-section-title">{item.title}</h3>
+                    <h3 className="text-section-title text-ground">{item.title}</h3>
                     {item.description ? (
                       <p className="font-inter text-sm font-medium leading-snug text-ground">
                         {item.description}
@@ -182,7 +217,12 @@ export function SiteFooter({ site }: { site: Site }) {
           </p>
           <p className="m-0 mt-2">
             Design &amp; Dev by{' '}
-            <a className="text-ground underline" href="#">
+            <a
+              className="text-ground underline"
+              href="https://eugeneugen.eu"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
               eugeneugen
             </a>
           </p>

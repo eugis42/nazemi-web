@@ -164,7 +164,7 @@ export default async function SearchPage({
     >
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="search">
-          <h1 className="text-display">Vyhledávání</h1>
+          <h1 className="text-display text-ground">Vyhledávání</h1>
           <SearchForm q={q} siteSlug={site.slug} type={type} />
           {q ? (
             <p className="text-body-inter text-ground/80">

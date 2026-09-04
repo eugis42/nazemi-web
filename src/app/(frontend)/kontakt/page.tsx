@@ -53,7 +53,7 @@ export default async function KontaktPage({
     >
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="contact">
-          <h1 className="text-display">Kontakty</h1>
+          <h1 className="text-display text-ground">Kontakty</h1>
 
           <div className="flex flex-col gap-section" data-component="contact-directory">
             {blocks.length ? (

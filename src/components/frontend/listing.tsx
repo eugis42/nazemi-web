@@ -116,5 +116,5 @@ export function Pagination({
 }
 
 export function EmptyState({ children }: { children: React.ReactNode }) {
-  return <p className="text-body-inter py-8 text-center">{children}</p>
+  return <p className="text-body-inter py-8 text-center text-ground">{children}</p>
 }

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 
 import type { Site } from '@/payload-types'
+import type { MenuItem } from '@/lib/menu'
 import { resolveMenuItem } from '@/lib/menu'
 
 export type EnabledCollectionKey = keyof NonNullable<Site['enabledCollections']>
@@ -37,8 +38,6 @@ export function isCollectionEnabled(site: Site, key: EnabledCollectionKey) {
 export function assertCollectionEnabled(site: Site, key: EnabledCollectionKey) {
   if (!isCollectionEnabled(site, key)) notFound()
 }
-
-type MenuItem = NonNullable<Site['mainMenu']>[number]
 
 export function filterMenuByEnabledCollections(
   items: MenuItem[] | null | undefined,

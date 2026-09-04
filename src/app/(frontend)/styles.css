@@ -245,6 +245,12 @@
     .card-tile:focus-visible [data-component='button'][data-variant='filled-green'] {
       @apply bg-sky text-ground;
     }
+
+    .card-tile:hover [data-component='button'][data-variant='colored'],
+    .card-tile:focus-visible [data-component='button'][data-variant='colored'] {
+      background-color: var(--color-ground);
+      color: var(--color-sky);
+    }
   }
 
   .btn-filled-sky {
@@ -296,6 +302,24 @@
       &:hover {
         @apply bg-sky text-ground;
       }
+    }
+  }
+
+  /** Accent fill via --btn-accent; hover → primary fill + sky text; border stays ground. */
+  .btn-colored {
+    @apply inline-flex w-fit items-center justify-center rounded-full border-2 border-ground px-[15px] py-1 font-saans text-[16px] leading-tight whitespace-nowrap text-ground no-underline transition-colors duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground;
+    background-color: var(--btn-accent, var(--color-sky));
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--color-ground);
+        color: var(--color-sky);
+      }
+    }
+
+    &:active {
+      background-color: var(--color-ground);
+      color: var(--color-sky);
     }
   }
 
@@ -831,7 +855,7 @@
   }
 
   .text-display {
-    @apply font-saans text-display leading-none tracking-[-0.88px];
+    @apply font-saans text-display leading-none tracking-[-0.88px] text-ground;
   }
 
   .text-card-title {
@@ -1080,6 +1104,14 @@
 
     :where(> * + *),
     :where(.payload-richtext > * + *) {
+      margin-top: 40px;
+    }
+
+    :where([data-component='richtext-relation']) {
+      @apply no-underline;
+    }
+
+    :where([data-component='richtext-relation'] + [data-component='richtext-relation']) {
       margin-top: 40px;
     }
 

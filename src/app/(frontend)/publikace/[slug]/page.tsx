@@ -104,7 +104,7 @@ export default async function PublikaceDetailPage({
 
   return (
     <SiteShell
-      beforeMain={<PublicationHeader item={doc} />}
+      beforeMain={<PublicationHeader item={doc} siteSlug={site.slug} />}
       breadcrumbs={breadcrumbs}
       mainClassName="pt-content-top"
       site={site}

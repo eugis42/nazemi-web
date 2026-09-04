@@ -5,6 +5,8 @@ import {
   HeroBlock,
   NewsGrid,
   ProjectsBlock,
+  ThreeCardsBlock,
+  ThreeColumnsBlock,
   type ContentBlock,
 } from '@/components/frontend/BlockRenderers'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
@@ -35,7 +37,14 @@ export async function HomepageBlocks({
     const key = block.id || `${block.blockType}-${index}`
     switch (block.blockType) {
       case 'hero':
-        rendered.push(<HeroBlock key={key} block={block} />)
+        rendered.push(
+          <HeroBlock
+            key={key}
+            block={block}
+            narrow={site.siteType === 'subsite'}
+            siteSlug={site.slug}
+          />,
+        )
         break
       case 'events':
         rendered.push(await renderEvents({ key, block, site }))
@@ -52,11 +61,17 @@ export async function HomepageBlocks({
       case 'about':
         rendered.push(<AboutBlock key={key} block={block} siteSlug={site.slug} />)
         break
+      case 'threeColumns':
+        rendered.push(<ThreeColumnsBlock key={key} block={block} siteSlug={site.slug} />)
+        break
+      case 'threeCards':
+        rendered.push(<ThreeCardsBlock key={key} block={block} siteSlug={site.slug} />)
+        break
       case 'richText':
         if (block.content) {
           rendered.push(
             <div className="prose-nazemi mx-auto w-full max-w-[874px]" key={key}>
-              <NazemiRichText data={block.content as never} />
+              <NazemiRichText data={block.content as never} siteSlug={site.slug} />
             </div>,
           )
         }

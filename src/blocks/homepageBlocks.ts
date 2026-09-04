@@ -2,6 +2,10 @@ import type { Block } from 'payload'
 
 import { additionalColorField } from '@/fields/additionalColor'
 import { callToActionField } from '@/fields/cta'
+import {
+  BLOCK_GROUP_HOME,
+  blockPickerAdmin,
+} from '@/blocks/blockMeta'
 
 export const HomepageHeroBlock: Block = {
   slug: 'hero',
@@ -9,6 +13,10 @@ export const HomepageHeroBlock: Block = {
     plural: 'Hero bloky',
     singular: 'Hero',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_HOME,
+    thumb: 'hero',
+  }),
   fields: [
     {
       name: 'segments',
@@ -20,6 +28,9 @@ export const HomepageHeroBlock: Block = {
       },
       minRows: 1,
       admin: {
+        components: {
+          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+        },
         initCollapsed: true,
       },
       fields: [
@@ -42,6 +53,7 @@ export const HomepageHeroBlock: Block = {
       type: 'textarea',
       label: 'Podnadpis',
     },
+    callToActionField(),
   ],
 }
 
@@ -51,6 +63,10 @@ export const EventsGridBlock: Block = {
     plural: 'Bloky událostí',
     singular: 'Události',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_HOME,
+    thumb: 'events',
+  }),
   fields: [
     {
       name: 'title',
@@ -111,6 +127,10 @@ export const PillarsBlock: Block = {
     plural: 'Bloky pilířů',
     singular: 'Pilíře',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_HOME,
+    thumb: 'pillars',
+  }),
   fields: [
     {
       name: 'title',
@@ -129,6 +149,9 @@ export const PillarsBlock: Block = {
         singular: 'Pilíř',
       },
       admin: {
+        components: {
+          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+        },
         initCollapsed: true,
       },
       fields: [
@@ -150,14 +173,21 @@ export const PillarsBlock: Block = {
           required: true,
         },
         {
-          name: 'buttonLabel',
-          type: 'text',
-          label: 'Text tlačítka',
-        },
-        {
-          name: 'href',
-          type: 'text',
-          label: 'URL tlačítka',
+          type: 'row',
+          fields: [
+            {
+              name: 'buttonLabel',
+              type: 'text',
+              label: 'Text tlačítka',
+              admin: { width: '40%' },
+            },
+            {
+              name: 'href',
+              type: 'text',
+              label: 'URL tlačítka',
+              admin: { width: '60%' },
+            },
+          ],
         },
       ],
     },
@@ -170,6 +200,10 @@ export const NewsGridBlock: Block = {
     plural: 'Bloky aktualit',
     singular: 'Aktuality',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_HOME,
+    thumb: 'news',
+  }),
   fields: [
     {
       name: 'title',
@@ -230,6 +264,10 @@ export const ProjectsListBlock: Block = {
     plural: 'Bloky projektů',
     singular: 'Projekty',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_HOME,
+    thumb: 'projects',
+  }),
   fields: [
     {
       name: 'title',
@@ -258,6 +296,10 @@ export const AboutBlock: Block = {
     plural: 'Bloky O nás',
     singular: 'O nás',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_HOME,
+    thumb: 'about',
+  }),
   fields: [
     {
       name: 'title',
@@ -282,6 +324,9 @@ export const AboutBlock: Block = {
         singular: 'Sloupec',
       },
       admin: {
+        components: {
+          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+        },
         description: 'Max. 3 sloupce — na frontendu vždy přes celou šířku kontejneru.',
         initCollapsed: true,
       },

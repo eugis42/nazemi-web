@@ -102,7 +102,7 @@ export default async function ProjectDetailPage({
       site={site}
       stacked={false}
     >
-      <ProjektLivePreview initialData={doc} />
+      <ProjektLivePreview initialData={doc} siteSlug={site.slug} />
     </SiteShell>
   )
 }

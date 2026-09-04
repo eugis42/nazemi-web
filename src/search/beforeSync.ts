@@ -63,9 +63,8 @@ function excerptForCollection(collectionSlug: string, doc: Record<string, unknow
         excerpt,
         typeof doc.description === 'string' ? doc.description : '',
         typeof location.name === 'string' ? location.name : '',
-        typeof location.city === 'string' ? location.city : '',
-        typeof location.venue === 'string' ? location.venue : '',
         typeof location.address === 'string' ? location.address : '',
+        typeof location.city === 'string' ? location.city : '',
         ...relationTitles(doc.tags),
         flattenLexical(doc.content),
       ])

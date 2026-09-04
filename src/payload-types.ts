@@ -74,6 +74,7 @@ export interface Config {
     workshopy: Workshopy;
     publikace: Publikace;
     lide: Lide;
+    prehledy: Prehledy;
     'site-navigace': SiteNavigace;
     'site-kontakt': SiteKontakt;
     'site-paticka': SitePaticka;
@@ -102,6 +103,7 @@ export interface Config {
     workshopy: WorkshopySelect<false> | WorkshopySelect<true>;
     publikace: PublikaceSelect<false> | PublikaceSelect<true>;
     lide: LideSelect<false> | LideSelect<true>;
+    prehledy: PrehledySelect<false> | PrehledySelect<true>;
     'site-navigace': SiteNavigaceSelect<false> | SiteNavigaceSelect<true>;
     'site-kontakt': SiteKontaktSelect<false> | SiteKontaktSelect<true>;
     'site-paticka': SitePatickaSelect<false> | SitePatickaSelect<true>;
@@ -178,6 +180,60 @@ export interface Stranky {
                 }[]
               | null;
             subheadline?: string | null;
+            /**
+             * Max. 2 tlačítka
+             */
+            actions?:
+              | {
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'hero';
@@ -189,12 +245,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -218,12 +314,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -248,12 +384,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -277,12 +453,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -301,12 +517,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -369,6 +625,154 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'gallery';
+          }
+        | {
+            title: string;
+            /**
+             * Max. 3 sloupce.
+             */
+            columns?:
+              | {
+                  /**
+                   * Akcentová barva — např. 150+.
+                   */
+                  headline: string;
+                  title: string;
+                  body: string;
+                  /**
+                   * Volitelné, max. 1 tlačítko
+                   */
+                  actions?:
+                    | {
+                        /**
+                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                         */
+                        label?: string | null;
+                        linkType: 'internal' | 'external';
+                        /**
+                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         */
+                        reference?:
+                          | ({
+                              relationTo: 'prehledy';
+                              value: number | Prehledy;
+                            } | null)
+                          | ({
+                              relationTo: 'stranky';
+                              value: number | Stranky;
+                            } | null)
+                          | ({
+                              relationTo: 'aktuality';
+                              value: number | Aktuality;
+                            } | null)
+                          | ({
+                              relationTo: 'kalendar';
+                              value: number | Kalendar;
+                            } | null)
+                          | ({
+                              relationTo: 'workshopy';
+                              value: number | Workshopy;
+                            } | null)
+                          | ({
+                              relationTo: 'publikace';
+                              value: number | Publikace;
+                            } | null)
+                          | ({
+                              relationTo: 'projekty';
+                              value: number | Projekty;
+                            } | null);
+                        /**
+                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                         */
+                        href?: string | null;
+                        variant?: ('filled' | 'outline' | 'colored') | null;
+                        /**
+                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                         */
+                        backgroundColor?: string | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'threeColumns';
+          }
+        | {
+            title: string;
+            /**
+             * Max. 3 karty.
+             */
+            columns?:
+              | {
+                  /**
+                   * Akcentová barva — např. Co:
+                   */
+                  prefix?: string | null;
+                  title: string;
+                  body: string;
+                  /**
+                   * Volitelné, max. 1 tlačítko
+                   */
+                  actions?:
+                    | {
+                        /**
+                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                         */
+                        label?: string | null;
+                        linkType: 'internal' | 'external';
+                        /**
+                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         */
+                        reference?:
+                          | ({
+                              relationTo: 'prehledy';
+                              value: number | Prehledy;
+                            } | null)
+                          | ({
+                              relationTo: 'stranky';
+                              value: number | Stranky;
+                            } | null)
+                          | ({
+                              relationTo: 'aktuality';
+                              value: number | Aktuality;
+                            } | null)
+                          | ({
+                              relationTo: 'kalendar';
+                              value: number | Kalendar;
+                            } | null)
+                          | ({
+                              relationTo: 'workshopy';
+                              value: number | Workshopy;
+                            } | null)
+                          | ({
+                              relationTo: 'publikace';
+                              value: number | Publikace;
+                            } | null)
+                          | ({
+                              relationTo: 'projekty';
+                              value: number | Projekty;
+                            } | null);
+                        /**
+                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                         */
+                        href?: string | null;
+                        variant?: ('filled' | 'outline' | 'colored') | null;
+                        /**
+                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                         */
+                        backgroundColor?: string | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'threeCards';
           }
         | {
             title: string;
@@ -417,6 +821,60 @@ export interface Stranky {
                 }[]
               | null;
             subheadline?: string | null;
+            /**
+             * Max. 2 tlačítka
+             */
+            actions?:
+              | {
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'hero';
@@ -428,12 +886,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -457,12 +955,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -487,12 +1025,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -516,12 +1094,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -540,12 +1158,52 @@ export interface Stranky {
              */
             actions?:
               | {
-                  label: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                    */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -608,6 +1266,154 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'gallery';
+          }
+        | {
+            title: string;
+            /**
+             * Max. 3 sloupce.
+             */
+            columns?:
+              | {
+                  /**
+                   * Akcentová barva — např. 150+.
+                   */
+                  headline: string;
+                  title: string;
+                  body: string;
+                  /**
+                   * Volitelné, max. 1 tlačítko
+                   */
+                  actions?:
+                    | {
+                        /**
+                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                         */
+                        label?: string | null;
+                        linkType: 'internal' | 'external';
+                        /**
+                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         */
+                        reference?:
+                          | ({
+                              relationTo: 'prehledy';
+                              value: number | Prehledy;
+                            } | null)
+                          | ({
+                              relationTo: 'stranky';
+                              value: number | Stranky;
+                            } | null)
+                          | ({
+                              relationTo: 'aktuality';
+                              value: number | Aktuality;
+                            } | null)
+                          | ({
+                              relationTo: 'kalendar';
+                              value: number | Kalendar;
+                            } | null)
+                          | ({
+                              relationTo: 'workshopy';
+                              value: number | Workshopy;
+                            } | null)
+                          | ({
+                              relationTo: 'publikace';
+                              value: number | Publikace;
+                            } | null)
+                          | ({
+                              relationTo: 'projekty';
+                              value: number | Projekty;
+                            } | null);
+                        /**
+                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                         */
+                        href?: string | null;
+                        variant?: ('filled' | 'outline' | 'colored') | null;
+                        /**
+                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                         */
+                        backgroundColor?: string | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'threeColumns';
+          }
+        | {
+            title: string;
+            /**
+             * Max. 3 karty.
+             */
+            columns?:
+              | {
+                  /**
+                   * Akcentová barva — např. Co:
+                   */
+                  prefix?: string | null;
+                  title: string;
+                  body: string;
+                  /**
+                   * Volitelné, max. 1 tlačítko
+                   */
+                  actions?:
+                    | {
+                        /**
+                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                         */
+                        label?: string | null;
+                        linkType: 'internal' | 'external';
+                        /**
+                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         */
+                        reference?:
+                          | ({
+                              relationTo: 'prehledy';
+                              value: number | Prehledy;
+                            } | null)
+                          | ({
+                              relationTo: 'stranky';
+                              value: number | Stranky;
+                            } | null)
+                          | ({
+                              relationTo: 'aktuality';
+                              value: number | Aktuality;
+                            } | null)
+                          | ({
+                              relationTo: 'kalendar';
+                              value: number | Kalendar;
+                            } | null)
+                          | ({
+                              relationTo: 'workshopy';
+                              value: number | Workshopy;
+                            } | null)
+                          | ({
+                              relationTo: 'publikace';
+                              value: number | Publikace;
+                            } | null)
+                          | ({
+                              relationTo: 'projekty';
+                              value: number | Projekty;
+                            } | null);
+                        /**
+                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                         */
+                        href?: string | null;
+                        variant?: ('filled' | 'outline' | 'colored') | null;
+                        /**
+                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                         */
+                        backgroundColor?: string | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'threeCards';
           }
         | {
             title: string;
@@ -674,6 +1480,7 @@ export interface Stranky {
    * Web, na kterém se stránka zobrazí.
    */
   site: number | Site;
+  searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -685,13 +1492,14 @@ export interface Stranky {
 export interface Media {
   id: number;
   /**
-   * Popis obrázku pro přístupnost a SEO.
+   * Volitelné. Prázdné → při uložení se doplní z názvu souboru (bez přípony).
    */
-  alt: string;
+  alt?: string | null;
   /**
    * Volitelný popisek u obrázku v obsahu.
    */
   caption?: string | null;
+  searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -764,571 +1572,20 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "kalendar".
+ * via the `definition` "prehledy".
  */
-export interface Kalendar {
+export interface Prehledy {
   id: number;
   /**
-   * Plakát nebo ilustrace události.
+   * Text v menu, pokud položka nemá vlastní popisek.
    */
-  coverImage?: (number | null) | Media;
-  startDate: string;
-  endDate?: string | null;
-  tags?: (number | Tag)[] | null;
   title: string;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  location?: {
-    name?: string | null;
-    city?: string | null;
-    address?: string | null;
-    /**
-     * Název venue (např. Hlavní nádraží Brno).
-     */
-    venue?: string | null;
-    /**
-     * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-     */
-    mapsLink?: string | null;
-  };
+  collectionKey: 'aktuality' | 'kalendar' | 'projekty' | 'workshopy' | 'publikace';
   /**
-   * Volitelné. Zobrazit event když uživatel klikne na tlačítko "Aktuální termíny" na stránce workshopu.
-   */
-  workshop?: (number | null) | Workshopy;
-  /**
-   * Hlavní výzvy (Přihlásit se, ...).
-   */
-  ctas?:
-    | {
-        title: string;
-        /**
-         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-         */
-        url: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Vygeneruje se z názvu při prvním uložení.
-   */
-  slug: string;
-  /**
-   * Volitelný přepis výchozího SEO titulku stránky.
-   */
-  metaTitle?: string | null;
-  /**
-   * Volitelný přepis meta popisu pro vyhledávače a sdílení.
-   */
-  description?: string | null;
-  /**
-   * Volitelný přepis výchozího sdílecího obrázku z nastavení webu.
-   */
-  sharingImage?: (number | null) | Media;
-  /**
-   * Volitelná kanonická URL adresa.
-   */
-  canonicalURL?: string | null;
-  /**
-   * Zakáže indexaci stránky ve vyhledávačích.
-   */
-  noindex?: boolean | null;
-  /**
-   * Kdo vytvořil tento obsah — nezobrazuje se na webu.
-   */
-  author?: (number | null) | User;
-  /**
-   * Kde se událost zobrazí.
+   * Web, ke kterému přehled patří.
    */
   site: number | Site;
-  /**
-   * Zobrazí obsah kromě aktuálního webu i na hlavním webu NaZemi.
-   */
-  showOnMainSite?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags".
- */
-export interface Tag {
-  id: number;
-  title: string;
-  /**
-   * Vygeneruje se z názvu při prvním uložení.
-   */
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "workshopy".
- */
-export interface Workshopy {
-  id: number;
-  coverImage?: (number | null) | Media;
-  /**
-   * Volný text (např. 6 hodin, 2 dny).
-   */
-  duration?: string | null;
-  /**
-   * Např. 12–24 účastníků.
-   */
-  groupSize?: string | null;
-  /**
-   * Volný text (např. 12 000 – 18 000 Kč).
-   */
-  price?: string | null;
-  topics?: (number | Tag)[] | null;
-  audiences?: (number | WorkshopAudience)[] | null;
-  title: string;
-  /**
-   * Krátký text v přehledech a na detailu.
-   */
-  excerpt?: string | null;
-  takeaways?:
-    | {
-        item: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Univerzální bloky včetně Textového, lektorů a referencí.
-   */
-  blocks?:
-    | (
-        | {
-            segments?:
-              | {
-                  text: string;
-                  underline?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            subheadline?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'hero';
-          }
-        | {
-            title?: string | null;
-            /**
-             * Max. 2 tlačítka
-             */
-            actions?:
-              | {
-                  label: string;
-                  /**
-                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                   */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            selection?: ('auto' | 'manual') | null;
-            /**
-             * Min. 3, max. 6.
-             */
-            limit?: number | null;
-            /**
-             * Min. 3, max. 6 událostí.
-             */
-            items?: (number | Kalendar)[] | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'events';
-          }
-        | {
-            title?: string | null;
-            /**
-             * Max. 2 tlačítka
-             */
-            actions?:
-              | {
-                  label: string;
-                  /**
-                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                   */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            pillars?:
-              | {
-                  color: string;
-                  title: string;
-                  body: string;
-                  buttonLabel?: string | null;
-                  href?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'pillars';
-          }
-        | {
-            title?: string | null;
-            /**
-             * Max. 2 tlačítka
-             */
-            actions?:
-              | {
-                  label: string;
-                  /**
-                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                   */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            selection?: ('auto' | 'manual') | null;
-            /**
-             * Min. 4, max. 8.
-             */
-            limit?: number | null;
-            /**
-             * Min. 4, max. 8 aktualit.
-             */
-            items?: (number | Aktuality)[] | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'news';
-          }
-        | {
-            title?: string | null;
-            /**
-             * Max. 2 tlačítka
-             */
-            actions?:
-              | {
-                  label: string;
-                  /**
-                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                   */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            /**
-             * Vyberte projekty a seřaďte je přetažením.
-             */
-            items: (number | Projekty)[];
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'projects';
-          }
-        | {
-            title?: string | null;
-            /**
-             * Max. 2 tlačítka
-             */
-            actions?:
-              | {
-                  label: string;
-                  /**
-                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                   */
-                  href: string;
-                  variant?: ('filled' | 'outline') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            image?: (number | null) | Media;
-            /**
-             * Max. 3 sloupce — na frontendu vždy přes celou šířku kontejneru.
-             */
-            columns?:
-              | {
-                  title: string;
-                  body: string;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'about';
-          }
-        | {
-            headerColor?: string | null;
-            /**
-             * Pokud je nastaven, překryje barevné pozadí.
-             */
-            coverImage?: (number | null) | Media;
-            lead?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'pageIntro';
-          }
-        | {
-            content: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richText';
-          }
-        | {
-            /**
-             * Pouze obrázky — video patří do samostatného bloku.
-             */
-            images: (number | Media)[];
-            /**
-             * Počet sloupců mřížky na desktopu (1–3).
-             */
-            columns?: ('1' | '2' | '3') | null;
-            caption?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'gallery';
-          }
-        | {
-            title: string;
-            /**
-             * Jména lektorů u workshopu (odděleně od kontaktu Lidé).
-             */
-            people?:
-              | {
-                  name: string;
-                  role?: string | null;
-                  image?: (number | null) | Media;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'speakers';
-          }
-        | {
-            title: string;
-            items?:
-              | {
-                  quote: string;
-                  author: string;
-                  role?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'testimonials';
-          }
-      )[]
-    | null;
-  /**
-   * Objednávka / externí odkaz v hlavičce.
-   */
-  ctas?:
-    | {
-        title: string;
-        /**
-         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-         */
-        url: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Propojené termíny z Kalendáře (vznikají u události polem Workshop).
-   */
-  scheduledWorkshops?: {
-    docs?: (number | Kalendar)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  /**
-   * Vygeneruje se z názvu při prvním uložení.
-   */
-  slug: string;
-  /**
-   * Volitelný přepis výchozího SEO titulku stránky.
-   */
-  metaTitle?: string | null;
-  /**
-   * Volitelný přepis meta popisu pro vyhledávače a sdílení.
-   */
-  description?: string | null;
-  /**
-   * Volitelný přepis výchozího sdílecího obrázku z nastavení webu.
-   */
-  sharingImage?: (number | null) | Media;
-  /**
-   * Volitelná kanonická URL adresa.
-   */
-  canonicalURL?: string | null;
-  /**
-   * Zakáže indexaci stránky ve vyhledávačích.
-   */
-  noindex?: boolean | null;
-  /**
-   * Kdo vytvořil tento obsah — nezobrazuje se na webu.
-   */
-  author?: (number | null) | User;
-  /**
-   * Na kterém webu se workshop nabízí.
-   */
-  site: number | Site;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "workshop-audiences".
- */
-export interface WorkshopAudience {
-  id: number;
-  title: string;
-  /**
-   * Vygeneruje se z názvu při prvním uložení.
-   */
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "aktuality".
- */
-export interface Aktuality {
-  id: number;
-  /**
-   * Náhled v přehledech a u sdílení.
-   */
-  coverImage?: (number | null) | Media;
-  publishedAt: string;
-  /**
-   * Velký = obrázek na celou šířku; malý = obrázek tak, aby se vešel do hlavičky celý.
-   */
-  layout?: ('big' | 'small') | null;
-  /**
-   * Volitelné kategorizace v přehledech.
-   */
-  tags?: (number | Tag)[] | null;
-  /**
-   * Vyplníte-li, karta článku bude odkazovat na externí odkaz(↗) místo na článek na našem webu. Relativní (/…) nebo https://…
-   */
-  externalUrl?: string | null;
-  title: string;
-  /**
-   * Veřejný podpis u článku. Předvyplní se z interního editora; můžete změnit.
-   */
-  authorName?: string | null;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * Vygeneruje se z názvu při prvním uložení.
-   */
-  slug: string;
-  /**
-   * Volitelný přepis výchozího SEO titulku stránky.
-   */
-  metaTitle?: string | null;
-  /**
-   * Volitelný přepis meta popisu pro vyhledávače a sdílení.
-   */
-  description?: string | null;
-  /**
-   * Volitelný přepis výchozího sdílecího obrázku z nastavení webu.
-   */
-  sharingImage?: (number | null) | Media;
-  /**
-   * Volitelná kanonická URL adresa.
-   */
-  canonicalURL?: string | null;
-  /**
-   * Zakáže indexaci stránky ve vyhledávačích.
-   */
-  noindex?: boolean | null;
-  /**
-   * Kdo vytvořil tento obsah — nezobrazuje se na webu.
-   */
-  author?: (number | null) | User;
-  /**
-   * Kde se aktualita zobrazí.
-   */
-  site: number | Site;
-  /**
-   * Zobrazí obsah kromě aktuálního webu i na hlavním webu NaZemi.
-   */
-  showOnMainSite?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  name: string;
-  /**
-   * Administrátor = weby, nastavení webu, uživatelé, vyhledávání. Editor = obsah, média, kategorizace. Víc administrátorů je v pořádku.
-   */
-  role: 'admin' | 'editor';
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
+  searchFold?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1344,6 +1601,10 @@ export interface Site {
    */
   subdomain?: string | null;
   logo?: (number | null) | Media;
+  /**
+   * Stejné odsazení ze všech stran uvnitř loga v navigaci (px). 0 = žádné.
+   */
+  logoNavbarPadding?: number | null;
   /**
    * Ikona v záložce prohlížeče a na ploše iOS. SVG + Apple Touch PNG 180×180 (čtverec, sky pozadí, značka beze změny tvaru).
    */
@@ -1373,6 +1634,9 @@ export interface Site {
    * Call to Action tlačítka (filled green / přihlášení) — na hlavním webu zelená.
    */
   accentColor?: string | null;
+  /**
+   * Předvyplněná paleta — lze upravit, přidat nebo smazat. Používá se u barevných výběrů v obsahu.
+   */
   additionalColors?:
     | {
         label?: string | null;
@@ -1380,20 +1644,22 @@ export interface Site {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Hlavní navigace. Interní odkaz = kolekce → položka; externí = URL. Podpoložky jen u hlavní úrovně.
-   */
   mainMenu?:
     | {
+        depth?: number | null;
         /**
          * Volitelné u interního odkazu — prázdné → název vybrané položky.
          */
         label?: string | null;
         linkType: 'internal' | 'external';
         /**
-         * Vyberte kolekci a záznam.
+         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
          */
         reference?:
+          | ({
+              relationTo: 'prehledy';
+              value: number | Prehledy;
+            } | null)
           | ({
               relationTo: 'stranky';
               value: number | Stranky;
@@ -1422,53 +1688,11 @@ export interface Site {
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
          */
         href?: string | null;
-        children?:
-          | {
-              /**
-               * Volitelné u interního odkazu — prázdné → název vybrané položky.
-               */
-              label?: string | null;
-              linkType: 'internal' | 'external';
-              /**
-               * Vyberte kolekci a záznam.
-               */
-              reference?:
-                | ({
-                    relationTo: 'stranky';
-                    value: number | Stranky;
-                  } | null)
-                | ({
-                    relationTo: 'aktuality';
-                    value: number | Aktuality;
-                  } | null)
-                | ({
-                    relationTo: 'kalendar';
-                    value: number | Kalendar;
-                  } | null)
-                | ({
-                    relationTo: 'workshopy';
-                    value: number | Workshopy;
-                  } | null)
-                | ({
-                    relationTo: 'publikace';
-                    value: number | Publikace;
-                  } | null)
-                | ({
-                    relationTo: 'projekty';
-                    value: number | Projekty;
-                  } | null);
-              /**
-               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-               */
-              href?: string | null;
-              id?: string | null;
-            }[]
-          | null;
         id?: string | null;
       }[]
     | null;
   /**
-   * Vedlejší odkazy (např. externí weby). Stejný model jako hlavní menu, bez podpoložek.
+   * Vedlejší odkazy (např. externí weby). Jedna úroveň, bez podpoložek.
    */
   secondaryMenu?:
     | {
@@ -1478,9 +1702,13 @@ export interface Site {
         label?: string | null;
         linkType: 'internal' | 'external';
         /**
-         * Vyberte kolekci a záznam.
+         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
          */
         reference?:
+          | ({
+              relationTo: 'prehledy';
+              value: number | Prehledy;
+            } | null)
           | ({
               relationTo: 'stranky';
               value: number | Stranky;
@@ -1594,6 +1822,7 @@ export interface Site {
   donateCta?: {
     title?: string | null;
     body?: string | null;
+    backgroundColor?: string | null;
     buttonLabel?: string | null;
     /**
      * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1652,9 +1881,987 @@ export interface Site {
      */
     lide?: boolean | null;
   };
+  searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "aktuality".
+ */
+export interface Aktuality {
+  id: number;
+  /**
+   * Náhled v přehledech a u sdílení.
+   */
+  coverImage?: (number | null) | Media;
+  publishedAt: string;
+  /**
+   * Velký = obrázek na celou šířku; malý = obrázek tak, aby se vešel do hlavičky celý.
+   */
+  layout?: ('big' | 'small') | null;
+  /**
+   * Volitelné kategorizace v přehledech.
+   */
+  tags?: (number | Tag)[] | null;
+  /**
+   * Vyplníte-li, karta článku bude odkazovat na externí odkaz(↗) místo na článek na našem webu. Relativní (/…) nebo https://…
+   */
+  externalUrl?: string | null;
+  title: string;
+  /**
+   * Veřejný podpis u článku. Předvyplní se z interního editora; můžete změnit.
+   */
+  authorName?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Vygeneruje se z názvu při prvním uložení.
+   */
+  slug: string;
+  /**
+   * Volitelný přepis výchozího SEO titulku stránky.
+   */
+  metaTitle?: string | null;
+  /**
+   * Volitelný přepis meta popisu pro vyhledávače a sdílení.
+   */
+  description?: string | null;
+  /**
+   * Volitelný přepis výchozího sdílecího obrázku z nastavení webu.
+   */
+  sharingImage?: (number | null) | Media;
+  /**
+   * Volitelná kanonická URL adresa.
+   */
+  canonicalURL?: string | null;
+  /**
+   * Zakáže indexaci stránky ve vyhledávačích.
+   */
+  noindex?: boolean | null;
+  /**
+   * Kdo vytvořil tento obsah — nezobrazuje se na webu.
+   */
+  author?: (number | null) | User;
+  /**
+   * Kde se aktualita zobrazí.
+   */
+  site: number | Site;
+  /**
+   * Zobrazí obsah kromě aktuálního webu i na hlavním webu NaZemi.
+   */
+  showOnMainSite?: boolean | null;
+  searchFold?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  title: string;
+  /**
+   * Vygeneruje se z názvu při prvním uložení.
+   */
+  slug: string;
+  searchFold?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name: string;
+  /**
+   * Administrátor = weby, nastavení webu, uživatelé, vyhledávání. Editor = obsah, média, kategorizace. Víc administrátorů je v pořádku.
+   */
+  role: 'admin' | 'editor';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "kalendar".
+ */
+export interface Kalendar {
+  id: number;
+  /**
+   * Plakát nebo ilustrace události.
+   */
+  coverImage?: (number | null) | Media;
+  startDate: string;
+  endDate?: string | null;
+  tags?: (number | Tag)[] | null;
+  title: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  location?: {
+    /**
+     * Jméno venue nebo stručný opis
+     */
+    name?: string | null;
+    city?: string | null;
+    /**
+     * Pouze ulice a číslo
+     */
+    address?: string | null;
+    /**
+     * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+     */
+    mapsLink?: string | null;
+  };
+  /**
+   * Volitelné. Jen workshopy stejného webu. Zobrazit event po kliku na „Aktuální termíny“ u workshopu.
+   */
+  workshop?: (number | null) | Workshopy;
+  /**
+   * Hlavní výzvy (Přihlásit se, ...).
+   */
+  ctas?:
+    | {
+        title: string;
+        /**
+         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+         */
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Vygeneruje se z názvu při prvním uložení.
+   */
+  slug: string;
+  /**
+   * Volitelný přepis výchozího SEO titulku stránky.
+   */
+  metaTitle?: string | null;
+  /**
+   * Volitelný přepis meta popisu pro vyhledávače a sdílení.
+   */
+  description?: string | null;
+  /**
+   * Volitelný přepis výchozího sdílecího obrázku z nastavení webu.
+   */
+  sharingImage?: (number | null) | Media;
+  /**
+   * Volitelná kanonická URL adresa.
+   */
+  canonicalURL?: string | null;
+  /**
+   * Zakáže indexaci stránky ve vyhledávačích.
+   */
+  noindex?: boolean | null;
+  /**
+   * Kdo vytvořil tento obsah — nezobrazuje se na webu.
+   */
+  author?: (number | null) | User;
+  /**
+   * Kde se událost zobrazí.
+   */
+  site: number | Site;
+  /**
+   * Zobrazí obsah kromě aktuálního webu i na hlavním webu NaZemi.
+   */
+  showOnMainSite?: boolean | null;
+  searchFold?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshopy".
+ */
+export interface Workshopy {
+  id: number;
+  coverImage?: (number | null) | Media;
+  /**
+   * Volný text (např. 6 hodin, 2 dny).
+   */
+  duration?: string | null;
+  /**
+   * Např. 12–24 účastníků.
+   */
+  groupSize?: string | null;
+  /**
+   * Volný text (např. 12 000 – 18 000 Kč).
+   */
+  price?: string | null;
+  topics?: (number | Tag)[] | null;
+  audiences?: (number | WorkshopAudience)[] | null;
+  title: string;
+  /**
+   * Krátký text v přehledech a na detailu.
+   */
+  excerpt?: string | null;
+  takeaways?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Univerzální bloky včetně Textového, lektorů a referencí.
+   */
+  blocks?:
+    | (
+        | {
+            segments?:
+              | {
+                  text: string;
+                  underline?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            subheadline?: string | null;
+            /**
+             * Max. 2 tlačítka
+             */
+            actions?:
+              | {
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            title?: string | null;
+            /**
+             * Max. 2 tlačítka
+             */
+            actions?:
+              | {
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            selection?: ('auto' | 'manual') | null;
+            /**
+             * Min. 3, max. 6.
+             */
+            limit?: number | null;
+            /**
+             * Min. 3, max. 6 událostí.
+             */
+            items?: (number | Kalendar)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'events';
+          }
+        | {
+            title?: string | null;
+            /**
+             * Max. 2 tlačítka
+             */
+            actions?:
+              | {
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            pillars?:
+              | {
+                  color: string;
+                  title: string;
+                  body: string;
+                  buttonLabel?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pillars';
+          }
+        | {
+            title?: string | null;
+            /**
+             * Max. 2 tlačítka
+             */
+            actions?:
+              | {
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            selection?: ('auto' | 'manual') | null;
+            /**
+             * Min. 4, max. 8.
+             */
+            limit?: number | null;
+            /**
+             * Min. 4, max. 8 aktualit.
+             */
+            items?: (number | Aktuality)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'news';
+          }
+        | {
+            title?: string | null;
+            /**
+             * Max. 2 tlačítka
+             */
+            actions?:
+              | {
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Vyberte projekty a seřaďte je přetažením.
+             */
+            items: (number | Projekty)[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'projects';
+          }
+        | {
+            title?: string | null;
+            /**
+             * Max. 2 tlačítka
+             */
+            actions?:
+              | {
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
+                  label?: string | null;
+                  linkType: 'internal' | 'external';
+                  /**
+                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  variant?: ('filled' | 'outline' | 'colored') | null;
+                  /**
+                   * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                   */
+                  backgroundColor?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Max. 3 sloupce — na frontendu vždy přes celou šířku kontejneru.
+             */
+            columns?:
+              | {
+                  title: string;
+                  body: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'about';
+          }
+        | {
+            headerColor?: string | null;
+            /**
+             * Pokud je nastaven, překryje barevné pozadí.
+             */
+            coverImage?: (number | null) | Media;
+            lead?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pageIntro';
+          }
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            /**
+             * Pouze obrázky — video patří do samostatného bloku.
+             */
+            images: (number | Media)[];
+            /**
+             * Počet sloupců mřížky na desktopu (1–3).
+             */
+            columns?: ('1' | '2' | '3') | null;
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+        | {
+            title: string;
+            /**
+             * Max. 3 sloupce.
+             */
+            columns?:
+              | {
+                  /**
+                   * Akcentová barva — např. 150+.
+                   */
+                  headline: string;
+                  title: string;
+                  body: string;
+                  /**
+                   * Volitelné, max. 1 tlačítko
+                   */
+                  actions?:
+                    | {
+                        /**
+                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                         */
+                        label?: string | null;
+                        linkType: 'internal' | 'external';
+                        /**
+                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         */
+                        reference?:
+                          | ({
+                              relationTo: 'prehledy';
+                              value: number | Prehledy;
+                            } | null)
+                          | ({
+                              relationTo: 'stranky';
+                              value: number | Stranky;
+                            } | null)
+                          | ({
+                              relationTo: 'aktuality';
+                              value: number | Aktuality;
+                            } | null)
+                          | ({
+                              relationTo: 'kalendar';
+                              value: number | Kalendar;
+                            } | null)
+                          | ({
+                              relationTo: 'workshopy';
+                              value: number | Workshopy;
+                            } | null)
+                          | ({
+                              relationTo: 'publikace';
+                              value: number | Publikace;
+                            } | null)
+                          | ({
+                              relationTo: 'projekty';
+                              value: number | Projekty;
+                            } | null);
+                        /**
+                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                         */
+                        href?: string | null;
+                        variant?: ('filled' | 'outline' | 'colored') | null;
+                        /**
+                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                         */
+                        backgroundColor?: string | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'threeColumns';
+          }
+        | {
+            title: string;
+            /**
+             * Max. 3 karty.
+             */
+            columns?:
+              | {
+                  /**
+                   * Akcentová barva — např. Co:
+                   */
+                  prefix?: string | null;
+                  title: string;
+                  body: string;
+                  /**
+                   * Volitelné, max. 1 tlačítko
+                   */
+                  actions?:
+                    | {
+                        /**
+                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                         */
+                        label?: string | null;
+                        linkType: 'internal' | 'external';
+                        /**
+                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         */
+                        reference?:
+                          | ({
+                              relationTo: 'prehledy';
+                              value: number | Prehledy;
+                            } | null)
+                          | ({
+                              relationTo: 'stranky';
+                              value: number | Stranky;
+                            } | null)
+                          | ({
+                              relationTo: 'aktuality';
+                              value: number | Aktuality;
+                            } | null)
+                          | ({
+                              relationTo: 'kalendar';
+                              value: number | Kalendar;
+                            } | null)
+                          | ({
+                              relationTo: 'workshopy';
+                              value: number | Workshopy;
+                            } | null)
+                          | ({
+                              relationTo: 'publikace';
+                              value: number | Publikace;
+                            } | null)
+                          | ({
+                              relationTo: 'projekty';
+                              value: number | Projekty;
+                            } | null);
+                        /**
+                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                         */
+                        href?: string | null;
+                        variant?: ('filled' | 'outline' | 'colored') | null;
+                        /**
+                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                         */
+                        backgroundColor?: string | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'threeCards';
+          }
+        | {
+            title: string;
+            /**
+             * Jména lektorů u workshopu (odděleně od kontaktu Lidé).
+             */
+            people?:
+              | {
+                  name: string;
+                  role?: string | null;
+                  image?: (number | null) | Media;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'speakers';
+          }
+        | {
+            title: string;
+            items?:
+              | {
+                  quote: string;
+                  author: string;
+                  role?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'testimonials';
+          }
+      )[]
+    | null;
+  /**
+   * Objednávka / externí odkaz v hlavičce.
+   */
+  ctas?:
+    | {
+        title: string;
+        /**
+         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+         */
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Propojené termíny z Kalendáře (vznikají u události polem Workshop).
+   */
+  scheduledWorkshops?: {
+    docs?: (number | Kalendar)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * Vygeneruje se z názvu při prvním uložení.
+   */
+  slug: string;
+  /**
+   * Volitelný přepis výchozího SEO titulku stránky.
+   */
+  metaTitle?: string | null;
+  /**
+   * Volitelný přepis meta popisu pro vyhledávače a sdílení.
+   */
+  description?: string | null;
+  /**
+   * Volitelný přepis výchozího sdílecího obrázku z nastavení webu.
+   */
+  sharingImage?: (number | null) | Media;
+  /**
+   * Volitelná kanonická URL adresa.
+   */
+  canonicalURL?: string | null;
+  /**
+   * Zakáže indexaci stránky ve vyhledávačích.
+   */
+  noindex?: boolean | null;
+  /**
+   * Kdo vytvořil tento obsah — nezobrazuje se na webu.
+   */
+  author?: (number | null) | User;
+  /**
+   * Na kterém webu se workshop nabízí.
+   */
+  site: number | Site;
+  searchFold?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshop-audiences".
+ */
+export interface WorkshopAudience {
+  id: number;
+  title: string;
+  /**
+   * Vygeneruje se z názvu při prvním uložení.
+   */
+  slug: string;
+  searchFold?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1738,6 +2945,7 @@ export interface Publikace {
    * Zobrazí obsah kromě aktuálního webu i na hlavním webu NaZemi.
    */
   showOnMainSite?: boolean | null;
+  searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1753,6 +2961,7 @@ export interface PublicationType {
    * Vygeneruje se z názvu při prvním uložení.
    */
   slug: string;
+  searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1792,6 +3001,60 @@ export interface Projekty {
             }[]
           | null;
         subheadline?: string | null;
+        /**
+         * Max. 2 tlačítka
+         */
+        actions?:
+          | {
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'hero';
@@ -1803,12 +3066,52 @@ export interface Projekty {
          */
         actions?:
           | {
-              label: string;
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                */
-              href: string;
-              variant?: ('filled' | 'outline') | null;
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
               id?: string | null;
             }[]
           | null;
@@ -1832,12 +3135,52 @@ export interface Projekty {
          */
         actions?:
           | {
-              label: string;
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                */
-              href: string;
-              variant?: ('filled' | 'outline') | null;
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
               id?: string | null;
             }[]
           | null;
@@ -1862,12 +3205,52 @@ export interface Projekty {
          */
         actions?:
           | {
-              label: string;
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                */
-              href: string;
-              variant?: ('filled' | 'outline') | null;
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
               id?: string | null;
             }[]
           | null;
@@ -1891,12 +3274,52 @@ export interface Projekty {
          */
         actions?:
           | {
-              label: string;
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                */
-              href: string;
-              variant?: ('filled' | 'outline') | null;
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
               id?: string | null;
             }[]
           | null;
@@ -1915,12 +3338,52 @@ export interface Projekty {
          */
         actions?:
           | {
-              label: string;
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                */
-              href: string;
-              variant?: ('filled' | 'outline') | null;
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
               id?: string | null;
             }[]
           | null;
@@ -1987,6 +3450,154 @@ export interface Projekty {
     | {
         title: string;
         /**
+         * Max. 3 sloupce.
+         */
+        columns?:
+          | {
+              /**
+               * Akcentová barva — např. 150+.
+               */
+              headline: string;
+              title: string;
+              body: string;
+              /**
+               * Volitelné, max. 1 tlačítko
+               */
+              actions?:
+                | {
+                    /**
+                     * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                     */
+                    label?: string | null;
+                    linkType: 'internal' | 'external';
+                    /**
+                     * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                     */
+                    reference?:
+                      | ({
+                          relationTo: 'prehledy';
+                          value: number | Prehledy;
+                        } | null)
+                      | ({
+                          relationTo: 'stranky';
+                          value: number | Stranky;
+                        } | null)
+                      | ({
+                          relationTo: 'aktuality';
+                          value: number | Aktuality;
+                        } | null)
+                      | ({
+                          relationTo: 'kalendar';
+                          value: number | Kalendar;
+                        } | null)
+                      | ({
+                          relationTo: 'workshopy';
+                          value: number | Workshopy;
+                        } | null)
+                      | ({
+                          relationTo: 'publikace';
+                          value: number | Publikace;
+                        } | null)
+                      | ({
+                          relationTo: 'projekty';
+                          value: number | Projekty;
+                        } | null);
+                    /**
+                     * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                     */
+                    href?: string | null;
+                    variant?: ('filled' | 'outline' | 'colored') | null;
+                    /**
+                     * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                     */
+                    backgroundColor?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'threeColumns';
+      }
+    | {
+        title: string;
+        /**
+         * Max. 3 karty.
+         */
+        columns?:
+          | {
+              /**
+               * Akcentová barva — např. Co:
+               */
+              prefix?: string | null;
+              title: string;
+              body: string;
+              /**
+               * Volitelné, max. 1 tlačítko
+               */
+              actions?:
+                | {
+                    /**
+                     * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                     */
+                    label?: string | null;
+                    linkType: 'internal' | 'external';
+                    /**
+                     * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                     */
+                    reference?:
+                      | ({
+                          relationTo: 'prehledy';
+                          value: number | Prehledy;
+                        } | null)
+                      | ({
+                          relationTo: 'stranky';
+                          value: number | Stranky;
+                        } | null)
+                      | ({
+                          relationTo: 'aktuality';
+                          value: number | Aktuality;
+                        } | null)
+                      | ({
+                          relationTo: 'kalendar';
+                          value: number | Kalendar;
+                        } | null)
+                      | ({
+                          relationTo: 'workshopy';
+                          value: number | Workshopy;
+                        } | null)
+                      | ({
+                          relationTo: 'publikace';
+                          value: number | Publikace;
+                        } | null)
+                      | ({
+                          relationTo: 'projekty';
+                          value: number | Projekty;
+                        } | null);
+                    /**
+                     * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                     */
+                    href?: string | null;
+                    variant?: ('filled' | 'outline' | 'colored') | null;
+                    /**
+                     * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+                     */
+                    backgroundColor?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'threeCards';
+      }
+    | {
+        title: string;
+        /**
          * Jména lektorů u workshopu (odděleně od kontaktu Lidé).
          */
         people?:
@@ -2026,7 +3637,11 @@ export interface Projekty {
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
          */
         url: string;
-        variant?: ('filled' | 'outline') | null;
+        variant?: ('filled' | 'outline' | 'colored') | null;
+        /**
+         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+         */
+        backgroundColor?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2058,6 +3673,7 @@ export interface Projekty {
    * Projekty jsou vázané na hlavní web.
    */
   site: number | Site;
+  searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -2082,6 +3698,7 @@ export interface Lide {
    * Web, na kterém se osoba zobrazí v kontaktech.
    */
   site: number | Site;
+  searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -2093,6 +3710,7 @@ export interface Lide {
 export interface SiteNavigace {
   id: number;
   title?: string | null;
+  searchFold?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2101,6 +3719,7 @@ export interface SiteNavigace {
 export interface SiteKontakt {
   id: number;
   title?: string | null;
+  searchFold?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2109,6 +3728,7 @@ export interface SiteKontakt {
 export interface SitePaticka {
   id: number;
   title?: string | null;
+  searchFold?: string | null;
 }
 /**
  * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
@@ -2217,6 +3837,10 @@ export interface PayloadLockedDocument {
         value: number | Lide;
       } | null)
     | ({
+        relationTo: 'prehledy';
+        value: number | Prehledy;
+      } | null)
+    | ({
         relationTo: 'site-navigace';
         value: number | SiteNavigace;
       } | null)
@@ -2321,6 +3945,17 @@ export interface StrankySelect<T extends boolean = true> {
                     id?: T;
                   };
               subheadline?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    reference?: T;
+                    href?: T;
+                    variant?: T;
+                    backgroundColor?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -2332,8 +3967,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               selection?: T;
@@ -2350,8 +3988,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               pillars?:
@@ -2375,8 +4016,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               selection?: T;
@@ -2393,8 +4037,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               items?: T;
@@ -2409,8 +4056,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               image?: T;
@@ -2446,6 +4096,58 @@ export interface StrankySelect<T extends boolean = true> {
               images?: T;
               columns?: T;
               caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        threeColumns?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    headline?: T;
+                    title?: T;
+                    body?: T;
+                    actions?:
+                      | T
+                      | {
+                          label?: T;
+                          linkType?: T;
+                          reference?: T;
+                          href?: T;
+                          variant?: T;
+                          backgroundColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        threeCards?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    prefix?: T;
+                    title?: T;
+                    body?: T;
+                    actions?:
+                      | T
+                      | {
+                          label?: T;
+                          linkType?: T;
+                          reference?: T;
+                          href?: T;
+                          variant?: T;
+                          backgroundColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -2494,6 +4196,17 @@ export interface StrankySelect<T extends boolean = true> {
                     id?: T;
                   };
               subheadline?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    reference?: T;
+                    href?: T;
+                    variant?: T;
+                    backgroundColor?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -2505,8 +4218,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               selection?: T;
@@ -2523,8 +4239,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               pillars?:
@@ -2548,8 +4267,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               selection?: T;
@@ -2566,8 +4288,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               items?: T;
@@ -2582,8 +4307,11 @@ export interface StrankySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               image?: T;
@@ -2619,6 +4347,58 @@ export interface StrankySelect<T extends boolean = true> {
               images?: T;
               columns?: T;
               caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        threeColumns?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    headline?: T;
+                    title?: T;
+                    body?: T;
+                    actions?:
+                      | T
+                      | {
+                          label?: T;
+                          linkType?: T;
+                          reference?: T;
+                          href?: T;
+                          variant?: T;
+                          backgroundColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        threeCards?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    prefix?: T;
+                    title?: T;
+                    body?: T;
+                    actions?:
+                      | T
+                      | {
+                          label?: T;
+                          linkType?: T;
+                          reference?: T;
+                          href?: T;
+                          variant?: T;
+                          backgroundColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -2661,6 +4441,7 @@ export interface StrankySelect<T extends boolean = true> {
   canonicalURL?: T;
   noindex?: T;
   site?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2687,6 +4468,7 @@ export interface AktualitySelect<T extends boolean = true> {
   author?: T;
   site?: T;
   showOnMainSite?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2708,7 +4490,6 @@ export interface KalendarSelect<T extends boolean = true> {
         name?: T;
         city?: T;
         address?: T;
-        venue?: T;
         mapsLink?: T;
       };
   workshop?: T;
@@ -2728,6 +4509,7 @@ export interface KalendarSelect<T extends boolean = true> {
   author?: T;
   site?: T;
   showOnMainSite?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2756,6 +4538,17 @@ export interface ProjektySelect<T extends boolean = true> {
                     id?: T;
                   };
               subheadline?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    reference?: T;
+                    href?: T;
+                    variant?: T;
+                    backgroundColor?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -2767,8 +4560,11 @@ export interface ProjektySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               selection?: T;
@@ -2785,8 +4581,11 @@ export interface ProjektySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               pillars?:
@@ -2810,8 +4609,11 @@ export interface ProjektySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               selection?: T;
@@ -2828,8 +4630,11 @@ export interface ProjektySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               items?: T;
@@ -2844,8 +4649,11 @@ export interface ProjektySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               image?: T;
@@ -2881,6 +4689,58 @@ export interface ProjektySelect<T extends boolean = true> {
               images?: T;
               columns?: T;
               caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        threeColumns?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    headline?: T;
+                    title?: T;
+                    body?: T;
+                    actions?:
+                      | T
+                      | {
+                          label?: T;
+                          linkType?: T;
+                          reference?: T;
+                          href?: T;
+                          variant?: T;
+                          backgroundColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        threeCards?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    prefix?: T;
+                    title?: T;
+                    body?: T;
+                    actions?:
+                      | T
+                      | {
+                          label?: T;
+                          linkType?: T;
+                          reference?: T;
+                          href?: T;
+                          variant?: T;
+                          backgroundColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -2921,6 +4781,7 @@ export interface ProjektySelect<T extends boolean = true> {
         title?: T;
         url?: T;
         variant?: T;
+        backgroundColor?: T;
         id?: T;
       };
   slug?: T;
@@ -2930,6 +4791,7 @@ export interface ProjektySelect<T extends boolean = true> {
   canonicalURL?: T;
   noindex?: T;
   site?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2967,6 +4829,17 @@ export interface WorkshopySelect<T extends boolean = true> {
                     id?: T;
                   };
               subheadline?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    reference?: T;
+                    href?: T;
+                    variant?: T;
+                    backgroundColor?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -2978,8 +4851,11 @@ export interface WorkshopySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               selection?: T;
@@ -2996,8 +4872,11 @@ export interface WorkshopySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               pillars?:
@@ -3021,8 +4900,11 @@ export interface WorkshopySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               selection?: T;
@@ -3039,8 +4921,11 @@ export interface WorkshopySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               items?: T;
@@ -3055,8 +4940,11 @@ export interface WorkshopySelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     variant?: T;
+                    backgroundColor?: T;
                     id?: T;
                   };
               image?: T;
@@ -3092,6 +4980,58 @@ export interface WorkshopySelect<T extends boolean = true> {
               images?: T;
               columns?: T;
               caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        threeColumns?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    headline?: T;
+                    title?: T;
+                    body?: T;
+                    actions?:
+                      | T
+                      | {
+                          label?: T;
+                          linkType?: T;
+                          reference?: T;
+                          href?: T;
+                          variant?: T;
+                          backgroundColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        threeCards?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    prefix?: T;
+                    title?: T;
+                    body?: T;
+                    actions?:
+                      | T
+                      | {
+                          label?: T;
+                          linkType?: T;
+                          reference?: T;
+                          href?: T;
+                          variant?: T;
+                          backgroundColor?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -3142,6 +5082,7 @@ export interface WorkshopySelect<T extends boolean = true> {
   noindex?: T;
   author?: T;
   site?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -3174,6 +5115,7 @@ export interface PublikaceSelect<T extends boolean = true> {
   author?: T;
   site?: T;
   showOnMainSite?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -3191,9 +5133,20 @@ export interface LideSelect<T extends boolean = true> {
   phone?: T;
   email?: T;
   site?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "prehledy_select".
+ */
+export interface PrehledySelect<T extends boolean = true> {
+  title?: T;
+  collectionKey?: T;
+  site?: T;
+  searchFold?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3201,6 +5154,7 @@ export interface LideSelect<T extends boolean = true> {
  */
 export interface SiteNavigaceSelect<T extends boolean = true> {
   title?: T;
+  searchFold?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3208,6 +5162,7 @@ export interface SiteNavigaceSelect<T extends boolean = true> {
  */
 export interface SiteKontaktSelect<T extends boolean = true> {
   title?: T;
+  searchFold?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3215,6 +5170,7 @@ export interface SiteKontaktSelect<T extends boolean = true> {
  */
 export interface SitePatickaSelect<T extends boolean = true> {
   title?: T;
+  searchFold?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3223,6 +5179,7 @@ export interface SitePatickaSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -3316,6 +5273,7 @@ export interface MediaSelect<T extends boolean = true> {
 export interface TagsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3326,6 +5284,7 @@ export interface TagsSelect<T extends boolean = true> {
 export interface WorkshopAudiencesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3336,6 +5295,7 @@ export interface WorkshopAudiencesSelect<T extends boolean = true> {
 export interface PublicationTypesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3349,6 +5309,7 @@ export interface SitesSelect<T extends boolean = true> {
   siteType?: T;
   subdomain?: T;
   logo?: T;
+  logoNavbarPadding?: T;
   favicon?:
     | T
     | {
@@ -3369,19 +5330,11 @@ export interface SitesSelect<T extends boolean = true> {
   mainMenu?:
     | T
     | {
+        depth?: T;
         label?: T;
         linkType?: T;
         reference?: T;
         href?: T;
-        children?:
-          | T
-          | {
-              label?: T;
-              linkType?: T;
-              reference?: T;
-              href?: T;
-              id?: T;
-            };
         id?: T;
       };
   secondaryMenu?:
@@ -3437,6 +5390,7 @@ export interface SitesSelect<T extends boolean = true> {
     | {
         title?: T;
         body?: T;
+        backgroundColor?: T;
         buttonLabel?: T;
         href?: T;
       };
@@ -3464,6 +5418,7 @@ export interface SitesSelect<T extends boolean = true> {
         publikace?: T;
         lide?: T;
       };
+  searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

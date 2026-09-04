@@ -6,9 +6,9 @@ import { EventOverviewMotion } from '@/components/frontend/EventOverviewMotion'
 import { PageBlocks } from '@/components/frontend/BlockRenderers'
 import { CalendarIcon, ClockIcon, PinIcon } from '@/components/frontend/icons'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
-import { Button, TagGroup } from '@/components/frontend/ui'
+import { Button, TagGroup, type TagItem } from '@/components/frontend/ui'
 import { WorkshopHeaderMotion } from '@/components/frontend/WorkshopHeaderMotion'
-import { crossPostSiteName, mediaAlt, mediaFocalStyle, mediaSizeURL, withSiteQuery } from '@/lib/content'
+import { crossPostSiteName, formatEventPlace, mediaAlt, mediaFocalStyle, mediaSizeURL, withSiteQuery } from '@/lib/content'
 import { formatDate, formatDateRange, formatTimeRange } from '@/lib/format'
 
 /** Full-bleed container + 874px prose column — matches the design content rhythm. */
@@ -22,11 +22,33 @@ const STICKY_BANNER_INNER_CLASS = 'container py-3 max-lg:px-card lg:py-4'
 const STICKY_BANNER_ROW_CLASS =
   'flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-8'
 
-function tagTitles(items?: (number | { title?: string | null })[] | null) {
+/** Taxonomy chips → collection listing filter (`?tag=` / `?topic=` / …). */
+function taxonomyFilterTags(
+  items: (number | { slug?: string | null; title?: string | null })[] | null | undefined,
+  collectionPath: string,
+  param: string,
+  siteSlug: string,
+): TagItem[] {
   if (!items?.length) return []
   return items
-    .filter((item): item is { title?: string | null } => typeof item === 'object' && item !== null)
-    .map((item) => item.title || '')
+    .filter(
+      (item): item is { slug?: string | null; title?: string | null } =>
+        typeof item === 'object' && item !== null,
+    )
+    .flatMap((item) => {
+      const label = item.title?.trim()
+      const slug = item.slug?.trim()
+      if (!label || !slug) return []
+      return [
+        {
+          href: withSiteQuery(
+            `${collectionPath}?${param}=${encodeURIComponent(slug)}`,
+            siteSlug,
+          ),
+          label,
+        },
+      ]
+    })
 }
 
 export function ContentColumn({ children }: { children: ReactNode }) {
@@ -37,7 +59,7 @@ export function ContentColumn({ children }: { children: ReactNode }) {
   )
 }
 
-export function Prose({ data }: { data?: unknown }) {
+export function Prose({ data, siteSlug = '' }: { data?: unknown; siteSlug?: string }) {
   if (!data) return null
 
   return (
@@ -47,7 +69,7 @@ export function Prose({ data }: { data?: unknown }) {
         data-block="event-content"
         data-component="event-prose"
       >
-        <NazemiRichText data={data as never} />
+        <NazemiRichText data={data as never} siteSlug={siteSlug} />
       </div>
     </div>
   )
@@ -109,9 +131,8 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
     currentSiteSlug: siteSlug,
     docSite: item.site,
   })
-  const address = item.location?.address || null
-  const placeText = address || [item.location?.name, item.location?.city].filter(Boolean).join(', ')
-  const stickyCity = item.location?.city || null
+  const placeText = formatEventPlace(item.location) || null
+  const stickyPlace = item.location?.name || null
   const primaryCta = item.ctas?.find((cta) => cta.url && cta.title)
 
   const dateMeta = (
@@ -121,8 +142,8 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
   const placeMeta = (
     <EventMeta href={item.location?.mapsLink} icon={<PinIcon />} text={placeText} wrapMobile />
   )
-  const stickyPlaceMeta = stickyCity ? (
-    <EventMeta href={item.location?.mapsLink} icon={<PinIcon />} text={stickyCity} />
+  const stickyPlaceMeta = stickyPlace ? (
+    <EventMeta href={item.location?.mapsLink} icon={<PinIcon />} text={stickyPlace} />
   ) : null
   const workshop = item.workshop && typeof item.workshop === 'object' ? item.workshop : null
   const signup = primaryCta ? (
@@ -170,7 +191,10 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
                 <div className="flex flex-col gap-2.5 lg:gap-6">
                   <TagGroup
                     tagClassName="text-[10px] lg:text-tag"
-                    tags={[...tagTitles(item.tags), origin]}
+                    tags={[
+                      ...taxonomyFilterTags(item.tags, '/kalendar', 'tag', siteSlug),
+                      ...(origin ? [origin] : []),
+                    ]}
                     variant="sky"
                   />
                   <h1 className="text-display text-balance text-sky">{item.title}</h1>
@@ -241,10 +265,10 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
   )
 }
 
-export function EventBody({ item }: { item: Kalendar }) {
+export function EventBody({ item, siteSlug = '' }: { item: Kalendar; siteSlug?: string }) {
   return (
     <div className="flex flex-col gap-content">
-      <Prose data={item.content} />
+      <Prose data={item.content} siteSlug={siteSlug} />
     </div>
   )
 }
@@ -254,7 +278,7 @@ export function EventDetail({ item, siteSlug }: { item: Kalendar; siteSlug: stri
     <article>
       <EventOverview item={item} siteSlug={siteSlug} />
       <div className="pt-content-top">
-        <EventBody item={item} />
+        <EventBody item={item} siteSlug={siteSlug} />
       </div>
     </article>
   )
@@ -336,8 +360,8 @@ export function NewsArticle({
       <div className={`flex flex-col gap-content${skipTopPad ? '' : ' pt-16 lg:pt-24'}`}>
         <ContentColumn>
           <header className="flex w-full flex-col gap-grid" data-component="news-article-header">
-            <h1 className="text-display text-balance">{item.title}</h1>
-            <TagGroup tags={tagTitles(item.tags)} />
+            <h1 className="text-display text-balance text-ground">{item.title}</h1>
+            <TagGroup tags={taxonomyFilterTags(item.tags, '/aktuality', 'tag', siteSlug)} />
             {meta ? <p className="font-saans text-body text-ground/70">{meta}</p> : null}
           </header>
         </ContentColumn>
@@ -359,7 +383,7 @@ export function NewsArticle({
           </div>
         ) : null}
 
-        <Prose data={item.content} />
+        <Prose data={item.content} siteSlug={siteSlug} />
       </div>
     </article>
   )
@@ -387,8 +411,8 @@ export function WorkshopHeader({
   const duration = typeof item.duration === 'string' && item.duration.trim() ? item.duration : null
   const price = typeof item.price === 'string' && item.price.trim() ? item.price : null
   const orderCta = item.ctas?.find((cta) => cta.url && cta.title)
-  const audienceTags = tagTitles(item.audiences)
-  const topicTags = tagTitles(item.topics)
+  const audienceTags = taxonomyFilterTags(item.audiences, '/workshopy', 'audience', siteSlug)
+  const topicTags = taxonomyFilterTags(item.topics, '/workshopy', 'topic', siteSlug)
   const hasTags = audienceTags.length > 0 || topicTags.length > 0
 
   const datesButton = (
@@ -493,10 +517,16 @@ export function WorkshopHeader({
   )
 }
 
-export function PublicationHeader({ item }: { item: Publikace }) {
+export function PublicationHeader({
+  item,
+  siteSlug,
+}: {
+  item: Publikace
+  siteSlug: string
+}) {
   const cover = item.coverImage && typeof item.coverImage === 'object' ? item.coverImage : null
-  const typeTags = tagTitles(item.types)
-  const topicTags = tagTitles(item.topics)
+  const typeTags = taxonomyFilterTags(item.types, '/publikace', 'filter', siteSlug)
+  const topicTags = taxonomyFilterTags(item.topics, '/publikace', 'topic', siteSlug)
   const hasTags = typeTags.length > 0 || topicTags.length > 0
   const primaryCta = (item.ctas || []).find((c) => c.url && c.title)
 
@@ -546,25 +576,31 @@ export function PublicationHeader({ item }: { item: Publikace }) {
   )
 }
 
-export function PublicationBody({ item }: { item: Publikace }) {
+export function PublicationBody({ item, siteSlug = '' }: { item: Publikace; siteSlug?: string }) {
   return (
     <div data-component="publication-body">
-      <Prose data={item.content} />
+      <Prose data={item.content} siteSlug={siteSlug} />
     </div>
   )
 }
 
-export function PublicationDetail({ item }: { item: Publikace }) {
+export function PublicationDetail({
+  item,
+  siteSlug,
+}: {
+  item: Publikace
+  siteSlug: string
+}) {
   return (
     <article>
-      <PublicationHeader item={item} />
+      <PublicationHeader item={item} siteSlug={siteSlug} />
       <div className="pt-content-top">
-        <PublicationBody item={item} />
+        <PublicationBody item={item} siteSlug={siteSlug} />
       </div>
     </article>
   )
 }
 
-export function ProjectDetail({ item }: { item: Projekty }) {
-  return <PageBlocks blocks={item.content as never} />
+export function ProjectDetail({ item, siteSlug = '' }: { item: Projekty; siteSlug?: string }) {
+  return <PageBlocks blocks={item.content as never} siteSlug={siteSlug} />
 }

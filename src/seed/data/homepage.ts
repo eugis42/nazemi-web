@@ -17,6 +17,7 @@ export const hero = {
 export const donateCta = {
   title: 'Podpořte NaZemi',
   body: 'Vaše podpora je klíčová pro naši další činnost. Abychom mohli naplňovat naši misi, potřebujeme i vaši finanční podporu. Každý příspěvek nám pomůže realizovat naše programy a akce s větší svobodou od rigidních grantů. Díky dlouhodobým dárcům můžeme práci také lépe plánovat.',
+  backgroundColor: '#bda9ff',
   buttonLabel: 'Podpořit přes darujme.cz',
   href: 'https://www.darujme.cz/organizace/nazemi',
 }

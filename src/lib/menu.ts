@@ -1,11 +1,18 @@
 import type { Site } from '@/payload-types'
+import {
+  collectionHomePath,
+  isCollectionHomeKey,
+} from '@/lib/collection-homes'
 import { isExternalHref } from '@/lib/links'
+import type { NestedMenuItem } from '@/lib/menu-tree'
+import { nestMenuItems } from '@/lib/menu-tree'
 
-type MenuItem = NonNullable<Site['mainMenu']>[number]
-type MenuChild = NonNullable<MenuItem['children']>[number]
-type AnyMenuItem = MenuItem | MenuChild
+type FlatMenuItem = NonNullable<Site['mainMenu']>[number]
+export type MenuItem = NestedMenuItem<Omit<FlatMenuItem, 'depth'>>
+type AnyMenuItem = MenuItem | NonNullable<MenuItem['children']>[number]
 
 type RefDoc = {
+  collectionKey?: string | null
   slug?: string | null
   title?: string | null
   name?: string | null
@@ -30,16 +37,24 @@ function collectionPath(relationTo: string, slug: string): string {
   }
 }
 
-function resolveReferenceHref(
-  reference: AnyMenuItem['reference'],
+export function resolveNavReferenceHref(
+  reference: unknown,
 ): { href: string; title: string | null } | null {
   if (!reference || typeof reference !== 'object') return null
-  const relationTo = 'relationTo' in reference ? reference.relationTo : null
-  const value = 'value' in reference ? reference.value : null
+  const rel = reference as { relationTo?: unknown; value?: unknown }
+  const relationTo = typeof rel.relationTo === 'string' ? rel.relationTo : null
+  const value = rel.value
   if (!relationTo || value == null) return null
 
   if (typeof value === 'object') {
     const doc = value as RefDoc
+
+    if (relationTo === 'prehledy') {
+      if (!isCollectionHomeKey(doc.collectionKey)) return null
+      const title = (typeof doc.title === 'string' && doc.title) || null
+      return { href: collectionHomePath(doc.collectionKey), title }
+    }
+
     const slug = typeof doc.slug === 'string' ? doc.slug : null
     if (!slug) return null
     const title =
@@ -61,7 +76,7 @@ export function resolveMenuItem(item: AnyMenuItem | null | undefined): {
   if (!item) return null
 
   if (item.linkType === 'internal') {
-    const resolved = resolveReferenceHref(item.reference)
+    const resolved = resolveNavReferenceHref(item.reference)
     if (!resolved?.href) return null
     const label =
       (typeof item.label === 'string' && item.label.trim()) || resolved.title || resolved.href
@@ -73,4 +88,9 @@ export function resolveMenuItem(item: AnyMenuItem | null | undefined): {
   if (!href) return null
   const label = (typeof item.label === 'string' && item.label.trim()) || href
   return { label, href, external: isExternalHref(href) }
+}
+
+/** Nest flat mainMenu (depth) for header / breadcrumbs. */
+export function nestedMainMenu(items: Site['mainMenu']): MenuItem[] {
+  return nestMenuItems<Omit<FlatMenuItem, 'depth'>>(items || [])
 }

@@ -24,14 +24,14 @@ export const RenderBlocks = ({ blocks }: { blocks?: any[] | null }) => {
   return <PageBlocks blocks={blocks} />
 }
 
-export const RenderRichText = ({ data }: { data?: any }) => {
+export const RenderRichText = ({ data, siteSlug = '' }: { data?: any; siteSlug?: string }) => {
   if (!data) {
     return null
   }
 
   return (
     <div className="prose prose-nazemi max-w-none font-inter">
-      <NazemiRichText data={data} />
+      <NazemiRichText data={data} siteSlug={siteSlug} />
     </div>
   )
 }

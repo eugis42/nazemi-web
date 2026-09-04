@@ -1,6 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { cs } from '@payloadcms/translations/languages/cs'
 import path from 'path'
@@ -15,6 +14,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Projekty } from './collections/Projekty'
 import { Publikace } from './collections/Publikace'
+import { Prehledy } from './collections/Prehledy'
 import { Sites } from './collections/Sites'
 import { Stranky } from './collections/Stranky'
 import {
@@ -29,6 +29,8 @@ import { searchDefaultPriorities } from './search/priorities'
 import { SiteKontakt, SiteNavigace, SitePaticka } from './collections/SiteSettingsNav'
 import { searchIndexAccess } from './access/roles'
 import { ADMIN_NAV_ADMINISTRATION } from './lib/admin-nav-groups'
+import { diacriticAdminSearchPlugin } from './lib/diacritic-admin-search'
+import { nazemiLexicalEditor } from './lib/lexical-editor'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -47,6 +49,10 @@ export default buildConfig({
           host: smtpHost,
           port: smtpPort,
           // 465 = implicit TLS; 587 = STARTTLS. No auth — Gmail relay allowlists the server IP.
+          // Gmail rejects EHLO without a FQDN; os.hostname() on this VPS is "vps".
+          name:
+            process.env.NEXT_PUBLIC_SERVER_URL?.replace(/^https?:\/\//, '').split('/')[0] ||
+            'novy.nazemi.cz',
           requireTLS: smtpPort !== 465,
           secure: smtpPort === 465,
         },
@@ -71,6 +77,7 @@ export default buildConfig({
     Workshopy,
     Publikace,
     Lide,
+    Prehledy,
     // 2. Nastavení webu [site]
     SiteNavigace,
     SiteKontakt,
@@ -85,7 +92,7 @@ export default buildConfig({
     Sites,
     Users,
   ],
-  editor: lexicalEditor(),
+  editor: nazemiLexicalEditor,
   i18n: {
     fallbackLanguage: 'cs',
     supportedLanguages: {
@@ -106,6 +113,7 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
+    diacriticAdminSearchPlugin(),
     searchPlugin({
       beforeSync: searchBeforeSync,
       collections: ['stranky', 'aktuality', 'kalendar', 'projekty', 'workshopy', 'publikace'],

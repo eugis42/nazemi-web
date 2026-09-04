@@ -81,11 +81,30 @@ export const getScopedBaseFilter = ({
   }
 }
 
+const publicHostname = (): null | string => {
+  const raw = process.env.NEXT_PUBLIC_SERVER_URL?.trim()
+  if (!raw) return null
+  try {
+    return new URL(raw).hostname.toLowerCase()
+  } catch {
+    return null
+  }
+}
+
 /** Host → site slug candidate (subdomain label). */
 export const siteSlugFromHost = (host?: null | string): null | string => {
   if (!host) return null
-  const hostname = host.split(':')[0]
-  if (hostname === 'localhost' || hostname === '127.0.0.1') return null
+  const hostname = host.split(':')[0]?.toLowerCase()
+  if (!hostname || hostname === 'localhost' || hostname === '127.0.0.1') return null
+
+  // Staging/prod public host (novy.nazemi.cz, www.nazemi.cz) is the main site, not a sub-web.
+  const published = publicHostname()
+  if (
+    published &&
+    (hostname === published || hostname === `www.${published}` || published === `www.${hostname}`)
+  ) {
+    return null
+  }
 
   const parts = hostname.split('.')
 

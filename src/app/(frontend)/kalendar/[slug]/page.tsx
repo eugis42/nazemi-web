@@ -33,7 +33,7 @@ export async function generateMetadata({
       and: [
         await getListingWhere({
           collection: 'kalendar',
-          includeCrossPosted: site.slug === 'nazemi',
+          includeCrossPosted: false,
           siteId: site.id,
         }),
         { slug: { equals: slug } },
@@ -69,7 +69,7 @@ export default async function EventDetailPage({
       and: [
         await getListingWhere({
           collection: 'kalendar',
-          includeCrossPosted: site.slug === 'nazemi',
+          includeCrossPosted: false,
           siteId: site.id,
         }),
         { slug: { equals: slug } },

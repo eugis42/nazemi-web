@@ -1,7 +1,8 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
 import { sitesAccess } from '@/access/roles'
-import { menuArrayAdmin, menuItemFields } from '@/fields/menu'
+import { additionalColorField } from '@/fields/additionalColor'
+import { mainMenuArrayAdmin, menuArrayAdmin, menuItemFields } from '@/fields/menu'
 import { draftStatusListCellField, socialLinkField } from '@/fields/shared'
 import {
   hrefFieldDescription,
@@ -11,6 +12,8 @@ import {
 } from '@/fields/validateHref'
 import { normaliseSiteSlug } from '@/hooks/content-hooks'
 import { ADMIN_NAV_ADMINISTRATION } from '@/lib/admin-nav-groups'
+import { DEFAULT_ADDITIONAL_COLORS } from '@/lib/site-colors'
+import { ensureCollectionHomesForSite } from '@/lib/collection-homes'
 import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
 /**
@@ -83,6 +86,7 @@ export const Sites: CollectionConfig = {
   admin: {
     defaultColumns: ['name', 'slug', 'siteType', '_status'],
     group: ADMIN_NAV_ADMINISTRATION,
+    listSearchableFields: ['name', 'slug'],
     useAsTitle: 'name',
     components: {
       edit: {
@@ -153,6 +157,18 @@ export const Sites: CollectionConfig = {
               relationTo: 'media',
             },
             {
+              name: 'logoNavbarPadding',
+              type: 'number',
+              label: 'Odsazení loga v navigaci',
+              defaultValue: 0,
+              min: 0,
+              max: 32,
+              admin: {
+                description:
+                  'Stejné odsazení ze všech stran uvnitř loga v navigaci (px). 0 = žádné.',
+              },
+            },
+            {
               name: 'favicon',
               type: 'group',
               label: 'Favicon',
@@ -203,7 +219,7 @@ export const Sites: CollectionConfig = {
                   admin: {
                     description:
                       'Texty, rámečky a navigace — na hlavním webu barva „ground“ (earth). CSS hex, např. #7C3AED.',
-                    width: '33%',
+                    width: '34%',
                   },
                 },
                 {
@@ -236,7 +252,13 @@ export const Sites: CollectionConfig = {
                 plural: 'Doplňkové barvy',
                 singular: 'Doplňková barva',
               },
+              defaultValue: [...DEFAULT_ADDITIONAL_COLORS],
               admin: {
+                components: {
+                  RowLabel: '/components/admin/AdditionalColorRowLabel#AdditionalColorRowLabel',
+                },
+                description:
+                  'Předvyplněná paleta — lze upravit, přidat nebo smazat. Používá se u barevných výběrů v obsahu.',
                 initCollapsed: true,
               },
               fields: [
@@ -262,22 +284,20 @@ export const Sites: CollectionConfig = {
               name: 'mainMenu',
               type: 'array',
               admin: {
-                description:
-                  'Hlavní navigace. Interní odkaz = kolekce → položka; externí = URL. Podpoložky jen u hlavní úrovně.',
-                ...menuArrayAdmin,
+                ...mainMenuArrayAdmin,
               },
               label: 'Hlavní menu',
               labels: {
                 plural: 'Položky',
                 singular: 'položku',
               },
-              fields: menuItemFields({ allowChildren: true }),
+              fields: menuItemFields({ withDepth: true }),
             },
             {
               name: 'secondaryMenu',
               type: 'array',
               admin: {
-                description: 'Vedlejší odkazy (např. externí weby). Stejný model jako hlavní menu, bez podpoložek.',
+                description: 'Vedlejší odkazy (např. externí weby). Jedna úroveň, bez podpoložek.',
                 ...menuArrayAdmin,
               },
               label: 'Vedlejší menu',
@@ -285,7 +305,7 @@ export const Sites: CollectionConfig = {
                 plural: 'Položky',
                 singular: 'položku',
               },
-              fields: menuItemFields({ allowChildren: false }),
+              fields: menuItemFields(),
             },
           ],
         },
@@ -302,6 +322,9 @@ export const Sites: CollectionConfig = {
                 singular: 'Kontaktní blok',
               },
               admin: {
+                components: {
+                  RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+                },
                 initCollapsed: true,
               },
               fields: [
@@ -312,14 +335,21 @@ export const Sites: CollectionConfig = {
                   required: true,
                 },
                 {
-                  name: 'email',
-                  type: 'email',
-                  label: 'E-mail',
-                },
-                {
-                  name: 'phone',
-                  type: 'text',
-                  label: 'Telefon',
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'email',
+                      type: 'email',
+                      label: 'E-mail',
+                      admin: { width: '55%' },
+                    },
+                    {
+                      name: 'phone',
+                      type: 'text',
+                      label: 'Telefon',
+                      admin: { width: '45%' },
+                    },
+                  ],
                 },
                 {
                   name: 'addressLines',
@@ -355,24 +385,34 @@ export const Sites: CollectionConfig = {
                     singular: 'Odkaz',
                   },
                   admin: {
+                    components: {
+                      RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+                    },
                     initCollapsed: true,
                   },
                   fields: [
                     {
-                      name: 'label',
-                      type: 'text',
-                      label: 'Text',
-                      required: true,
-                    },
-                    {
-                      name: 'href',
-                      type: 'text',
-                      label: 'URL',
-                      required: true,
-                      admin: {
-                        description: hrefFieldDescription,
-                      },
-                      validate: validateRequiredHref,
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          label: 'Text',
+                          required: true,
+                          admin: { width: '40%' },
+                        },
+                        {
+                          name: 'href',
+                          type: 'text',
+                          label: 'URL',
+                          required: true,
+                          admin: {
+                            description: hrefFieldDescription,
+                            width: '60%',
+                          },
+                          validate: validateRequiredHref,
+                        },
+                      ],
                     },
                   ],
                 },
@@ -389,16 +429,23 @@ export const Sites: CollectionConfig = {
                   },
                   fields: [
                     {
-                      name: 'label',
-                      type: 'text',
-                      label: 'Popisek',
-                      required: true,
-                    },
-                    {
-                      name: 'value',
-                      type: 'text',
-                      label: 'Hodnota',
-                      required: true,
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          label: 'Popisek',
+                          required: true,
+                          admin: { width: '40%' },
+                        },
+                        {
+                          name: 'value',
+                          type: 'text',
+                          label: 'Hodnota',
+                          required: true,
+                          admin: { width: '60%' },
+                        },
+                      ],
                     },
                   ],
                 },
@@ -430,7 +477,7 @@ export const Sites: CollectionConfig = {
             {
               name: 'donateCta',
               type: 'group',
-              label: 'Výzva k darování',
+              label: 'Hlavní call to action patičky',
               fields: [
                 {
                   name: 'title',
@@ -442,19 +489,32 @@ export const Sites: CollectionConfig = {
                   type: 'textarea',
                   label: 'Text',
                 },
+                additionalColorField({
+                  allowNone: true,
+                  defaultValue: '#bda9ff',
+                  label: 'Barva pozadí',
+                  name: 'backgroundColor',
+                }),
                 {
-                  name: 'buttonLabel',
-                  type: 'text',
-                  label: 'Text tlačítka',
-                },
-                {
-                  name: 'href',
-                  type: 'text',
-                  label: 'URL tlačítka',
-                  admin: {
-                    description: hrefFieldDescription,
-                  },
-                  validate: validateDonateHref,
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'buttonLabel',
+                      type: 'text',
+                      label: 'Text tlačítka',
+                      admin: { width: '40%' },
+                    },
+                    {
+                      name: 'href',
+                      type: 'text',
+                      label: 'URL tlačítka',
+                      admin: {
+                        description: hrefFieldDescription,
+                        width: '60%',
+                      },
+                      validate: validateDonateHref,
+                    },
+                  ],
                 },
               ],
             },
@@ -467,6 +527,9 @@ export const Sites: CollectionConfig = {
                 singular: 'Newsletter',
               },
               admin: {
+                components: {
+                  RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+                },
                 initCollapsed: true,
               },
               fields: [
@@ -482,20 +545,27 @@ export const Sites: CollectionConfig = {
                   label: 'Popis',
                 },
                 {
-                  name: 'subscribeLabel',
-                  type: 'text',
-                  label: 'Text tlačítka',
-                  defaultValue: 'Přihlásit se',
-                },
-                {
-                  name: 'subscribeUrl',
-                  type: 'text',
-                  label: 'URL přihlášení',
-                  required: true,
-                  admin: {
-                    description: hrefFieldDescription,
-                  },
-                  validate: validateRequiredHref,
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'subscribeLabel',
+                      type: 'text',
+                      label: 'Text tlačítka',
+                      defaultValue: 'Přihlásit se',
+                      admin: { width: '40%' },
+                    },
+                    {
+                      name: 'subscribeUrl',
+                      type: 'text',
+                      label: 'URL přihlášení',
+                      required: true,
+                      admin: {
+                        description: hrefFieldDescription,
+                        width: '60%',
+                      },
+                      validate: validateRequiredHref,
+                    },
+                  ],
                 },
               ],
             },
@@ -619,10 +689,29 @@ export const Sites: CollectionConfig = {
   hooks: {
     beforeChange: [
       async (args) => {
-        if (args.context?.skipMainSiteGuard) {
-          return args.data
+        const data = { ...(args.data || {}) }
+        // New sites get the shared accent palette (admin defaultValue alone is easy to clear).
+        if (
+          args.operation === 'create' &&
+          (!Array.isArray(data.additionalColors) || data.additionalColors.length === 0)
+        ) {
+          data.additionalColors = [...DEFAULT_ADDITIONAL_COLORS]
         }
-        return ensureSingleMainSite(args)
+        if (args.context?.skipMainSiteGuard) {
+          return data
+        }
+        return ensureSingleMainSite({ ...args, data })
+      },
+    ],
+    afterChange: [
+      async ({ doc, req }) => {
+        if (doc?.id == null) return doc
+        try {
+          await ensureCollectionHomesForSite(req.payload, doc.id)
+        } catch {
+          // ponytail: menu homes best-effort; save must not fail if create races
+        }
+        return doc
       },
     ],
   },

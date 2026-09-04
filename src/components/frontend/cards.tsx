@@ -6,10 +6,11 @@ import { Button, Divider, MetaLine, TagGroup } from '@/components/frontend/ui'
 import { mapCtaVariant } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
 import {
-  crossPostSiteName,
+  crossPostOriginSite,
   mediaAlt,
   mediaFocalStyle,
   mediaSizeURL,
+  siteBrandStyle,
   withSiteQuery,
 } from '@/lib/content'
 import { formatDate, formatDateRange } from '@/lib/format'
@@ -48,6 +49,7 @@ function CardLink({
   component,
   external,
   href,
+  style,
 }: {
   ariaLabel: string
   children: ReactNode
@@ -55,6 +57,7 @@ function CardLink({
   component: string
   external?: boolean
   href: string
+  style?: CSSProperties
 }) {
   if (external) {
     return (
@@ -64,6 +67,7 @@ function CardLink({
         data-component={component}
         href={href}
         rel="noopener noreferrer"
+        style={style}
         target="_blank"
       >
         {children}
@@ -72,7 +76,13 @@ function CardLink({
   }
 
   return (
-    <Link aria-label={ariaLabel} className={className} data-component={component} href={href}>
+    <Link
+      aria-label={ariaLabel}
+      className={className}
+      data-component={component}
+      href={href}
+      style={style}
+    >
       {children}
     </Link>
   )
@@ -87,26 +97,28 @@ function tagTitles(items?: (number | { title?: string | null })[] | null) {
 
 export function EventCard({ item, siteSlug }: { item: Kalendar; siteSlug: string }) {
   const cover = item.coverImage && typeof item.coverImage === 'object' ? item.coverImage : null
-  const origin = crossPostSiteName({
+  const originSite = crossPostOriginSite({
     currentSiteSlug: siteSlug,
     docSite: item.site,
   })
   const meta = [
     formatDateRange(item.startDate, item.endDate),
+    item.location?.name,
     item.location?.city,
-    item.location?.venue,
-    origin,
   ]
     .filter(Boolean)
     .join(' · ')
   const buttonLabel = 'Více info'
+  const href = withSiteQuery(`/kalendar/${item.slug}`, originSite?.slug || siteSlug)
 
   return (
     <CardLink
       ariaLabel={`${item.title}. ${buttonLabel}`}
       className="card-tile flex h-full flex-1 flex-col border-2 border-ground bg-ground"
       component="event-card"
-      href={withSiteQuery(`/kalendar/${item.slug}`, siteSlug)}
+      external={Boolean(originSite)}
+      href={href}
+      style={originSite ? siteBrandStyle(originSite) : undefined}
     >
       <div className="relative aspect-square w-full overflow-hidden">
         {cover ? (
@@ -128,9 +140,17 @@ export function EventCard({ item, siteSlug }: { item: Kalendar; siteSlug: string
           </h3>
           <TagGroup tags={tagTitles(item.tags)} variant="sky" />
         </div>
-        <Button tag="span" variant="outline-sky">
-          {buttonLabel}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button className="shrink-0" tag="span" variant="outline-sky">
+            {buttonLabel}
+          </Button>
+          {originSite ? (
+            <span className="min-w-0 font-saans text-tag leading-tight text-sky opacity-75">
+              <span className="inline-block">↗ Na webu</span>{' '}
+              <span className="inline-block">{originSite.name}</span>
+            </span>
+          ) : null}
+        </div>
       </div>
     </CardLink>
   )
@@ -138,20 +158,24 @@ export function EventCard({ item, siteSlug }: { item: Kalendar; siteSlug: string
 
 export function NewsCard({ item, siteSlug }: { item: Aktuality; siteSlug: string }) {
   const cover = item.coverImage && typeof item.coverImage === 'object' ? item.coverImage : null
-  const origin = crossPostSiteName({
+  const originSite = crossPostOriginSite({
     currentSiteSlug: siteSlug,
     docSite: item.site,
   })
-  const external = Boolean(item.externalUrl)
+  const externalUrl = Boolean(item.externalUrl)
+  const external = externalUrl || Boolean(originSite)
   const buttonLabel = 'Přečíst článek'
+  const href =
+    item.externalUrl || withSiteQuery(`/aktuality/${item.slug}`, originSite?.slug || siteSlug)
 
   return (
     <CardLink
-      ariaLabel={`${item.title}. ${external ? '↗ ' : ''}${buttonLabel}`}
+      ariaLabel={`${item.title}. ${buttonLabel}`}
       className="card-tile flex h-full min-w-0 flex-1 flex-col self-stretch overflow-hidden border-2 border-ground bg-sky"
       component="news-card"
       external={external}
-      href={item.externalUrl || withSiteQuery(`/aktuality/${item.slug}`, siteSlug)}
+      href={href}
+      style={originSite ? siteBrandStyle(originSite) : undefined}
     >
       <div
         aria-hidden="true"
@@ -170,12 +194,23 @@ export function NewsCard({ item, siteSlug }: { item: Aktuality; siteSlug: string
       <Divider />
       <div className="flex flex-1 flex-col justify-between gap-6 p-card">
         <div className="flex flex-col gap-2.5">
-          <MetaLine external={external} source={origin} text={formatDate(item.publishedAt)} />
-          <h3 className="text-card-title">{item.title}</h3>
+          <MetaLine
+            external={externalUrl}
+            text={formatDate(item.publishedAt)}
+          />
+          <h3 className="text-card-title text-ground">{item.title}</h3>
         </div>
-        <Button tag="span" variant="outline">
-          {buttonLabel}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button className="shrink-0" tag="span" variant="outline">
+            {buttonLabel}
+          </Button>
+          {originSite ? (
+            <span className="min-w-0 font-saans text-tag leading-tight text-ground opacity-75">
+              <span className="inline-block">↗ Na webu</span>{' '}
+              <span className="inline-block">{originSite.name}</span>
+            </span>
+          ) : null}
+        </div>
       </div>
     </CardLink>
   )
@@ -288,6 +323,7 @@ function projectLinks(item: Projekty, isDark: boolean) {
   return (item.ctas || []).map((link, index) =>
     link.url && link.title ? (
       <Button
+        backgroundColor={link.backgroundColor}
         href={link.url}
         key={`${link.title}-${index}`}
         variant={mapCtaVariant(link.variant) || (isDark ? 'outline-sky' : 'outline')}

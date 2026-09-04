@@ -132,7 +132,7 @@ export default async function NewsListingPage({
     >
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="news">
-          <h1 className="text-display">Aktuality</h1>
+          <h1 className="text-display text-ground">Aktuality</h1>
           <FilterBar
             ariaLabel="Filtrovat aktuality"
             primary={allChip}

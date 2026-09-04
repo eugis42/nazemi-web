@@ -1,4 +1,6 @@
 import { AdditionalColorSelect as AdditionalColorSelect_880a221a08ffd9a357fb5c0f09bdfbb0 } from '../../../components/admin/AdditionalColorSelect'
+import { ArrayFieldRowLabel as ArrayFieldRowLabel_d44d8bca07623a7cd724190df0ab111c } from '../../../components/admin/ArrayFieldRowLabel'
+import { MenuItemRowLabel as MenuItemRowLabel_9473bef4688bd9e672a3684ab91560da } from '../../../components/admin/MenuItemRowLabel'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -31,7 +33,8 @@ import { UploadPreviewCell as UploadPreviewCell_010a4787e181865d3ff8fbabde563dcf
 import { RedirectToSiteSettings_navigace as RedirectToSiteSettings_navigace_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
 import { RedirectToSiteSettings_kontakt as RedirectToSiteSettings_kontakt_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
 import { RedirectToSiteSettings_paticka as RedirectToSiteSettings_paticka_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
-import { MenuItemRowLabel as MenuItemRowLabel_9473bef4688bd9e672a3684ab91560da } from '../../../components/admin/MenuItemRowLabel'
+import { AdditionalColorRowLabel as AdditionalColorRowLabel_1c99f761c6c54a6576ad3792822d3518 } from '../../../components/admin/AdditionalColorRowLabel'
+import { MenuTreeField as MenuTreeField_09fe7a88de3a4ab27bf379056d54fce4 } from '../../../components/admin/MenuTreeField'
 import { SitesEditTabFocus as SitesEditTabFocus_dfeeb06dce6155f560469ce716013bac } from '../../../components/admin/SitesEditTabFocus'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
@@ -41,6 +44,8 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/components/admin/AdditionalColorSelect#AdditionalColorSelect": AdditionalColorSelect_880a221a08ffd9a357fb5c0f09bdfbb0,
+  "/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel": ArrayFieldRowLabel_d44d8bca07623a7cd724190df0ab111c,
+  "/components/admin/MenuItemRowLabel#MenuItemRowLabel": MenuItemRowLabel_9473bef4688bd9e672a3684ab91560da,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -73,7 +78,8 @@ export const importMap = {
   "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_navigace": RedirectToSiteSettings_navigace_36effb95c4f0c3009c59ec855b0d94d5,
   "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_kontakt": RedirectToSiteSettings_kontakt_36effb95c4f0c3009c59ec855b0d94d5,
   "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_paticka": RedirectToSiteSettings_paticka_36effb95c4f0c3009c59ec855b0d94d5,
-  "/components/admin/MenuItemRowLabel#MenuItemRowLabel": MenuItemRowLabel_9473bef4688bd9e672a3684ab91560da,
+  "/components/admin/AdditionalColorRowLabel#AdditionalColorRowLabel": AdditionalColorRowLabel_1c99f761c6c54a6576ad3792822d3518,
+  "/components/admin/MenuTreeField#MenuTreeField": MenuTreeField_09fe7a88de3a4ab27bf379056d54fce4,
   "/components/admin/SitesEditTabFocus#SitesEditTabFocus": SitesEditTabFocus_dfeeb06dce6155f560469ce716013bac,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,

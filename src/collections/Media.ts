@@ -104,9 +104,9 @@ export const Media: CollectionConfig = {
       name: 'alt',
       type: 'text',
       label: 'Alternativní text',
-      required: true,
       admin: {
-        description: 'Popis obrázku pro přístupnost a SEO.',
+        description:
+          'Volitelné. Prázdné → při uložení se doplní z názvu souboru (bez přípony).',
       },
     },
     {
@@ -118,6 +118,21 @@ export const Media: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (!data || (typeof data.alt === 'string' && data.alt.trim())) return data
+        const filename = typeof data.filename === 'string' ? data.filename : ''
+        if (!filename) return data
+        data.alt = filename
+          .replace(/\.[^.]+$/, '')
+          .replace(/[-_]+/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+        return data
+      },
+    ],
+  },
   labels: {
     plural: 'Knihovna médií',
     singular: 'Médium',

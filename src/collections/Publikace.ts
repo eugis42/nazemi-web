@@ -33,6 +33,12 @@ export const Publikace = {
     useAsTitle: 'title',
   },
   defaultPopulate: {
+    slug: true,
+    title: true,
+    excerpt: true,
+    coverImage: true,
+    authorName: true,
+    ctas: true,
     site: true,
     types: true,
     topics: true,

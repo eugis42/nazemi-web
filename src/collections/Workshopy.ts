@@ -16,6 +16,7 @@ import {
 import { makeSlugUniqueOnDuplicate, populateSlugAndDescription } from '@/hooks/content-hooks'
 import { ADMIN_NAV_SITE_CONTENT } from '@/lib/admin-nav-groups'
 import { siteContentLivePreviewUrl } from '@/lib/live-preview'
+import { validateWorkshopSiteAgainstKalendar } from '@/lib/same-site-workshop'
 import { getScopedBaseFilter } from '@/lib/site-context'
 
 export const Workshopy = {
@@ -35,8 +36,11 @@ export const Workshopy = {
   defaultPopulate: {
     slug: true,
     title: true,
+    excerpt: true,
+    coverImage: true,
     site: true,
     topics: true,
+    audiences: true,
   },
   defaultSort: 'title',
   fields: [
@@ -122,6 +126,9 @@ export const Workshopy = {
                 singular: 'Bod',
               },
               admin: {
+                components: {
+                  RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+                },
                 initCollapsed: true,
               },
               fields: [
@@ -139,6 +146,9 @@ export const Workshopy = {
               label: 'Obsah',
               blocks: allBlocks,
               admin: {
+                components: {
+                  RowLabel: '/components/admin/BlocksRowLabel#BlocksRowLabel',
+                },
                 description: 'Univerzální bloky včetně Textového, lektorů a referencí.',
                 initCollapsed: true,
               },
@@ -184,6 +194,7 @@ export const Workshopy = {
         ...siteField.admin,
         description: 'Na kterém webu se workshop nabízí.',
       },
+      validate: validateWorkshopSiteAgainstKalendar,
     },
     draftStatusListCellField,
   ],

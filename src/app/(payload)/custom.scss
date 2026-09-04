@@ -184,3 +184,33 @@ html[data-theme='dark'] {
     color: var(--theme-text);
   }
 }
+
+/*
+ * Multi-collection relationship picker (Navigace / block CTA Položka):
+ * section headers as sticky bars — clearer than opacity alone.
+ */
+.react-select .rs__group {
+  padding-top: 0;
+  padding-bottom: 0.25rem;
+}
+
+.react-select .rs__group + .rs__group {
+  border-top: 1px solid var(--theme-elevation-150);
+  margin-top: 0.15rem;
+  padding-top: 0;
+}
+
+.react-select .rs__group-heading {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-600);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  position: sticky;
+  text-transform: uppercase;
+  top: 0;
+  z-index: 1;
+}

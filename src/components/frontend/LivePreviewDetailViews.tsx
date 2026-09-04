@@ -45,7 +45,7 @@ export function StrankaLivePreview({
       />
       {page.isHomepage ? null : (
         <div className="pt-content-top">
-          <PageBlocks blocks={page.content as never} skipPageIntro />
+          <PageBlocks blocks={page.content as never} siteSlug={siteSlug} skipPageIntro />
         </div>
       )}
     </article>
@@ -85,17 +85,24 @@ export function KalendarLivePreview({
   const { data: item } = useDocLivePreview(initialData)
 
   // Overview lives in SiteShell `beforeMain` on the public page.
-  return <EventBody item={item} />
+  return <EventBody item={item} siteSlug={currentSiteSlug} />
 }
 
-export function ProjektLivePreview({ initialData }: { initialData: Projekty }) {
+export function ProjektLivePreview({
+  initialData,
+  siteSlug,
+}: {
+  initialData: Projekty
+  siteSlug?: string
+}) {
   const { data: item } = useDocLivePreview(initialData)
 
   // Header lives in SiteShell `beforeMain` on the public page.
-  return <ProjectDetail item={item} />
+  return <ProjectDetail item={item} siteSlug={siteSlug} />
 }
 
 export function WorkshopLivePreview({
+  currentSiteSlug,
   initialData,
 }: {
   currentSiteSlug: string
@@ -104,13 +111,17 @@ export function WorkshopLivePreview({
   const { data: item } = useDocLivePreview(initialData)
 
   // Header lives in SiteShell `beforeMain` on the public page.
-  return (
-    <WorkshopContentBlocks blocks={item.blocks as never} />
-  )
+  return <WorkshopContentBlocks blocks={item.blocks as never} siteSlug={currentSiteSlug} />
 }
 
-export function PublikaceLivePreview({ initialData }: { initialData: Publikace }) {
+export function PublikaceLivePreview({
+  currentSiteSlug,
+  initialData,
+}: {
+  currentSiteSlug: string
+  initialData: Publikace
+}) {
   const { data: item } = useDocLivePreview(initialData)
 
-  return <PublicationDetail item={item} />
+  return <PublicationDetail item={item} siteSlug={currentSiteSlug} />
 }

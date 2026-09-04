@@ -5,7 +5,7 @@ import { EventCard, NewsCard, PageIntro, ProjectRow } from '@/components/fronten
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { EmptyState } from '@/components/frontend/listing'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
-import { BlockHeader } from '@/components/frontend/ui'
+import { BlockHeader, Button } from '@/components/frontend/ui'
 import { resolveBlockActions } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
 import { mediaAlt, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
@@ -36,19 +36,35 @@ export type ContentBlock = {
 }
 
 /** Full-width wave illustration sitting behind the hero and the first section below it. */
-export function HeroBackdrop({ src }: { src?: string | null } = {}) {
+export function HeroBackdrop({
+  fitWidth = false,
+  src,
+}: {
+  /** Subsite: 75vh under navbar, object-cover (sides may crop). */
+  fitWidth?: boolean
+  src?: string | null
+} = {}) {
   const imageSrc = src || '/hero-backdrop.svg'
 
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 z-0 min-h-screen w-full overflow-hidden"
+      className={
+        fitWidth
+          ? 'pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 h-[75vh] w-full overflow-hidden'
+          : 'pointer-events-none absolute inset-x-0 top-0 z-0 min-h-screen w-full overflow-hidden'
+      }
       data-component="hero-backdrop"
+      data-fit-width={fitWidth ? 'true' : undefined}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt=""
-        className="h-full min-h-screen w-full object-cover object-top"
+        className={
+          fitWidth
+            ? 'h-full w-full object-cover object-top'
+            : 'h-full min-h-screen w-full object-cover object-top'
+        }
         height={1378}
         src={imageSrc}
         width={1512}
@@ -57,9 +73,22 @@ export function HeroBackdrop({ src }: { src?: string | null } = {}) {
   )
 }
 
-export function HeroBlock({ block }: { block: ContentBlock }) {
+export function HeroBlock({
+  block,
+  narrow = false,
+  siteSlug,
+}: {
+  block: ContentBlock
+  /** Sub-sites: match article prose column width (desktop). */
+  narrow?: boolean
+  siteSlug?: string
+}) {
   const segments = (block.segments as { text?: string; underline?: string }[]) || []
   const subheadline = block.subheadline as string | undefined
+  const actions = resolveBlockActions({
+    actions: block.actions as never,
+    siteSlug: siteSlug || '',
+  })
 
   return (
     <section
@@ -67,8 +96,12 @@ export function HeroBlock({ block }: { block: ContentBlock }) {
       data-block="hero"
       data-component="hero"
     >
-      <div className="flex flex-col items-center gap-8 text-center lg:gap-content">
-        <h1 className="font-saans max-w-full text-balance text-5xl leading-none tracking-tight lg:text-6xl xl:text-7xl 2xl:text-[83px] 2xl:leading-[80px] 2xl:tracking-[-1.4px]">
+      <div
+        className={`flex flex-col items-center gap-8 text-center lg:gap-content${
+          narrow ? ' mx-auto w-full max-w-[874px]' : ''
+        }`}
+      >
+        <h1 className="font-saans max-w-full text-balance text-5xl leading-none tracking-tight text-ground lg:text-6xl xl:text-7xl 2xl:text-[83px] 2xl:leading-[80px] 2xl:tracking-[-1.4px]">
           {segments.map((segment, index) => {
             const underlineToken =
               segment.underline && segment.underline !== 'none' ? segment.underline : null
@@ -98,9 +131,28 @@ export function HeroBlock({ block }: { block: ContentBlock }) {
           })}
         </h1>
         {subheadline ? (
-          <p className="font-saans max-w-full text-balance text-2xl leading-snug tracking-tight lg:text-3xl xl:text-3xl 2xl:text-4xl">
+          <p className="font-saans max-w-full text-balance text-2xl leading-snug tracking-tight text-ground lg:text-3xl xl:text-3xl 2xl:text-4xl">
             {subheadline}
           </p>
+        ) : null}
+        {actions.length > 0 ? (
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {actions.map((action, index) =>
+              action.label ? (
+                <Button
+                  backgroundColor={action.backgroundColor}
+                  className="px-6 py-1.5 ![font-size:var(--text-section-title)] leading-none"
+                  external={action.external}
+                  href={action.href || '#'}
+                  key={`${action.label}-${index}`}
+                  newTab={action.newTab}
+                  variant={action.variant || 'outline'}
+                >
+                  {action.label}
+                </Button>
+              ) : null,
+            )}
+          </div>
         ) : null}
       </div>
     </section>
@@ -182,6 +234,122 @@ export function ProjectsBlock({ block, siteSlug }: { block: ContentBlock; siteSl
   )
 }
 
+type ColumnCtaRow = {
+  actions?:
+    | {
+        backgroundColor?: string | null
+        href?: string | null
+        label?: string | null
+        variant?: string | null
+      }[]
+    | null
+}
+
+function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: string }) {
+  const action = resolveBlockActions({
+    actions: column.actions as never,
+    siteSlug,
+  })[0]
+  if (!action?.label) return null
+  return (
+    <Button
+      backgroundColor={action.backgroundColor}
+      external={action.external}
+      href={action.href || '#'}
+      newTab={action.newTab}
+      variant={action.variant || 'outline'}
+    >
+      {action.label}
+    </Button>
+  )
+}
+
+export function ThreeColumnsBlock({
+  block,
+  siteSlug,
+}: {
+  block: ContentBlock
+  siteSlug: string
+}) {
+  const columns = (
+    (block.columns as {
+      body?: string
+      headline?: string
+      title?: string
+      actions?: ColumnCtaRow['actions']
+    }[]) || []
+  ).slice(0, 3)
+
+  if (!columns.length) return null
+
+  return (
+    <section className="flex flex-col" data-block="threeColumns">
+      <BlockHeader title={(block.title as string) || undefined} />
+      <div className="grid grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
+        {columns.map((column, index) => (
+          <div
+            className="flex min-w-0 flex-col gap-card"
+            data-component="three-column"
+            key={`${column.title}-${index}`}
+          >
+            <h3 className="font-saans text-5xl leading-none tracking-tight text-ground lg:text-[74px] lg:leading-[70px] lg:tracking-[-1.48px]">
+              {column.headline ? <span className="block text-green">{column.headline}</span> : null}
+              {column.title ? <span className="block">{column.title}</span> : null}
+            </h3>
+            {column.body ? <p className="text-body-inter text-ground">{column.body}</p> : null}
+            <ColumnCta column={column} siteSlug={siteSlug} />
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+export function ThreeCardsBlock({
+  block,
+  siteSlug,
+}: {
+  block: ContentBlock
+  siteSlug: string
+}) {
+  const columns = (
+    (block.columns as {
+      body?: string
+      prefix?: string
+      title?: string
+      actions?: ColumnCtaRow['actions']
+    }[]) || []
+  ).slice(0, 3)
+
+  if (!columns.length) return null
+
+  return (
+    <section className="flex flex-col" data-block="threeCards">
+      <BlockHeader title={(block.title as string) || undefined} />
+      <div className="grid grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
+        {columns.map((column, index) => (
+          <article
+            className="flex h-full min-w-0 flex-col border-2 border-ground bg-sky"
+            data-component="three-card"
+            key={`${column.title}-${index}`}
+          >
+            <div className="flex h-full flex-1 flex-col justify-between gap-6 p-card">
+              <div className="flex flex-col gap-2.5">
+                <h3 className="text-display text-ground">
+                  {column.prefix ? <span className="block text-green">{column.prefix}</span> : null}
+                  {column.title ? <span className="block">{column.title}</span> : null}
+                </h3>
+                {column.body ? <p className="text-body-inter text-ground">{column.body}</p> : null}
+              </div>
+              <ColumnCta column={column} siteSlug={siteSlug} />
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug: string }) {
   const image = block.image && typeof block.image === 'object' ? (block.image as Media) : null
   const imageUrl = image ? mediaSizeURL(image, 'large') : null
@@ -225,8 +393,8 @@ export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug:
             key={`${column.title}-${index}`}
           >
             <div className="flex flex-col gap-2.5">
-              <h3 className="text-card-title">{column.title}</h3>
-              <p className="text-body-inter">{column.body}</p>
+              <h3 className="text-card-title text-ground">{column.title}</h3>
+              <p className="text-body-inter text-ground">{column.body}</p>
             </div>
           </div>
         ))}
@@ -237,9 +405,11 @@ export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug:
 
 export function PageBlocks({
   blocks,
+  siteSlug = '',
   skipPageIntro = false,
 }: {
   blocks?: ContentBlock[] | null
+  siteSlug?: string
   /** When page fields already render PageIntro (design generic-page). */
   skipPageIntro?: boolean
 }) {
@@ -286,8 +456,24 @@ export function PageBlocks({
           return (
             <div className="container max-lg:px-card" key={key}>
               <div className="prose-nazemi mx-auto w-full max-w-[874px]">
-                <NazemiRichText data={block.content as never} />
+                <NazemiRichText data={block.content as never} siteSlug={siteSlug} />
               </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'threeColumns') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <ThreeColumnsBlock block={block} siteSlug={siteSlug} />
+            </div>
+          )
+        }
+
+        if (block.blockType === 'threeCards') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <ThreeCardsBlock block={block} siteSlug={siteSlug} />
             </div>
           )
         }
@@ -300,8 +486,10 @@ export function PageBlocks({
 
 export function WorkshopContentBlocks({
   blocks,
+  siteSlug = '',
 }: {
   blocks?: ContentBlock[] | null
+  siteSlug?: string
 }) {
   // Design always emits workshop-body with pt-content-top (even when empty).
   const ordered = blocks?.length
@@ -396,7 +584,7 @@ export function WorkshopContentBlocks({
                       data-component="workshop-testimonial"
                       key={`${item.author}-${itemIndex}`}
                     >
-                      <p className="font-serif text-xl font-normal leading-snug tracking-tight">
+                      <p className="font-serif text-xl font-normal leading-snug tracking-tight text-ground">
                         „{item.quote}“
                       </p>
                       <footer className="font-saans mt-auto text-sm leading-snug text-ground/70">
@@ -429,8 +617,24 @@ export function WorkshopContentBlocks({
           return (
             <div className="container max-lg:px-card" key={key}>
               <div className="prose-nazemi mx-auto w-full max-w-[874px]">
-                <NazemiRichText data={block.content as never} />
+                <NazemiRichText data={block.content as never} siteSlug={siteSlug} />
               </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'threeColumns') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <ThreeColumnsBlock block={block} siteSlug={siteSlug} />
+            </div>
+          )
+        }
+
+        if (block.blockType === 'threeCards') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <ThreeCardsBlock block={block} siteSlug={siteSlug} />
             </div>
           )
         }

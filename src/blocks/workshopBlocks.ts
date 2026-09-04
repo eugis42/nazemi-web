@@ -1,5 +1,9 @@
 import type { Block } from 'payload'
 
+import {
+  BLOCK_GROUP_WORKSHOP,
+  blockPickerAdmin,
+} from '@/blocks/blockMeta'
 import { RichTextBlock } from './pageBlocks'
 
 export { RichTextBlock }
@@ -10,6 +14,10 @@ export const SpeakersBlock: Block = {
     plural: 'Lektoři',
     singular: 'Lektoři',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_WORKSHOP,
+    thumb: 'speakers',
+  }),
   fields: [
     {
       name: 'title',
@@ -23,6 +31,9 @@ export const SpeakersBlock: Block = {
       type: 'array',
       label: 'Lidé',
       admin: {
+        components: {
+          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+        },
         description: 'Jména lektorů u workshopu (odděleně od kontaktu Lidé).',
         initCollapsed: true,
       },
@@ -33,15 +44,22 @@ export const SpeakersBlock: Block = {
       minRows: 1,
       fields: [
         {
-          name: 'name',
-          type: 'text',
-          label: 'Jméno',
-          required: true,
-        },
-        {
-          name: 'role',
-          type: 'text',
-          label: 'Role',
+          type: 'row',
+          fields: [
+            {
+              name: 'name',
+              type: 'text',
+              label: 'Jméno',
+              required: true,
+              admin: { width: '50%' },
+            },
+            {
+              name: 'role',
+              type: 'text',
+              label: 'Role',
+              admin: { width: '50%' },
+            },
+          ],
         },
         {
           name: 'image',
@@ -60,6 +78,10 @@ export const TestimonialsBlock: Block = {
     plural: 'Reference',
     singular: 'Reference',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_WORKSHOP,
+    thumb: 'testimonials',
+  }),
   fields: [
     {
       name: 'title',
@@ -78,6 +100,9 @@ export const TestimonialsBlock: Block = {
       },
       minRows: 1,
       admin: {
+        components: {
+          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+        },
         initCollapsed: true,
       },
       fields: [
@@ -88,15 +113,22 @@ export const TestimonialsBlock: Block = {
           required: true,
         },
         {
-          name: 'author',
-          type: 'text',
-          label: 'Autor',
-          required: true,
-        },
-        {
-          name: 'role',
-          type: 'text',
-          label: 'Role / kontext',
+          type: 'row',
+          fields: [
+            {
+              name: 'author',
+              type: 'text',
+              label: 'Autor',
+              required: true,
+              admin: { width: '45%' },
+            },
+            {
+              name: 'role',
+              type: 'text',
+              label: 'Role / kontext',
+              admin: { width: '55%' },
+            },
+          ],
         },
       ],
     },

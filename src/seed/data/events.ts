@@ -3,8 +3,18 @@ const event1 = 'event-1.jpg'
 const event2 = 'event-2.jpg'
 const event3 = 'event-3.jpg'
 
-const DEFAULT_ADDRESS = 'NaNebi, Kounicova 42, 602 00, Brno'
-const DEFAULT_ADDRESS_URL = 'https://maps.google.com/?q=NaNebi+Kounicova+42+Brno'
+const NANEBI = {
+  placeName: 'NaNebi',
+  address: 'Kounicova 42',
+  addressUrl: 'https://maps.google.com/?q=NaNebi+Kounicova+42+Brno',
+} as const
+
+const FLOW_MAKERS = {
+  placeName: 'Flow Makers',
+  address: 'Údolní 33',
+  addressUrl: 'https://maps.google.com/?q=Flow+Makers+Údolní+33+Brno',
+} as const
+
 const DEFAULT_SIGNUP_URL = 'https://darujme.cz'
 
 export function getEventHref(slug: string) {
@@ -15,12 +25,16 @@ export type CalendarEventSeed = {
   slug: string
   image: string
   date: string
+  /** Město only */
   location: string
   title: string
   tags: string[]
   filters: string[]
   past?: boolean
   time?: string
+  /** Název místa / venue name */
+  placeName?: string
+  /** Street + number only */
   address?: string
   addressUrl?: string
   signupUrl?: string
@@ -37,8 +51,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Workshop', 'Nenásilná komunikace'],
     filters: ['workshop', 'nenasilna-komunikace', 'nanebi'],
     time: '9:00 – 17:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -50,20 +63,20 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Akademie', 'Nerůst', 'Budoucnost'],
     filters: ['akademie', 'nerust', 'budoucnost', 'nanebi'],
     time: '14:00 – 20:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
     slug: 'nebudeme-mlcet-protest',
     image: event3,
     date: '1. 7. 2026',
-    location: 'Ministerstvo ŽP, Praha',
+    location: 'Praha',
     title: 'Nebudeme mlčet! Protest proti rozhodnutí ministerstva životního prostředí',
     tags: ['Protest', 'Občanská neposlušnost'],
     filters: ['protest'],
     time: '17:00 – 20:00',
-    address: 'Ministerstvo životního prostředí, Vršovická 65, Praha',
+    placeName: 'Ministerstvo životního prostředí',
+    address: 'Vršovická 65',
     addressUrl: 'https://maps.google.com/?q=Ministerstvo+životního+prostředí+Praha',
     signupUrl: DEFAULT_SIGNUP_URL,
   },
@@ -76,8 +89,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Workshop', 'Sebeřízení'],
     filters: ['workshop', 'nanebi'],
     time: '10:00 – 16:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -89,8 +101,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Workshop', 'Facilitace'],
     filters: ['workshop', 'flow-makers'],
     time: '14:00 – 18:00',
-    address: 'Flow Makers, Brno',
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...FLOW_MAKERS,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -102,8 +113,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Diskuse', 'Vzdělávání'],
     filters: ['workshop'],
     time: '18:00 – 21:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -115,8 +125,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Akademie', 'Nerůst'],
     filters: ['akademie', 'nerust', 'nanebi'],
     time: '14:00 – 20:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -128,8 +137,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Workshop', 'Budoucnost'],
     filters: ['workshop', 'budoucnost', 'flow-makers'],
     time: '9:30 – 17:30',
-    address: 'Flow Makers, Brno',
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...FLOW_MAKERS,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -141,7 +149,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Protest'],
     filters: ['protest'],
     time: '15:00 – 19:00',
-    address: 'Náměstí Republiky, Praha',
+    placeName: 'Náměstí Republiky',
     addressUrl: 'https://maps.google.com/?q=Náměstí+Republiky+Praha',
     signupUrl: DEFAULT_SIGNUP_URL,
   },
@@ -154,8 +162,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Workshop', 'Nenásilná komunikace'],
     filters: ['workshop', 'nenasilna-komunikace', 'nanebi'],
     time: '9:00 – 17:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -167,8 +174,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Komunita'],
     filters: ['flow-makers'],
     time: '16:00 – 22:00',
-    address: 'Flow Makers, Brno',
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...FLOW_MAKERS,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -180,8 +186,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     tags: ['Nerůst', 'Vzdělávání'],
     filters: ['nerust', 'nanebi'],
     time: '10:00 – 18:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -194,8 +199,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     filters: ['akademie', 'nerust', 'nanebi'],
     past: true,
     time: '14:00 – 20:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -208,8 +212,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     filters: ['workshop', 'flow-makers'],
     past: true,
     time: '10:00 – 16:00',
-    address: 'Flow Makers, Brno',
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...FLOW_MAKERS,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
   {
@@ -222,7 +225,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     filters: ['protest'],
     past: true,
     time: '17:00 – 20:00',
-    address: 'Náměstí Republiky, Praha',
+    placeName: 'Náměstí Republiky',
     addressUrl: 'https://maps.google.com/?q=Náměstí+Republiky+Praha',
     signupUrl: DEFAULT_SIGNUP_URL,
   },
@@ -236,8 +239,7 @@ export const calendarEvents: (CalendarEventSeed & { href: string })[] = ([
     filters: ['workshop', 'nenasilna-komunikace', 'nanebi'],
     past: true,
     time: '9:00 – 17:00',
-    address: DEFAULT_ADDRESS,
-    addressUrl: DEFAULT_ADDRESS_URL,
+    ...NANEBI,
     signupUrl: DEFAULT_SIGNUP_URL,
   },
 ] as CalendarEventSeed[]).map((event) => ({

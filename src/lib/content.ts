@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 
 import type { Media, Site } from '@/payload-types'
 
-import { resolveMenuItem } from '@/lib/menu'
+import { nestedMainMenu, resolveMenuItem } from '@/lib/menu'
 import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
 export type MediaLike = Media | number | null | undefined
@@ -53,11 +53,24 @@ export function mediaAlt(media: MediaLike, fallback = ''): string {
   return media.alt || fallback
 }
 
+/** Event header / meta: Název místa, ulice, město — skip empties. */
+export function formatEventPlace(location?: {
+  address?: string | null
+  city?: string | null
+  name?: string | null
+} | null): string {
+  if (!location) return ''
+  return [location.name, location.address, location.city].filter(Boolean).join(', ')
+}
+
 export type PopulatedSite = {
   id: number
   name: string
   slug: string
   siteType?: 'main' | 'subsite' | null
+  primaryColor?: string | null
+  primaryBackgroundColor?: string | null
+  accentColor?: string | null
 }
 
 export function populatedSite(site: unknown): PopulatedSite | null {
@@ -81,10 +94,36 @@ export function crossPostSiteName({
   /** @deprecated Ignored — site relationship is the source of truth. */
   showOnMainSite?: boolean | null
 }): string | null {
+  return crossPostOriginSite({ currentSiteSlug, docSite })?.name || null
+}
+
+/** Sub-web owning a cross-posted doc when browsing the main site; else null. */
+export function crossPostOriginSite({
+  currentSiteSlug,
+  docSite,
+}: {
+  currentSiteSlug: string
+  docSite: unknown
+}): PopulatedSite | null {
   if (currentSiteSlug !== MAIN_SITE_SLUG) return null
   const site = populatedSite(docSite)
   if (!site || site.slug === MAIN_SITE_SLUG || site.siteType === 'main') return null
-  return site.name || null
+  return site
+}
+
+/** Remap design tokens like SiteShell (ground / sky / green). */
+export function siteBrandStyle(site: {
+  accentColor?: string | null
+  primaryBackgroundColor?: string | null
+  primaryColor?: string | null
+}): CSSProperties {
+  return {
+    ...(site.primaryColor ? { ['--color-ground' as string]: site.primaryColor } : {}),
+    ...(site.primaryBackgroundColor
+      ? { ['--color-sky' as string]: site.primaryBackgroundColor }
+      : {}),
+    ...(site.accentColor ? { ['--color-green' as string]: site.accentColor } : {}),
+  }
 }
 
 export type QueryParamValue = string | string[] | undefined
@@ -127,7 +166,6 @@ export function hrefWith(
 }
 
 type MenuChild = { href: string; label: string }
-type MenuItem = NonNullable<Site['mainMenu']>[number]
 
 function normaliseMenuHref(href: string): string {
   const [rawPath = '', rawQuery = ''] = href.split('?')
@@ -144,12 +182,12 @@ function normaliseMenuHref(href: string): string {
  * plus its children as breadcrumb siblings (design `findNavChildByHref`).
  */
 export function menuParentForHref(
-  mainMenu: MenuItem[] | null | undefined,
+  mainMenu: Site['mainMenu'] | null | undefined,
   href: string,
 ): { parent: MenuChild; siblings: MenuChild[] } | null {
   const target = normaliseMenuHref(href)
 
-  for (const item of mainMenu || []) {
+  for (const item of nestedMainMenu(mainMenu)) {
     const parentResolved = resolveMenuItem(item)
     if (!parentResolved) continue
     const children = (item.children || [])
@@ -172,7 +210,7 @@ export function withSiteQuery(href: string, siteSlug: string): string {
   if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
     return href
   }
-  if (siteSlug === 'nazemi') return href
+  if (!siteSlug || siteSlug === 'nazemi') return href
   const sep = href.includes('?') ? '&' : '?'
   return `${href}${sep}site=${encodeURIComponent(siteSlug)}`
 }

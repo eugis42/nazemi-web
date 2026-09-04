@@ -27,6 +27,8 @@ import {
   pillarsActions,
 } from './data/homepage'
 import { MAIN_LINKS, SECONDARY_LINKS } from './data/navigation'
+import { flattenMenuItems } from '@/lib/menu-tree'
+import { ensureCollectionHomesForSite } from '@/lib/collection-homes'
 import { featuredNews, newsArticles } from './data/news'
 import { projectPages } from './data/projects'
 import {
@@ -43,6 +45,7 @@ import {
 } from './data/workshops'
 import { richText, richTextFromHtml } from './html'
 import { createMediaLoader, parseCzechDate, slugifyCs, upsertByField } from './utils'
+import { DEFAULT_ADDITIONAL_COLORS } from '@/lib/site-colors'
 
 const ADMIN_EMAIL = 'admin@nazemi.local'
 const ADMIN_PASSWORD = 'payload-demo-password'
@@ -165,20 +168,22 @@ const seed = async () => {
 
   const demoProseOptions = { uploadId: demoProseImage.id }
 
-  const mainMenu = MAIN_LINKS.map((item) => ({
-    href: item.href,
-    label: item.label,
-    linkType: 'external' as const,
-    ...(item.children?.length
-      ? {
-          children: item.children.map((child) => ({
-            href: child.href,
-            label: child.label,
-            linkType: 'external' as const,
-          })),
-        }
-      : {}),
-  }))
+  const mainMenu = flattenMenuItems(
+    MAIN_LINKS.map((item) => ({
+      href: item.href,
+      label: item.label,
+      linkType: 'external' as const,
+      ...(item.children?.length
+        ? {
+            children: item.children.map((child) => ({
+              href: child.href,
+              label: child.label,
+              linkType: 'external' as const,
+            })),
+          }
+        : {}),
+    })),
+  ).map(({ depth, ...item }) => ({ ...item, depth: depth ?? 0 }))
 
   const contactDetails = CONTACT_BLOCKS.map((block) => ({
     title: block.title,
@@ -206,17 +211,7 @@ const seed = async () => {
     data: {
       _status: 'published',
       accentColor: '#90d750',
-      additionalColors: [
-        { label: 'Fialová', value: '#bda9ff' },
-        { label: 'Oranžová', value: '#ffaf53' },
-        { label: 'Růžová', value: '#ff91ac' },
-        { label: 'Tyrkysová', value: '#6acad9' },
-        { label: 'Modrá', value: '#9fcfff' },
-        { label: 'Zelená', value: '#90d750' },
-        { label: 'Nerůst', value: '#5a47ff' },
-        { label: 'Hnědá', value: '#c7b299' },
-        { label: 'Šedá', value: '#bdccd4' },
-      ],
+      additionalColors: [...DEFAULT_ADDITIONAL_COLORS],
       additionalContent: richText(
         'Jsme nezisková nevládní organizace se sídlem v Brně, která funguje od roku 2003.',
       ),
@@ -271,8 +266,8 @@ const seed = async () => {
     collection: 'sites',
     data: {
       _status: 'published',
-      accentColor: '#C084FC',
-      additionalColors: [{ label: 'Doplněk', value: '#F3E8FF' }],
+      accentColor: '#90d750',
+      additionalColors: [...DEFAULT_ADDITIONAL_COLORS],
       additionalContent: richText('Lokální aktivity NaZemi v Brně a okolí.'),
       canonicalURL: 'https://brno.nazemi.cz',
       contactDetails: [
@@ -287,6 +282,7 @@ const seed = async () => {
       donateCta: {
         title: 'Podpořte brněnské aktivity',
         body: 'Vaše podpora pomáhá lokálním setkáním, knihovně a komunitnímu prostoru NaNebi.',
+        backgroundColor: '#bda9ff',
         buttonLabel: 'Podpořit přes darujme.cz',
         href: 'https://www.darujme.cz/organizace/nazemi',
       },
@@ -302,12 +298,12 @@ const seed = async () => {
       homepageBackground: heroBackdrop.id,
       logo: subLogo.id,
       mainMenu: [
-        { href: '/', label: 'Domů', linkType: 'external' },
-        { href: '/aktuality', label: 'Aktuality', linkType: 'external' },
-        { href: '/kalendar', label: 'Kalendář', linkType: 'external' },
-        { href: '/workshopy', label: 'Workshopy', linkType: 'external' },
-        { href: '/publikace', label: 'Knihovna', linkType: 'external' },
-        { href: '/kontakt', label: 'Kontakt', linkType: 'external' },
+        { href: '/', label: 'Domů', linkType: 'external', depth: 0 },
+        { href: '/aktuality', label: 'Aktuality', linkType: 'external', depth: 0 },
+        { href: '/kalendar', label: 'Kalendář', linkType: 'external', depth: 0 },
+        { href: '/workshopy', label: 'Workshopy', linkType: 'external', depth: 0 },
+        { href: '/publikace', label: 'Knihovna', linkType: 'external', depth: 0 },
+        { href: '/kontakt', label: 'Kontakt', linkType: 'external', depth: 0 },
       ],
       metaTitle: 'NaZemi Brno',
       name: 'NaZemi Brno',
@@ -531,12 +527,7 @@ const seed = async () => {
           address: event.address ?? null,
           city: event.location,
           mapsLink: event.addressUrl ?? null,
-          name: event.address?.split(',')[0] ?? 'NaZemi',
-          venue: event.filters?.includes('nanebi')
-            ? 'NaNebi'
-            : event.filters?.includes('flow-makers')
-              ? 'Flow Makers'
-              : null,
+          name: event.placeName ?? 'NaZemi',
         },
         showOnMainSite: false,
         site: mainSite.id,
@@ -877,7 +868,7 @@ const seed = async () => {
       ctas: [{ title: 'Přihlásit se', url: 'https://darujme.cz' }],
       excerpt: '24. 9. 2026, 9:00 – 17:00 — Brno. Workshop, Nenásilná komunikace.',
       location: {
-        address: 'NaNebi, Kounicova 42, 602 00, Brno',
+        address: 'Kounicova 42',
         city: 'Brno',
         mapsLink: 'https://maps.google.com/?q=NaNebi+Kounicova+42+Brno',
         name: 'NaNebi',
@@ -889,9 +880,6 @@ const seed = async () => {
       endDate: parseCzechDate('24. 9. 2026', '9:00 – 17:00').endDate,
       tags: [tagIds.get('Workshop'), tagIds.get('Nenásilná komunikace')].filter(Boolean),
       title: 'Brněnský otevřený workshop nenásilné komunikace',
-      ...(workshopIds.get('nenasilna-komunikace')
-        ? { workshop: workshopIds.get('nenasilna-komunikace') }
-        : {}),
     },
     field: 'slug',
     payload,
@@ -907,6 +895,9 @@ const seed = async () => {
       })
     }
   }
+
+  await ensureCollectionHomesForSite(payload, mainSite.id)
+  await ensureCollectionHomesForSite(payload, subSite.id)
 
   payload.logger.info(
     `Seed completed. Weby: 2, projekty: ${projectPages.length}, workshopy: ${workshops.length}, události: ${calendarEvents.length + 1}, aktuality: ${newsArticles.length + 1}, publikace: ${publications.length}, lidé: ${teamMembers.length}, stránky: ${genericPages.length + 2}.`,

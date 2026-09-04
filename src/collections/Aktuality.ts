@@ -16,6 +16,7 @@ import { validateOptionalHref } from '@/fields/validateHref'
 import { makeSlugUniqueOnDuplicate, populateSlugAndDescription } from '@/hooks/content-hooks'
 import { ADMIN_NAV_SITE_CONTENT } from '@/lib/admin-nav-groups'
 import { siteContentLivePreviewUrl } from '@/lib/live-preview'
+import { aktualityMenuPickerBeforeOperation } from '@/lib/menu-relation-picker'
 import { getScopedBaseFilter } from '@/lib/site-context'
 
 export const Aktuality = {
@@ -42,6 +43,13 @@ export const Aktuality = {
     useAsTitle: 'title',
   },
   defaultPopulate: {
+    slug: true,
+    title: true,
+    coverImage: true,
+    publishedAt: true,
+    externalUrl: true,
+    description: true,
+    authorName: true,
     site: true,
     tags: true,
     author: true,
@@ -150,6 +158,7 @@ export const Aktuality = {
   hooks: {
     beforeChange: [populateSlugAndDescription],
     beforeDuplicate: [makeSlugUniqueOnDuplicate],
+    beforeOperation: [aktualityMenuPickerBeforeOperation],
   },
   indexes: [
     {

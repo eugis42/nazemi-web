@@ -24,6 +24,16 @@ export const Projekty = {
     useAsTitle: 'title',
   },
   defaultSort: 'title',
+  defaultPopulate: {
+    slug: true,
+    title: true,
+    excerpt: true,
+    logo: true,
+    projectColor: true,
+    logoClass: true,
+    ctas: true,
+    site: true,
+  },
   fields: [
     {
       name: 'logo',
@@ -78,6 +88,9 @@ export const Projekty = {
               blocks: allBlocks,
               required: true,
               admin: {
+                components: {
+                  RowLabel: '/components/admin/BlocksRowLabel#BlocksRowLabel',
+                },
                 description: 'Univerzální bloky (včetně Textového a galerie).',
                 initCollapsed: true,
               },

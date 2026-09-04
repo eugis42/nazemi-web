@@ -20,6 +20,7 @@ const buildSimpleTaxonomyCollection = ({
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
     group: ADMIN_NAV_TAGS,
+    listSearchableFields: ['title', 'slug'],
     useAsTitle: 'title',
   },
   fields: [
@@ -31,6 +32,10 @@ const buildSimpleTaxonomyCollection = ({
     },
     slugField(),
   ],
+  defaultPopulate: {
+    title: true,
+    slug: true,
+  },
   labels: {
     plural,
     singular,

@@ -60,7 +60,7 @@ export const validateDonateHref: Validate = (value, { siblingData, data }) => {
   )
   if (!anyFilled) return true
   if (typeof value !== 'string' || !value.trim()) {
-    return 'URL tlačítka je povinná, pokud je vyplněna výzva k darování.'
+    return 'URL tlačítka je povinná, pokud je vyplněn hlavní call to action patičky.'
   }
   return hrefFormatError(value) || true
 }

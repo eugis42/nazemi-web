@@ -1,6 +1,7 @@
 import Link from 'next/link'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
+import { resolveColor } from '@/lib/colors'
 import { isDocumentHref, isExternalHref } from '@/lib/links'
 
 const VARIANT_CLASS: Record<string, string> = {
@@ -11,9 +12,11 @@ const VARIANT_CLASS: Record<string, string> = {
   'filled-green': 'btn-signup',
   'outline-ground': 'btn-outline-ground',
   'outline-sky': 'btn-outline-sky',
+  colored: 'btn-colored',
 }
 
 export function Button({
+  backgroundColor,
   children,
   className = '',
   external,
@@ -23,6 +26,8 @@ export function Button({
   tag = 'a',
   variant = 'outline',
 }: {
+  /** Accent fill for `colored` variant (site doplňkové barvy). */
+  backgroundColor?: string | null
   children: ReactNode
   className?: string
   /** Force outbound treatment; otherwise auto-detected from href. */
@@ -36,6 +41,12 @@ export function Button({
 }) {
   const resolvedVariant = variant || 'outline'
   const classes = `${VARIANT_CLASS[resolvedVariant] || VARIANT_CLASS.outline} ${className}`.trim()
+  const style: CSSProperties | undefined =
+    resolvedVariant === 'colored'
+      ? ({
+          ['--btn-accent' as string]: resolveColor(backgroundColor) || 'var(--color-sky)',
+        } as CSSProperties)
+      : undefined
   const autoExternal = isExternalHref(href)
   const doc = isDocumentHref(href)
   const treatExternal = external ?? (autoExternal && !doc)
@@ -59,7 +70,12 @@ export function Button({
 
   if (tag === 'span') {
     return (
-      <span className={classes} data-component="button" data-variant={resolvedVariant}>
+      <span
+        className={classes}
+        data-component="button"
+        data-variant={resolvedVariant}
+        style={style}
+      >
         {content}
       </span>
     )
@@ -73,6 +89,7 @@ export function Button({
         data-variant={resolvedVariant}
         href={href || '#'}
         rel={blank ? 'noopener noreferrer' : undefined}
+        style={style}
         target={blank ? '_blank' : undefined}
       >
         {content}
@@ -81,7 +98,13 @@ export function Button({
   }
 
   return (
-    <Link className={classes} data-component="button" data-variant={resolvedVariant} href={href}>
+    <Link
+      className={classes}
+      data-component="button"
+      data-variant={resolvedVariant}
+      href={href}
+      style={style}
+    >
       {content}
     </Link>
   )
@@ -94,24 +117,45 @@ const TAG_VARIANT_CLASS: Record<string, string> = {
   sky: 'bg-sky/15 text-sky',
 }
 
+const TAG_BASE_CLASS =
+  'inline-flex h-6 items-center justify-center rounded-full px-3 font-saans text-tag leading-none'
+
 export function Tag({
   children,
   className = '',
+  href,
   variant = 'soft',
 }: {
   children: ReactNode
   className?: string
+  href?: string | null
   variant?: 'soft' | 'sky' | 'ground' | 'green'
 }) {
+  const classes = `${TAG_BASE_CLASS} ${TAG_VARIANT_CLASS[variant] || TAG_VARIANT_CLASS.soft} ${
+    href ? 'no-underline transition-opacity hover:opacity-75' : ''
+  } ${className}`.trim()
+
+  if (href) {
+    return (
+      <Link className={classes} data-component="tag" data-variant={variant} href={href}>
+        {children}
+      </Link>
+    )
+  }
+
   return (
-    <span
-      className={`inline-flex h-6 items-center justify-center rounded-full px-3 font-saans text-tag leading-none ${TAG_VARIANT_CLASS[variant] || TAG_VARIANT_CLASS.soft} ${className}`}
-      data-component="tag"
-      data-variant={variant}
-    >
+    <span className={classes} data-component="tag" data-variant={variant}>
       {children}
     </span>
   )
+}
+
+export type TagItem = string | { href?: string | null; label: string }
+
+function normalizeTagItem(tag: TagItem): { href?: string; label: string } | null {
+  if (typeof tag === 'string') return tag ? { label: tag } : null
+  if (!tag?.label) return null
+  return { label: tag.label, ...(tag.href ? { href: tag.href } : {}) }
 }
 
 export function TagGroup({
@@ -124,10 +168,10 @@ export function TagGroup({
   className?: string
   muted?: boolean
   tagClassName?: string
-  tags: (string | null | undefined)[]
+  tags: TagItem[]
   variant?: 'soft' | 'sky' | 'ground' | 'green'
 }) {
-  const items = tags.filter((label): label is string => Boolean(label))
+  const items = tags.map(normalizeTagItem).filter((item): item is { href?: string; label: string } => Boolean(item))
   if (!items.length) return null
 
   return (
@@ -135,9 +179,14 @@ export function TagGroup({
       className={`flex flex-wrap gap-tag ${muted ? 'opacity-50' : ''} ${className}`}
       data-component="tag-group"
     >
-      {items.map((label, index) => (
-        <Tag className={tagClassName} key={`${label}-${index}`} variant={variant}>
-          {label}
+      {items.map((item, index) => (
+        <Tag
+          className={tagClassName}
+          href={item.href}
+          key={`${item.label}-${index}`}
+          variant={variant}
+        >
+          {item.label}
         </Tag>
       ))}
     </div>
@@ -181,6 +230,7 @@ export function MetaLine({
 }
 
 export type BlockHeaderAction = {
+  backgroundColor?: string | null
   external?: boolean | null
   href?: string | null
   icon?: ReactNode
@@ -215,12 +265,13 @@ export function BlockHeader({
       className={`flex flex-col items-center gap-4 py-5 text-center sm:min-h-[73px] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-5 sm:gap-y-4 sm:text-left lg:h-[73px] ${className}`}
       data-component="block-header"
     >
-      <h2 className="text-section-title min-w-0">{title}</h2>
+      <h2 className="text-section-title min-w-0 text-ground">{title}</h2>
       {list.length ? (
         <div className="flex shrink-0 flex-wrap items-center justify-center gap-3 sm:justify-end">
           {list.map((action, index) =>
             action.label ? (
               <Button
+                backgroundColor={action.backgroundColor}
                 className="shrink-0"
                 external={action.external}
                 href={action.href || '#'}

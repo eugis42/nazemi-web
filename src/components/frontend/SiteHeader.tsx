@@ -7,9 +7,9 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import type { Site } from '@/payload-types'
 import { CaretDownIcon, CaretRightIcon, SearchIcon } from '@/components/frontend/icons'
 import { withSiteQuery } from '@/lib/content'
+import type { MenuItem } from '@/lib/menu'
 import { resolveMenuItem } from '@/lib/menu'
 
-type MenuItem = NonNullable<Site['mainMenu']>[number]
 type SecondaryItem = NonNullable<Site['secondaryMenu']>[number]
 
 const MENU_ANIM_MS = 220
@@ -164,6 +164,7 @@ function SearchButton({ siteSlug }: { siteSlug: string }) {
 
 export function SiteHeader({
   logoAlt,
+  logoNavbarPadding,
   logoUrl,
   mainMenu,
   secondaryMenu,
@@ -171,6 +172,7 @@ export function SiteHeader({
   siteSlug,
 }: {
   logoAlt?: string
+  logoNavbarPadding?: number | null
   logoUrl?: string | null
   mainMenu?: MenuItem[] | null
   secondaryMenu?: SecondaryItem[] | null
@@ -420,9 +422,14 @@ export function SiteHeader({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     alt={logoAlt || siteName}
-                    className="h-[45px] w-auto lg:h-[57px]"
+                    className="h-[45px] w-auto box-border lg:h-[57px]"
                     height={57}
                     src={logoUrl}
+                    style={
+                      logoNavbarPadding && logoNavbarPadding > 0
+                        ? { padding: `${logoNavbarPadding}px` }
+                        : undefined
+                    }
                     width={116}
                   />
                 ) : (
@@ -477,11 +484,13 @@ export function SiteHeader({
                 >
                   {renderMainItems(items)}
                 </div>
-                <div
-                  aria-hidden="true"
-                  className="w-[2px] shrink-0 self-stretch bg-ground max-lg:hidden"
-                  data-component="nav-menu-separator"
-                />
+                {secondaryMenu && secondaryMenu.length > 0 && (
+                  <div
+                    aria-hidden="true"
+                    className="w-[2px] shrink-0 self-stretch bg-ground max-lg:hidden"
+                    data-component="nav-menu-separator"
+                  />
+                )}
                 <div
                   className="flex w-full gap-4 max-lg:flex-col lg:w-auto lg:shrink-0 lg:gap-x-5 lg:gap-y-1"
                   data-component="secondary-menu"

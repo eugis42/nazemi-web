@@ -161,7 +161,7 @@ export default async function SitePage({
       site={site}
       stacked={false}
     >
-      <PageBlocks blocks={doc.content as never} skipPageIntro />
+      <PageBlocks blocks={doc.content as never} siteSlug={site.slug} skipPageIntro />
     </SiteShell>
   )
 }

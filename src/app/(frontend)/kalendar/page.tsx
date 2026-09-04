@@ -165,7 +165,7 @@ export default async function EventsPage({
     >
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="calendar">
-          <h1 className="text-display">Kalendář</h1>
+          <h1 className="text-display text-ground">Kalendář</h1>
           {workshopTitle ? (
             <p className="text-body-inter">
               Termíny workshopu <strong>{workshopTitle}</strong>{' '}

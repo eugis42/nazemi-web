@@ -1,6 +1,6 @@
 import type { Field, TextareaField, TextField } from 'payload'
 
-import { ctaVariantOptions } from '@/fields/cta'
+import { ctaVariantFields } from '@/fields/cta'
 import {
   hrefFieldDescription,
   validateOptionalHref,
@@ -102,7 +102,10 @@ export const showOnMainSiteField: Field = {
  * Sidebar “Web” box: site picker + optional cross-post checkbox (sub-webs only).
  * Collapsible = visible container without nesting data paths.
  */
-export const siteSidebarGroup = (siteDescription?: string): Field => ({
+export const siteSidebarGroup = (
+  siteDescription?: string,
+  siteOverrides?: Pick<Field, 'validate'>,
+): Field => ({
   type: 'collapsible',
   label: 'Web',
   admin: {
@@ -112,6 +115,7 @@ export const siteSidebarGroup = (siteDescription?: string): Field => ({
   fields: [
     {
       ...siteField,
+      ...siteOverrides,
       admin: {
         description: siteDescription,
       },
@@ -173,21 +177,28 @@ export const seoFields = (): Field[] => [
   },
   sharingImageField,
   {
-    name: 'canonicalURL',
-    type: 'text',
-    admin: {
-      description: 'Volitelná kanonická URL adresa.',
-    },
-    label: 'Kanonická URL',
-    validate: validateOptionalHref,
-  },
-  {
-    name: 'noindex',
-    type: 'checkbox',
-    admin: {
-      description: 'Zakáže indexaci stránky ve vyhledávačích.',
-    },
-    label: 'Zakázat indexaci',
+    type: 'row',
+    fields: [
+      {
+        name: 'canonicalURL',
+        type: 'text',
+        admin: {
+          description: 'Volitelná kanonická URL adresa.',
+          width: '70%',
+        },
+        label: 'Kanonická URL',
+        validate: validateOptionalHref,
+      },
+      {
+        name: 'noindex',
+        type: 'checkbox',
+        admin: {
+          description: 'Zakáže indexaci stránky ve vyhledávačích.',
+          width: '30%',
+        },
+        label: 'Zakázat indexaci',
+      },
+    ],
   },
 ]
 
@@ -195,6 +206,9 @@ export const socialLinkField: Field = {
   name: 'socialLinks',
   type: 'array',
   admin: {
+    components: {
+      RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+    },
     description: 'Odkazy v patičce webu.',
     initCollapsed: true,
   },
@@ -205,20 +219,27 @@ export const socialLinkField: Field = {
   },
   fields: [
     {
-      name: 'network',
-      type: 'text',
-      label: 'Síť',
-      required: true,
-    },
-    {
-      name: 'url',
-      type: 'text',
-      label: 'Profil URL',
-      required: true,
-      admin: {
-        description: hrefFieldDescription,
-      },
-      validate: validateRequiredHref,
+      type: 'row',
+      fields: [
+        {
+          name: 'network',
+          type: 'text',
+          label: 'Síť',
+          required: true,
+          admin: { width: '35%' },
+        },
+        {
+          name: 'url',
+          type: 'text',
+          label: 'Profil URL',
+          required: true,
+          admin: {
+            description: hrefFieldDescription,
+            width: '65%',
+          },
+          validate: validateRequiredHref,
+        },
+      ],
     },
   ],
 }
@@ -236,6 +257,9 @@ export const ctaField = (
   type: 'array',
   admin: {
     ...(description ? { description } : {}),
+    components: {
+      RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+    },
     initCollapsed: true,
   },
   label: 'Call to Action',
@@ -245,32 +269,29 @@ export const ctaField = (
   },
   fields: [
     {
-      name: 'title',
-      type: 'text',
-      label: 'Text tlačítka',
-      required: true,
-    },
-    {
-      name: 'url',
-      type: 'text',
-      label: 'URL',
-      required: true,
-      admin: {
-        description: hrefFieldDescription,
-      },
-      validate: validateRequiredHref,
-    },
-    ...(options?.withVariant
-      ? [
-          {
-            name: 'variant',
-            type: 'select' as const,
-            label: 'Varianta',
-            defaultValue: 'outline',
-            options: [...ctaVariantOptions],
+      type: 'row',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          label: 'Text tlačítka',
+          required: true,
+          admin: { width: '40%' },
+        },
+        {
+          name: 'url',
+          type: 'text',
+          label: 'URL',
+          required: true,
+          admin: {
+            description: hrefFieldDescription,
+            width: '60%',
           },
-        ]
-      : []),
+          validate: validateRequiredHref,
+        },
+      ],
+    },
+    ...(options?.withVariant ? ctaVariantFields() : []),
   ],
 })
 

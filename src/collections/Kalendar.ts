@@ -16,6 +16,12 @@ import { hrefFieldDescription, validateOptionalHref } from '@/fields/validateHre
 import { makeSlugUniqueOnDuplicate, populateSlugAndDescription } from '@/hooks/content-hooks'
 import { ADMIN_NAV_SITE_CONTENT } from '@/lib/admin-nav-groups'
 import { siteContentLivePreviewUrl } from '@/lib/live-preview'
+import { kalendarMenuPickerBeforeOperation } from '@/lib/menu-relation-picker'
+import {
+  kalendarWorkshopFilterOptions,
+  validateKalendarSiteAgainstWorkshop,
+  validateKalendarWorkshopSameSite,
+} from '@/lib/same-site-workshop'
 import { getScopedBaseFilter } from '@/lib/site-context'
 
 export const Kalendar = {
@@ -33,6 +39,12 @@ export const Kalendar = {
     useAsTitle: 'title',
   },
   defaultPopulate: {
+    slug: true,
+    title: true,
+    coverImage: true,
+    startDate: true,
+    endDate: true,
+    location: true,
     site: true,
     tags: true,
     workshop: true,
@@ -136,7 +148,10 @@ export const Kalendar = {
                       name: 'name',
                       type: 'text',
                       label: 'Název místa',
-                      admin: { width: '50%' },
+                      admin: {
+                        description: 'Jméno venue nebo stručný opis',
+                        width: '50%',
+                      },
                     },
                     {
                       name: 'city',
@@ -150,13 +165,8 @@ export const Kalendar = {
                   name: 'address',
                   type: 'text',
                   label: 'Adresa',
-                },
-                {
-                  name: 'venue',
-                  type: 'text',
-                  label: 'Venue',
                   admin: {
-                    description: 'Název venue (např. Hlavní nádraží Brno).',
+                    description: 'Pouze ulice a číslo',
                   },
                 },
                 {
@@ -175,10 +185,15 @@ export const Kalendar = {
               type: 'relationship',
               label: 'Propojit s workshopem',
               relationTo: 'workshopy',
+              filterOptions: ({ data }) =>
+                kalendarWorkshopFilterOptions({
+                  data: data as Record<string, unknown> | null,
+                }),
               admin: {
                 description:
-                  'Volitelné. Zobrazit event když uživatel klikne na tlačítko "Aktuální termíny" na stránce workshopu.',
+                  'Volitelné. Jen workshopy stejného webu. Zobrazit event po kliku na „Aktuální termíny“ u workshopu.',
               },
+              validate: validateKalendarWorkshopSameSite,
             },
           ],
         },
@@ -198,12 +213,15 @@ export const Kalendar = {
         },
       ],
     },
-    siteSidebarGroup('Kde se událost zobrazí.'),
+    siteSidebarGroup('Kde se událost zobrazí.', {
+      validate: validateKalendarSiteAgainstWorkshop,
+    }),
     draftStatusListCellField,
   ],
   hooks: {
     beforeChange: [populateSlugAndDescription],
     beforeDuplicate: [makeSlugUniqueOnDuplicate],
+    beforeOperation: [kalendarMenuPickerBeforeOperation],
   },
   indexes: [
     {

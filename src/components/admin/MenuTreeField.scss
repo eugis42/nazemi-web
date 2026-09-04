@@ -1,0 +1,118 @@
+/* Menu tree — Payload array chrome + indent + drop placeholder. */
+
+.menu-tree-field {
+  &__rows {
+    gap: calc(var(--base) / 3);
+    position: relative;
+  }
+
+  &--dragging &__rows {
+    cursor: grabbing;
+  }
+
+  &__row {
+    position: relative;
+    transition: margin-left 120ms ease;
+
+    &--child {
+      &::before {
+        background: var(--theme-elevation-150);
+        bottom: 4px;
+        content: '';
+        left: calc(var(--base) / -2);
+        position: absolute;
+        top: 4px;
+        width: 2px;
+      }
+    }
+
+    &--dragging,
+    &--active {
+      pointer-events: none;
+    }
+
+    &--dragging {
+      /* Keep layout gap so list doesn’t jump; content hidden (overlay follows pointer). */
+      min-height: 42px;
+    }
+  }
+
+  &__level {
+    color: var(--theme-elevation-500);
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1;
+    margin-right: 4px;
+    pointer-events: none;
+    width: 1rem;
+  }
+
+  &__remove {
+    margin: 0;
+  }
+
+  &__drop-indicator {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    min-height: 18px;
+    padding: 2px 0;
+    pointer-events: none;
+    position: relative;
+    z-index: 2;
+  }
+
+  &__drop-indicator-line {
+    background: var(--theme-success-500, #3fa076);
+    border-radius: 1px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--theme-success-500, #3fa076) 25%, transparent);
+    flex: 1;
+    height: 3px;
+    min-width: 48px;
+  }
+
+  &__drop-indicator-badge {
+    background: var(--theme-success-500, #3fa076);
+    border-radius: 999px;
+    color: var(--theme-success-50, #fff);
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+
+  &__overlay {
+    align-items: center;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-elevation-150);
+    border-left: 3px solid var(--theme-success-500, #3fa076);
+    border-radius: var(--border-radius-s);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    display: flex;
+    gap: 8px;
+    max-width: 420px;
+    padding: 10px 14px;
+    pointer-events: none;
+    transition: margin-left 80ms ease;
+  }
+
+  &__overlay-label {
+    color: var(--theme-text);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__overlay-meta {
+    color: var(--theme-elevation-500);
+    flex-shrink: 0;
+    font-size: 12px;
+    margin-left: auto;
+  }
+}
