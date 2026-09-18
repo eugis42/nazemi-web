@@ -1,4 +1,4 @@
-import type { Field, TextareaField, TextField } from 'payload'
+import type { Field, TextareaField, TextField, Validate } from 'payload'
 
 import { ctaVariantFields } from '@/fields/cta'
 import {
@@ -104,7 +104,7 @@ export const showOnMainSiteField: Field = {
  */
 export const siteSidebarGroup = (
   siteDescription?: string,
-  siteOverrides?: Pick<Field, 'validate'>,
+  siteOverrides?: { validate?: Validate },
 ): Field => ({
   type: 'collapsible',
   label: 'Web',
