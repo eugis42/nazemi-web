@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { contentCollectionAccess } from '@/access/roles'
 import { allBlocks } from '@/blocks/allBlocks'
 import { additionalColorField } from '@/fields/additionalColor'
-import { adminDocumentTitleClass, ctaField, draftStatusListCellField, excerptField, metaTabDescription, seoFields } from '@/fields/shared'
+import { adminDocumentTitleClass, ctaField, draftStatusListCellField, excerptField, imageUploadFilter, metaTabDescription, seoFields } from '@/fields/shared'
 import { lockProjectsToMainSite, makeSlugUniqueOnDuplicate, populateSlugAndDescription } from '@/hooks/content-hooks'
 import { ADMIN_NAV_SITE_CONTENT } from '@/lib/admin-nav-groups'
 import { siteContentLivePreviewUrl } from '@/lib/live-preview'
@@ -40,6 +40,7 @@ export const Projekty = {
       type: 'upload',
       label: 'Logo',
       relationTo: 'media',
+      filterOptions: imageUploadFilter,
       admin: {
         description: 'Značka projektu v přehledech.',
         position: 'sidebar',

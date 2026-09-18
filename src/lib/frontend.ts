@@ -245,3 +245,90 @@ export const getListingWhere = async ({
 
   return baseWhere
 }
+
+type TaxonomyDoc = { id: number | string; slug: string; title: string }
+
+/**
+ * Taxonomy chips that yield ≥1 matching doc under `where`.
+ * Avoids empty filters + arbitrary `tags` list limits.
+ */
+export const findUsedTaxonomy = async ({
+  contentCollection,
+  relationCollection,
+  relationField,
+  where,
+}: {
+  contentCollection: 'aktuality' | 'kalendar' | 'publikace' | 'workshopy'
+  relationCollection: 'tags' | 'publication-types' | 'workshop-audiences'
+  relationField: string
+  where: Where
+}): Promise<TaxonomyDoc[]> => {
+  const payload = await getPayloadClient()
+  const scoped = await payload.find({
+    collection: contentCollection,
+    depth: 0,
+    limit: 2000,
+    pagination: false,
+    select: { [relationField]: true } as never,
+    where,
+  })
+
+  const ids = [
+    ...new Set(
+      scoped.docs.flatMap((doc) => {
+        const value = (doc as Record<string, unknown>)[relationField]
+        if (!Array.isArray(value)) return []
+        return value.map((item) =>
+          item && typeof item === 'object' && 'id' in item
+            ? (item as { id: number | string }).id
+            : (item as number | string),
+        )
+      }),
+    ),
+  ].filter((id) => id != null)
+
+  if (!ids.length) return []
+
+  const result = await payload.find({
+    collection: relationCollection,
+    depth: 0,
+    limit: ids.length,
+    pagination: false,
+    sort: 'title',
+    where: { id: { in: ids } },
+  })
+
+  return result.docs as TaxonomyDoc[]
+}
+
+/** Resolve taxonomy by slug (active URL filters that may be empty in current view). */
+export const findTaxonomyBySlugs = async ({
+  collection,
+  slugs,
+}: {
+  collection: 'tags' | 'publication-types' | 'workshop-audiences'
+  slugs: string[]
+}): Promise<TaxonomyDoc[]> => {
+  if (!slugs.length) return []
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection,
+    depth: 0,
+    limit: slugs.length,
+    pagination: false,
+    where: { slug: { in: slugs } },
+  })
+  return result.docs as TaxonomyDoc[]
+}
+
+/** Used chips + any active URL values (so empty filters stay clearable). */
+export const mergeActiveTaxonomy = (
+  used: TaxonomyDoc[],
+  active: TaxonomyDoc[],
+): TaxonomyDoc[] => {
+  if (!active.length) return used
+  const seen = new Set(used.map((item) => String(item.id)))
+  const extra = active.filter((item) => !seen.has(String(item.id)))
+  if (!extra.length) return used
+  return [...used, ...extra].sort((a, b) => a.title.localeCompare(b.title, 'cs'))
+}

@@ -8,6 +8,7 @@ import {
   ctaField,
   draftStatusListCellField,
   excerptField,
+  imageUploadFilter,
   metaTabDescription,
   seoFields,
   siteSidebarGroup,
@@ -51,6 +52,7 @@ export const Publikace = {
       label: 'Úvodní obrázek',
       relationTo: 'media',
       required: true,
+      filterOptions: imageUploadFilter,
       admin: {
         position: 'sidebar',
       },

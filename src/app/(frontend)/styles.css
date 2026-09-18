@@ -693,6 +693,10 @@
         @apply bg-ground/20 text-ground;
       }
     }
+
+    &.is-active-filters {
+      @apply bg-ground text-sky;
+    }
   }
 
   .btn-filter-active {
@@ -734,6 +738,14 @@
 
   .btn-pagination-active {
     @apply inline-flex aspect-square size-10 shrink-0 items-center justify-center rounded-full border-2 border-solid border-ground bg-ground p-0 font-saans text-[14px] leading-none text-sky;
+  }
+
+  .btn-pagination-ellipsis {
+    @apply inline-flex aspect-square size-10 shrink-0 items-center justify-center p-0 text-ground select-none;
+  }
+
+  .btn-pagination-ellipsis-dots {
+    @apply block size-4;
   }
 
   .filter-bar-divider {
@@ -1148,6 +1160,16 @@
       margin-top: 16px;
     }
 
+    :where(h1):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(h2):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(h3):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(h4):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      :where(strong, b, em, i) {
+        font-weight: inherit;
+        font-style: inherit;
+      }
+    }
+
     :where(h1):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
       @apply mb-0 font-saans text-[44px] font-medium leading-none tracking-[-0.88px] text-ground;
     }
@@ -1197,8 +1219,38 @@
       @apply mx-0 w-full;
     }
 
+    /* mx only — vertical rhythm from sibling `* + *` (m-0 was killing heading→img gap). */
     :where(img):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply m-0 w-full;
+      @apply mx-0 w-full;
+    }
+
+    /* Media ↔ neighbours: same 40px stack as body blocks (after img m-0 fix). */
+    :where(.payload-richtext > * + img),
+    :where(.payload-richtext > img + *),
+    :where(.payload-richtext > * + figure),
+    :where(.payload-richtext > figure + *),
+    :where(> * + img),
+    :where(> img + *),
+    :where(> * + figure),
+    :where(> figure + *) {
+      margin-top: 40px;
+    }
+
+    /* Constrained inline uploads — beat prose `w-full`. */
+    :where(img[data-max-width]):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      width: auto;
+      height: auto;
+    }
+
+    /* %-width: full bleed on mobile; chosen % from lg up (never overflow column). */
+    :where(img[data-upload-w='percent']):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+
+      @media (min-width: 1024px) {
+        width: var(--upload-w, 100%);
+      }
     }
 
     :where(figcaption):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
@@ -1207,6 +1259,9 @@
 
     :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
       @apply font-inter text-ground underline underline-offset-2;
+      /* Long bare URLs (WP citations) must wrap inside the prose column. */
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     /* External inline links — ↗ prefix (auto-detected by href) */
@@ -1220,7 +1275,7 @@
     }
 
     :where(hr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply border-ground;
+      @apply border-0 border-t-2 border-dotted border-ground/20;
     }
 
     :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {

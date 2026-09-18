@@ -7,6 +7,7 @@ import {
   authorField,
   authorNameField,
   draftStatusListCellField,
+  imageUploadFilter,
   seoFields,
   siteSidebarGroup,
   tagsListCellAdmin,
@@ -61,6 +62,7 @@ export const Aktuality = {
       type: 'upload',
       label: 'Úvodní obrázek',
       relationTo: 'media',
+      filterOptions: imageUploadFilter,
       admin: {
         description: 'Náhled v přehledech a u sdílení.',
         position: 'sidebar',

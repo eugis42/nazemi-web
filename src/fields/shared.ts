@@ -146,12 +146,18 @@ export const authorNameField: TextField = {
   label: 'Autor (veřejný)',
 }
 
+/** Image-only picker — Media also holds PDFs/docs after the WP import. */
+export const imageUploadFilter = {
+  mimeType: { contains: 'image' },
+} as const
+
 export const sharingImageField: Field = {
   name: 'sharingImage',
   type: 'upload',
   admin: {
     description: 'Volitelný přepis výchozího sdílecího obrázku z nastavení webu.',
   },
+  filterOptions: imageUploadFilter,
   label: 'Sdílecí obrázek',
   relationTo: 'media',
 }

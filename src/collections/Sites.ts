@@ -3,7 +3,7 @@ import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { sitesAccess } from '@/access/roles'
 import { additionalColorField } from '@/fields/additionalColor'
 import { mainMenuArrayAdmin, menuArrayAdmin, menuItemFields } from '@/fields/menu'
-import { draftStatusListCellField, socialLinkField } from '@/fields/shared'
+import { draftStatusListCellField, imageUploadFilter, socialLinkField } from '@/fields/shared'
 import {
   hrefFieldDescription,
   validateDonateHref,
@@ -155,6 +155,7 @@ export const Sites: CollectionConfig = {
               type: 'upload',
               label: 'Logo',
               relationTo: 'media',
+              filterOptions: imageUploadFilter,
             },
             {
               name: 'logoNavbarPadding',
@@ -182,6 +183,7 @@ export const Sites: CollectionConfig = {
                   type: 'upload',
                   label: 'Favicon (SVG)',
                   relationTo: 'media',
+                  filterOptions: imageUploadFilter,
                   admin: {
                     description:
                       'Primární ikona — SVG se sky pozadím. Propojí se do <head> jako rel="icon".',
@@ -192,6 +194,7 @@ export const Sites: CollectionConfig = {
                   type: 'upload',
                   label: 'Apple Touch Icon',
                   relationTo: 'media',
+                  filterOptions: imageUploadFilter,
                   admin: {
                     description:
                       'PNG 180×180 (sky pozadí) pro iOS. Propojí se jako rel="apple-touch-icon".',
@@ -204,6 +207,7 @@ export const Sites: CollectionConfig = {
               type: 'upload',
               label: 'Pozadí homepage',
               relationTo: 'media',
+              filterOptions: imageUploadFilter,
               admin: {
                 description:
                   'Ilustrace / obrázek za hero blokem na domovské stránce. Bez výběru se použije výchozí vlna.',
@@ -598,6 +602,7 @@ export const Sites: CollectionConfig = {
               type: 'upload',
               label: 'Sdílecí obrázek',
               relationTo: 'media',
+              filterOptions: imageUploadFilter,
               admin: {
                 description: 'Výchozí obrázek pro sociální sítě.',
               },

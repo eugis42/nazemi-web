@@ -7,6 +7,7 @@ import {
   authorField,
   ctaField,
   draftStatusListCellField,
+  imageUploadFilter,
   metaTabDescription,
   seoFields,
   siteSidebarGroup,
@@ -56,6 +57,7 @@ export const Kalendar = {
       type: 'upload',
       label: 'Úvodní obrázek',
       relationTo: 'media',
+      filterOptions: imageUploadFilter,
       admin: {
         description: 'Plakát nebo ilustrace události.',
         position: 'sidebar',

@@ -4,6 +4,8 @@ export const ADMIN_SITE_COOKIE = 'nazemi-site'
 export const MAIN_SITE_SLUG = 'nazemi'
 /** Set by middleware from `?site=` or host subdomain — readable in root layout. */
 export const FRONTEND_SITE_HEADER = 'x-nazemi-site'
+/** Failed request path — set by middleware, read by `not-found.tsx` for search hints. */
+export const PATHNAME_HEADER = 'x-pathname'
 
 const disabledSiteSlug = '__no_active_site__'
 

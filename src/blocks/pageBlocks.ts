@@ -6,6 +6,7 @@ import {
 } from '@/blocks/blockMeta'
 import { additionalColorField } from '@/fields/additionalColor'
 import { columnCallToActionField } from '@/fields/cta'
+import { imageUploadFilter } from '@/fields/shared'
 
 export const RichTextBlock: Block = {
   slug: 'richText',
@@ -46,9 +47,7 @@ export const GalleryBlock: Block = {
       hasMany: true,
       required: true,
       minRows: 1,
-      filterOptions: {
-        mimeType: { contains: 'image' },
-      },
+      filterOptions: imageUploadFilter,
       admin: {
         description: 'Pouze obrázky — video patří do samostatného bloku.',
       },
@@ -98,6 +97,7 @@ export const PageIntroBlock: Block = {
       type: 'upload',
       label: 'Úvodní obrázek',
       relationTo: 'media',
+      filterOptions: imageUploadFilter,
       admin: {
         description: 'Pokud je nastaven, překryje barevné pozadí.',
       },

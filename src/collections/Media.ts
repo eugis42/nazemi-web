@@ -145,7 +145,15 @@ export const Media: CollectionConfig = {
     /** Focal point UI — used by cover/crop sizes; changing it re-saves sizes. */
     focalPoint: true,
     crop: true,
-    mimeTypes: ['image/*'],
+    mimeTypes: [
+      'image/*',
+      'image/heic',
+      'image/heif',
+      'application/pdf',
+      'application/zip',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
     imageSizes: mediaImageSizes,
   },
 }

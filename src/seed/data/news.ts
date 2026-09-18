@@ -188,7 +188,7 @@ export const NEWS_FILTER_GROUPS = [
   ],
 ]
 
-export const NEWS_PER_PAGE = 9
+export const NEWS_PER_PAGE = 10
 
 /** Homepage teaser — first four articles */
 export const featuredNews = newsArticles.slice(0, 4)

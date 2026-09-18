@@ -7,14 +7,17 @@ import { SiteShell } from '@/components/frontend/SiteShell'
 import { hrefWith, queryList, toggleQueryValue, withSiteQuery } from '@/lib/content'
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
 import {
+  findTaxonomyBySlugs,
+  findUsedTaxonomy,
   getListingWhere,
   getPayloadClient,
   getSourceSites,
+  mergeActiveTaxonomy,
   resolveSiteFromCurrentRequest,
 } from '@/lib/frontend'
 import { buildPageMetadata } from '@/lib/metadata'
 
-const PAGE_SIZE = 9
+const PAGE_SIZE = 10
 
 export async function generateMetadata({
   searchParams,
@@ -42,30 +45,29 @@ export default async function NewsListingPage({
   const payload = await getPayloadClient()
   const page = Math.max(1, Number(query.page) || 1)
 
-  const filters: Where[] = [
-    await getListingWhere({
-      collection: 'aktuality',
-      includeCrossPosted: site.slug === 'nazemi',
-      siteId: site.id,
-    }),
-  ]
+  const baseWhere = await getListingWhere({
+    collection: 'aktuality',
+    includeCrossPosted: site.slug === 'nazemi',
+    siteId: site.id,
+  })
+  const filters: Where[] = [baseWhere]
 
-  const [tags, sourceSites] = await Promise.all([
-    payload.find({
-      collection: 'tags',
-      depth: 0,
-      limit: 30,
-      pagination: false,
-      sort: 'title',
+  const [usedTags, sourceSites] = await Promise.all([
+    findUsedTaxonomy({
+      contentCollection: 'aktuality',
+      relationCollection: 'tags',
+      relationField: 'tags',
+      where: baseWhere,
     }),
     getSourceSites(site.slug),
   ])
 
   const activeTagSlugs = queryList(query.tag)
-  const activeTags = tags.docs.filter((tag) => activeTagSlugs.includes(tag.slug))
+  const activeTags = await findTaxonomyBySlugs({ collection: 'tags', slugs: activeTagSlugs })
   if (activeTags.length) {
     filters.push({ tags: { in: activeTags.map((tag) => tag.id) } })
   }
+  const tags = mergeActiveTaxonomy(usedTags, activeTags)
 
   const activeSourceSlugs = queryList(query.source)
   const activeSources = sourceSites.filter((source) => activeSourceSlugs.includes(source.slug))
@@ -96,7 +98,7 @@ export default async function NewsListingPage({
       solid: true,
     },
   ]
-  const tagChips: FilterChip[] = tags.docs.map((tag) => ({
+  const tagChips: FilterChip[] = tags.map((tag) => ({
     active: activeTagSlugs.includes(tag.slug),
     clearable: true,
     href: hrefWith(

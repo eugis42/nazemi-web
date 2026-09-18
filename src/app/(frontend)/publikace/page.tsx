@@ -18,7 +18,14 @@ import {
   withSiteQuery,
 } from '@/lib/content'
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
-import { getListingWhere, getPayloadClient, resolveSiteFromCurrentRequest } from '@/lib/frontend'
+import {
+  findTaxonomyBySlugs,
+  findUsedTaxonomy,
+  getListingWhere,
+  getPayloadClient,
+  mergeActiveTaxonomy,
+  resolveSiteFromCurrentRequest,
+} from '@/lib/frontend'
 import { buildPageMetadata } from '@/lib/metadata'
 
 const PAGE_SIZE = 16
@@ -57,44 +64,35 @@ export default async function PublikacePage({
   })
   const filters: Where[] = [baseWhere]
 
-  const [types, tags, scoped] = await Promise.all([
-    payload.find({
-      collection: 'publication-types',
-      depth: 0,
-      limit: 30,
-      pagination: false,
-      sort: 'title',
+  const [usedTypes, usedTopics] = await Promise.all([
+    findUsedTaxonomy({
+      contentCollection: 'publikace',
+      relationCollection: 'publication-types',
+      relationField: 'types',
+      where: baseWhere,
     }),
-    payload.find({ collection: 'tags', depth: 0, limit: 30, pagination: false, sort: 'title' }),
-    // Topic chips only list tags that publications on this site actually use.
-    payload.find({
-      collection: 'publikace',
-      depth: 0,
-      limit: 500,
-      pagination: false,
-      select: { topics: true },
+    findUsedTaxonomy({
+      contentCollection: 'publikace',
+      relationCollection: 'tags',
+      relationField: 'topics',
       where: baseWhere,
     }),
   ])
 
-  const usedTopicIds = new Set(
-    scoped.docs.flatMap((doc) =>
-      (doc.topics || []).map((topic) => (typeof topic === 'object' ? topic.id : topic)),
-    ),
-  )
-  const publicationTopics = tags.docs.filter((tag) => usedTopicIds.has(tag.id))
-
   const activeTypeSlugs = queryList(query.filter)
-  const activeTypes = types.docs.filter((type) => activeTypeSlugs.includes(type.slug))
+  const activeTopicSlugs = queryList(query.topic)
+  const [activeTypes, activeTopics] = await Promise.all([
+    findTaxonomyBySlugs({ collection: 'publication-types', slugs: activeTypeSlugs }),
+    findTaxonomyBySlugs({ collection: 'tags', slugs: activeTopicSlugs }),
+  ])
   if (activeTypes.length) {
     filters.push({ types: { in: activeTypes.map((type) => type.id) } })
   }
-
-  const activeTopicSlugs = queryList(query.topic)
-  const activeTopics = publicationTopics.filter((topic) => activeTopicSlugs.includes(topic.slug))
   if (activeTopics.length) {
     filters.push({ topics: { in: activeTopics.map((topic) => topic.id) } })
   }
+  const types = mergeActiveTaxonomy(usedTypes, activeTypes)
+  const publicationTopics = mergeActiveTaxonomy(usedTopics, activeTopics)
 
   const publications = await payload.find({
     collection: 'publikace',
@@ -123,7 +121,7 @@ export default async function PublikacePage({
       solid: true,
     },
   ]
-  const typeChips: FilterChip[] = types.docs.map((type) => ({
+  const typeChips: FilterChip[] = types.map((type) => ({
     active: activeTypeSlugs.includes(type.slug),
     clearable: true,
     href: hrefWith(

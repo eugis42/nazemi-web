@@ -71,6 +71,10 @@ scripts/.*-backup*.json
 /blob-report/
 /playwright/.cache/
 
+# WP import download cache + last run report
+/.cache/
+scripts/import-aktuality-report.json
+
 # Editor local
 .cursor/
 .vscode/

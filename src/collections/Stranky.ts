@@ -7,6 +7,7 @@ import {
   adminDocumentTitleClass,
   draftStatusListCellField,
   excerptField,
+  imageUploadFilter,
   metaTabDescription,
   seoFields,
   siteField,
@@ -108,6 +109,7 @@ export const Stranky = {
       type: 'upload',
       label: 'Úvodní obrázek',
       relationTo: 'media',
+      filterOptions: imageUploadFilter,
       admin: {
         condition: (_, siblingData) => !siblingData?.isHomepage,
         position: 'sidebar',

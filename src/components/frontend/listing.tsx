@@ -70,7 +70,7 @@ export function Pagination({
 }) {
   if (totalPages <= 1) return null
 
-  const pages = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pages = paginationWindow(currentPage, totalPages)
   const prevDisabled = currentPage <= 1
   const nextDisabled = currentPage >= totalPages
 
@@ -99,20 +99,72 @@ export function Pagination({
       data-total-pages={totalPages}
     >
       {step('←', 'Předchozí strana', prevDisabled, currentPage - 1)}
-      {pages.map((page) => (
-        <Link
-          aria-current={page === currentPage ? 'page' : undefined}
-          aria-label={`Strana ${page}`}
-          className={page === currentPage ? 'btn-pagination-active' : 'btn-pagination'}
-          href={buildHref(page)}
-          key={page}
-        >
-          {page}
-        </Link>
-      ))}
+      {pages.map((page, index) =>
+        page === 'ellipsis' ? (
+          <span
+            aria-hidden="true"
+            className="btn-pagination-ellipsis"
+            key={`ellipsis-${index}`}
+          >
+            <svg
+              aria-hidden="true"
+              className="btn-pagination-ellipsis-dots"
+              fill="currentColor"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <circle cx="2" cy="8" r="1.5" />
+              <circle cx="8" cy="8" r="1.5" />
+              <circle cx="14" cy="8" r="1.5" />
+            </svg>
+          </span>
+        ) : (
+          <Link
+            aria-current={page === currentPage ? 'page' : undefined}
+            aria-label={`Strana ${page}`}
+            className={page === currentPage ? 'btn-pagination-active' : 'btn-pagination'}
+            href={buildHref(page)}
+            key={page}
+          >
+            {page}
+          </Link>
+        ),
+      )}
       {step('→', 'Další strana', nextDisabled, currentPage + 1)}
     </nav>
   )
+}
+
+/** First + last + current ± siblings; ellipsis when the gap is bigger than 1. */
+function paginationWindow(
+  currentPage: number,
+  totalPages: number,
+  siblingCount = 1,
+): Array<number | 'ellipsis'> {
+  const range = (start: number, end: number) =>
+    Array.from({ length: end - start + 1 }, (_, i) => start + i)
+
+  // first, last, current, 2×siblings, 2×ellipsis slots
+  const maxButtons = siblingCount * 2 + 5
+  if (totalPages <= maxButtons) return range(1, totalPages)
+
+  const left = Math.max(currentPage - siblingCount, 1)
+  const right = Math.min(currentPage + siblingCount, totalPages)
+  const showLeftEllipsis = left > 2
+  const showRightEllipsis = right < totalPages - 1
+
+  if (!showLeftEllipsis && showRightEllipsis) {
+    const leftCount = 3 + siblingCount * 2
+    return [...range(1, leftCount), 'ellipsis', totalPages]
+  }
+
+  if (showLeftEllipsis && !showRightEllipsis) {
+    const rightCount = 3 + siblingCount * 2
+    return [1, 'ellipsis', ...range(totalPages - rightCount + 1, totalPages)]
+  }
+
+  return [1, 'ellipsis', ...range(left, right), 'ellipsis', totalPages]
 }
 
 export function EmptyState({ children }: { children: React.ReactNode }) {

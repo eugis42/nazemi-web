@@ -6,7 +6,14 @@ import { EmptyState, FilterBar, Pagination, type FilterChip } from '@/components
 import { SiteShell } from '@/components/frontend/SiteShell'
 import { hrefWith, queryList, toggleQueryValue, withSiteQuery } from '@/lib/content'
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
-import { getListingWhere, getPayloadClient, resolveSiteFromCurrentRequest } from '@/lib/frontend'
+import {
+  findTaxonomyBySlugs,
+  findUsedTaxonomy,
+  getListingWhere,
+  getPayloadClient,
+  mergeActiveTaxonomy,
+  resolveSiteFromCurrentRequest,
+} from '@/lib/frontend'
 import { buildPageMetadata } from '@/lib/metadata'
 
 const PAGE_SIZE = 50
@@ -40,44 +47,35 @@ export default async function WorkshopsPage({
   const baseWhere = await getListingWhere({ collection: 'workshopy', siteId: site.id })
   const filters: Where[] = [baseWhere]
 
-  const [audiences, tags, scoped] = await Promise.all([
-    payload.find({
-      collection: 'workshop-audiences',
-      depth: 0,
-      limit: 30,
-      pagination: false,
-      sort: 'title',
+  const [usedAudiences, usedTopics] = await Promise.all([
+    findUsedTaxonomy({
+      contentCollection: 'workshopy',
+      relationCollection: 'workshop-audiences',
+      relationField: 'audiences',
+      where: baseWhere,
     }),
-    payload.find({ collection: 'tags', depth: 0, limit: 50, pagination: false, sort: 'title' }),
-    // Topic chips only list themes that workshops on this site actually use.
-    payload.find({
-      collection: 'workshopy',
-      depth: 0,
-      limit: 500,
-      pagination: false,
-      select: { topics: true },
+    findUsedTaxonomy({
+      contentCollection: 'workshopy',
+      relationCollection: 'tags',
+      relationField: 'topics',
       where: baseWhere,
     }),
   ])
 
-  const usedTopicIds = new Set(
-    scoped.docs.flatMap((doc) =>
-      (doc.topics || []).map((topic) => (typeof topic === 'object' ? topic.id : topic)),
-    ),
-  )
-  const workshopTopics = tags.docs.filter((tag) => usedTopicIds.has(tag.id))
-
   const activeAudienceSlugs = queryList(query.audience)
-  const activeAudiences = audiences.docs.filter((item) => activeAudienceSlugs.includes(item.slug))
+  const activeTopicSlugs = queryList(query.topic)
+  const [activeAudiences, activeTopics] = await Promise.all([
+    findTaxonomyBySlugs({ collection: 'workshop-audiences', slugs: activeAudienceSlugs }),
+    findTaxonomyBySlugs({ collection: 'tags', slugs: activeTopicSlugs }),
+  ])
   if (activeAudiences.length) {
     filters.push({ audiences: { in: activeAudiences.map((item) => item.id) } })
   }
-
-  const activeTopicSlugs = queryList(query.topic)
-  const activeTopics = workshopTopics.filter((item) => activeTopicSlugs.includes(item.slug))
   if (activeTopics.length) {
     filters.push({ topics: { in: activeTopics.map((item) => item.id) } })
   }
+  const audiences = mergeActiveTaxonomy(usedAudiences, activeAudiences)
+  const workshopTopics = mergeActiveTaxonomy(usedTopics, activeTopics)
 
   const workshops = await payload.find({
     collection: 'workshopy',
@@ -106,7 +104,7 @@ export default async function WorkshopsPage({
       solid: true,
     },
   ]
-  const audienceChips: FilterChip[] = audiences.docs.map((item) => ({
+  const audienceChips: FilterChip[] = audiences.map((item) => ({
     active: activeAudienceSlugs.includes(item.slug),
     clearable: true,
     href: hrefWith(

@@ -73,10 +73,34 @@ function renderChip(chip: FilterChip, index: number) {
   )
 }
 
-function FilterToggleButton({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+function FilterToggleButton({
+  activeCount,
+  open,
+  onToggle,
+}: {
+  activeCount: number
+  open: boolean
+  onToggle: () => void
+}) {
   const openFaceRef = useRef<HTMLSpanElement>(null)
   const closeFaceRef = useRef<HTMLSpanElement>(null)
   const [stackWidth, setStackWidth] = useState<number | null>(null)
+  const showActiveLabel = !open && activeCount > 0
+  const openLabel = showActiveLabel ? 'Aktivní filtry' : 'Filtrovat'
+  // Saans liga: "(1)" → ① — kill features + ZWSP (same as SearchResults counts)
+  const openLabelNode = showActiveLabel ? (
+    <>
+      Aktivní filtry{' '}
+      <span className="[font-feature-settings:'liga'_0,'clig'_0,'calt'_0,'dlig'_0]">
+        {'(\u200B'}
+        {activeCount}
+        {'\u200B)'}
+      </span>
+    </>
+  ) : (
+    'Filtrovat'
+  )
+  const openLabelSr = showActiveLabel ? `Aktivní filtry (${activeCount})` : 'Filtrovat'
 
   const syncWidth = useCallback(() => {
     const active = open ? closeFaceRef.current : openFaceRef.current
@@ -86,7 +110,7 @@ function FilterToggleButton({ open, onToggle }: { open: boolean; onToggle: () =>
 
   useLayoutEffect(() => {
     syncWidth()
-  }, [syncWidth])
+  }, [syncWidth, openLabel, activeCount])
 
   useLayoutEffect(() => {
     const ro =
@@ -108,7 +132,9 @@ function FilterToggleButton({ open, onToggle }: { open: boolean; onToggle: () =>
     <button
       aria-controls="listing-filter-panel"
       aria-expanded={open}
-      className="btn-filter filter-toggle cursor-pointer border-0 sm:ml-auto"
+      className={`btn-filter filter-toggle cursor-pointer border-0 sm:ml-auto${
+        showActiveLabel ? ' is-active-filters' : ''
+      }`}
       data-open={open ? 'true' : 'false'}
       onClick={onToggle}
       type="button"
@@ -120,14 +146,14 @@ function FilterToggleButton({ open, onToggle }: { open: boolean; onToggle: () =>
       >
         <span className="filter-toggle-face" data-face="open" ref={openFaceRef}>
           <FilterIcon />
-          Filtrovat
+          {openLabelNode}
         </span>
         <span className="filter-toggle-face" data-face="close" ref={closeFaceRef}>
           <FilterOffIcon />
           Zavřít filtr
         </span>
       </span>
-      <span className="sr-only">{open ? 'Zavřít filtr' : 'Filtrovat'}</span>
+      <span className="sr-only">{open ? 'Zavřít filtr' : openLabelSr}</span>
     </button>
   )
 }
@@ -146,10 +172,11 @@ export function FilterBar({
   sections?: FilterSection[]
 }) {
   const visibleSections = sections.filter((section) => section.chips.length)
-  const hasActiveSecondary = visibleSections.some((section) =>
-    section.chips.some((chip) => chip.active),
+  const activeCount = visibleSections.reduce(
+    (sum, section) => sum + section.chips.filter((chip) => chip.active).length,
+    0,
   )
-  const [open, setOpen] = useState(hasActiveSecondary)
+  const [open, setOpen] = useState(activeCount > 0)
 
   if (!primary.length && !visibleSections.length) return null
 
@@ -164,7 +191,11 @@ export function FilterBar({
           {primary.map(renderChip)}
         </div>
         {visibleSections.length ? (
-          <FilterToggleButton open={open} onToggle={() => setOpen((value) => !value)} />
+          <FilterToggleButton
+            activeCount={activeCount}
+            open={open}
+            onToggle={() => setOpen((value) => !value)}
+          />
         ) : null}
       </div>
 

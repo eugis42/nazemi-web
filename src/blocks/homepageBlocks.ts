@@ -2,6 +2,7 @@ import type { Block } from 'payload'
 
 import { additionalColorField } from '@/fields/additionalColor'
 import { callToActionField } from '@/fields/cta'
+import { imageUploadFilter } from '@/fields/shared'
 import {
   BLOCK_GROUP_HOME,
   blockPickerAdmin,
@@ -313,6 +314,7 @@ export const AboutBlock: Block = {
       type: 'upload',
       label: 'Obrázek',
       relationTo: 'media',
+      filterOptions: imageUploadFilter,
     },
     {
       name: 'columns',

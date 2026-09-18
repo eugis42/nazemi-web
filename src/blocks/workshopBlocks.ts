@@ -4,6 +4,7 @@ import {
   BLOCK_GROUP_WORKSHOP,
   blockPickerAdmin,
 } from '@/blocks/blockMeta'
+import { imageUploadFilter } from '@/fields/shared'
 import { RichTextBlock } from './pageBlocks'
 
 export { RichTextBlock }
@@ -66,6 +67,7 @@ export const SpeakersBlock: Block = {
           type: 'upload',
           label: 'Fotografie',
           relationTo: 'media',
+          filterOptions: imageUploadFilter,
         },
       ],
     },

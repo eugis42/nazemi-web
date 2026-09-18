@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { contentCollectionAccess } from '@/access/roles'
-import { adminDocumentTitleClass, draftStatusListCellField, siteField, uploadPreviewListCellAdmin } from '@/fields/shared'
+import { adminDocumentTitleClass, draftStatusListCellField, imageUploadFilter, siteField, uploadPreviewListCellAdmin } from '@/fields/shared'
 import { makeSlugUniqueOnDuplicate } from '@/hooks/content-hooks'
 import { ADMIN_NAV_SITE_CONTENT } from '@/lib/admin-nav-groups'
 import { getAdminSiteSlugFromRequest } from '@/lib/site-context'
@@ -34,6 +34,7 @@ export const Lide = {
       type: 'upload',
       label: 'Fotografie',
       relationTo: 'media',
+      filterOptions: imageUploadFilter,
       admin: {
         ...uploadPreviewListCellAdmin,
         position: 'sidebar',

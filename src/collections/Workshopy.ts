@@ -8,6 +8,7 @@ import {
   ctaField,
   draftStatusListCellField,
   excerptField,
+  imageUploadFilter,
   metaTabDescription,
   seoFields,
   siteField,
@@ -49,6 +50,7 @@ export const Workshopy = {
       type: 'upload',
       label: 'Úvodní obrázek',
       relationTo: 'media',
+      filterOptions: imageUploadFilter,
       admin: {
         position: 'sidebar',
       },
