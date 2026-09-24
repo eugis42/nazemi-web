@@ -1,4 +1,5 @@
 import {
+  HeadingFeature,
   RelationshipFeature,
   UploadFeature,
   lexicalEditor,
@@ -65,6 +66,12 @@ const uploadWidthPercentField = {
 export const nazemiLexicalEditor = lexicalEditor({
   features: ({ defaultFeatures }) =>
     defaultFeatures.map((feature) => {
+      // Page headers already use h1 — keep rich text at h2+ to avoid duplicate H1s.
+      if (feature.key === 'heading') {
+        return HeadingFeature({
+          enabledHeadingSizes: ['h2', 'h3', 'h4', 'h5', 'h6'],
+        })
+      }
       if (feature.key === 'relationship') {
         return RelationshipFeature({
           enabledCollections: [...RICH_TEXT_RELATION_COLLECTIONS],
