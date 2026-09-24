@@ -3,11 +3,12 @@ import {
   RichText as PayloadRichText,
 } from '@payloadcms/richtext-lexical/react'
 import type {
+  SerializedHeadingNode,
   SerializedLinkNode,
   SerializedRelationshipNode,
   SerializedUploadNode,
 } from '@payloadcms/richtext-lexical'
-import type { ComponentProps, CSSProperties } from 'react'
+import type { ComponentProps, CSSProperties, ElementType, ReactNode } from 'react'
 
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
@@ -136,6 +137,15 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
       converters={({ defaultConverters }) => ({
         ...defaultConverters,
         ...LinkJSXConverter({ internalDocToHref }),
+        // Live + imported content may still store h1; page chrome already owns <h1>.
+        heading: ({ node, nodesToJSX }: {
+          node: SerializedHeadingNode
+          nodesToJSX: (args: { nodes: SerializedHeadingNode['children'] }) => ReactNode
+        }) => {
+          const children = nodesToJSX({ nodes: node.children })
+          const Tag = (node.tag === 'h1' ? 'h2' : node.tag) as ElementType
+          return <Tag>{children}</Tag>
+        },
         relationship: ({ node }: { node: SerializedRelationshipNode }) => (
           <RichTextRelation
             relationTo={node.relationTo}
