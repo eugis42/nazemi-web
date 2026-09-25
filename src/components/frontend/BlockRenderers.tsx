@@ -131,7 +131,7 @@ export function HeroBlock({
           })}
         </h1>
         {subheadline ? (
-          <p className="font-saans max-w-full text-balance text-2xl leading-snug tracking-tight text-ground lg:text-3xl xl:text-3xl 2xl:text-4xl">
+          <p className="font-saans max-w-full text-balance text-xl leading-tight tracking-tight text-ground lg:text-2xl xl:text-2xl 2xl:text-3xl">
             {subheadline}
           </p>
         ) : null}
