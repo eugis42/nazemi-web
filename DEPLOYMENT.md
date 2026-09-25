@@ -12,6 +12,18 @@ NaZemi runs as Next.js + Payload on the host (Node), Postgres in Docker (`docker
 
 Seed assets for a fresh install: `public/seed/` (in repo) + `npm run seed`.
 
+## Users are sacred — do not overwrite
+
+**Never** sync local DB users onto staging/prod. Local seed accounts (`admin@nazemi.local`, `test@test.com`) must not replace real editors.
+
+| Do | Don’t |
+|----|--------|
+| `./scripts/db-dump-content.sh` / `./scripts/db-restore-content.sh` | `DROP SCHEMA public CASCADE` + full `pg_restore` for “content update” |
+| Keep `users` + `users_sessions` on the server | Include `users` in content dumps |
+| After a bad wipe: `npx tsx scripts/set-prod-admin.ts` then forgot-password | Restore local dump over prod logins |
+
+Content restore script always snapshots `users`/`users_sessions` first. SMTP (`SMTP_*` in `.env`) is independent of DB dumps — leave it alone when restoring content.
+
 ## Staging checklist (`novy.nazemi.cz`)
 
 1. **Clone** on the VPS and install deps:
@@ -73,5 +85,7 @@ Default seed admin (local): `admin@nazemi.local` / `payload-demo-password` after
 |---------|---------|
 | `npm run db:push` | Apply Payload schema to Postgres |
 | `npm run seed` | Populate demo content |
-| `npx tsx scripts/set-prod-admin.ts` | Create/update production admin |
+| `npx tsx scripts/set-prod-admin.ts` | Create/update production admin (also strips seed users) |
+| `npm run db:dump-content` | Dump DB **without** `users` / `users_sessions` |
+| `npm run db:restore-content -- file.dump` | Restore content; snapshots users first |
 | `npx tsx scripts/reindex-search.ts` | Rebuild search index |

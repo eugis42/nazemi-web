@@ -10,7 +10,7 @@ import { useEffect, useRef } from 'react'
  * and parallax translateY chops the graphic bottom (esp. subsite / Flowmakers).
  */
 /** Lag vs scroll — 0 = glued to viewport, 1 = normal document scroll. */
-const PARALLAX_FACTOR = 0.35
+const PARALLAX_FACTOR = 0.175
 /** Lerp toward target each frame — higher = snappier, lower = smoother. */
 const SMOOTHING = 0.12
 
