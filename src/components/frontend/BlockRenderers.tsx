@@ -254,6 +254,7 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
   return (
     <Button
       backgroundColor={action.backgroundColor}
+      className="mt-auto self-start"
       external={action.external}
       href={action.href || '#'}
       newTab={action.newTab}
@@ -291,7 +292,7 @@ export function ThreeColumnsBlock({
           const title = column.title?.trim()
           return (
             <div
-              className="flex min-w-0 flex-col gap-card"
+              className="flex h-full min-w-0 flex-col gap-card"
               data-component="three-column"
               key={`${title || headline || 'col'}-${index}`}
             >
