@@ -273,9 +273,9 @@ export function ThreeColumnsBlock({
 }) {
   const columns = (
     (block.columns as {
-      body?: string
-      headline?: string
-      title?: string
+      body?: unknown
+      headline?: string | null
+      title?: string | null
       actions?: ColumnCtaRow['actions']
     }[]) || []
   ).slice(0, 3)
@@ -286,20 +286,30 @@ export function ThreeColumnsBlock({
     <section className="flex flex-col" data-block="threeColumns">
       <BlockHeader title={(block.title as string) || undefined} />
       <div className="grid grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
-        {columns.map((column, index) => (
-          <div
-            className="flex min-w-0 flex-col gap-card"
-            data-component="three-column"
-            key={`${column.title}-${index}`}
-          >
-            <h3 className="font-saans text-5xl leading-none tracking-tight text-ground lg:text-[74px] lg:leading-[70px] lg:tracking-[-1.48px]">
-              {column.headline ? <span className="block text-green">{column.headline}</span> : null}
-              {column.title ? <span className="block">{column.title}</span> : null}
-            </h3>
-            {column.body ? <p className="text-body-inter text-ground">{column.body}</p> : null}
-            <ColumnCta column={column} siteSlug={siteSlug} />
-          </div>
-        ))}
+        {columns.map((column, index) => {
+          const headline = column.headline?.trim()
+          const title = column.title?.trim()
+          return (
+            <div
+              className="flex min-w-0 flex-col gap-card"
+              data-component="three-column"
+              key={`${title || headline || 'col'}-${index}`}
+            >
+              {headline || title ? (
+                <h3 className="font-saans text-5xl leading-none tracking-tight text-ground lg:text-[74px] lg:leading-[70px] lg:tracking-[-1.48px]">
+                  {headline ? <span className="block text-green">{headline}</span> : null}
+                  {title ? <span className="block">{title}</span> : null}
+                </h3>
+              ) : null}
+              {column.body ? (
+                <div className="prose-nazemi text-body-inter text-ground">
+                  <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
+                </div>
+              ) : null}
+              <ColumnCta column={column} siteSlug={siteSlug} />
+            </div>
+          )
+        })}
       </div>
     </section>
   )
@@ -314,9 +324,9 @@ export function ThreeCardsBlock({
 }) {
   const columns = (
     (block.columns as {
-      body?: string
-      prefix?: string
-      title?: string
+      body?: unknown
+      prefix?: string | null
+      title?: string | null
       actions?: ColumnCtaRow['actions']
     }[]) || []
   ).slice(0, 3)
@@ -327,24 +337,34 @@ export function ThreeCardsBlock({
     <section className="flex flex-col" data-block="threeCards">
       <BlockHeader title={(block.title as string) || undefined} />
       <div className="grid grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
-        {columns.map((column, index) => (
-          <article
-            className="flex h-full min-w-0 flex-col border-2 border-ground bg-sky"
-            data-component="three-card"
-            key={`${column.title}-${index}`}
-          >
-            <div className="flex h-full flex-1 flex-col justify-between gap-6 p-card">
-              <div className="flex flex-col gap-2.5">
-                <h3 className="text-display text-ground">
-                  {column.prefix ? <span className="block text-green">{column.prefix}</span> : null}
-                  {column.title ? <span className="block">{column.title}</span> : null}
-                </h3>
-                {column.body ? <p className="text-body-inter text-ground">{column.body}</p> : null}
+        {columns.map((column, index) => {
+          const prefix = column.prefix?.trim()
+          const title = column.title?.trim()
+          return (
+            <article
+              className="flex h-full min-w-0 flex-col border-2 border-ground bg-sky"
+              data-component="three-card"
+              key={`${title || prefix || 'card'}-${index}`}
+            >
+              <div className="flex h-full flex-1 flex-col justify-between gap-6 p-card">
+                <div className="flex flex-col gap-2.5">
+                  {prefix || title ? (
+                    <h3 className="text-display text-ground">
+                      {prefix ? <span className="block text-green">{prefix}</span> : null}
+                      {title ? <span className="block">{title}</span> : null}
+                    </h3>
+                  ) : null}
+                  {column.body ? (
+                    <div className="prose-nazemi text-body-inter text-ground">
+                      <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
+                    </div>
+                  ) : null}
+                </div>
+                <ColumnCta column={column} siteSlug={siteSlug} />
               </div>
-              <ColumnCta column={column} siteSlug={siteSlug} />
-            </div>
-          </article>
-        ))}
+            </article>
+          )
+        })}
       </div>
     </section>
   )
