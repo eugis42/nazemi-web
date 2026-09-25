@@ -11,8 +11,6 @@ import { useEffect, useRef } from 'react'
  */
 /** Lag vs scroll — 0 = glued to viewport, 1 = normal document scroll. */
 const PARALLAX_FACTOR = 0.35
-/** Cap translate (px). */
-const PARALLAX_MAX_PX = 96
 /** Lerp toward target each frame — higher = snappier, lower = smoother. */
 const SMOOTHING = 0.12
 
@@ -25,26 +23,47 @@ export function HeroBackdrop({
   src?: string | null
 } = {}) {
   const imageSrc = src || '/hero-backdrop.svg'
+  const rootRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
     const img = imgRef.current
-    if (!img) return undefined
+    const root = rootRef.current
+    if (!img || !root) return undefined
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let current = 0
     let target = 0
     let raf = 0
+    /** Freeze translate once the graphic has fully left the viewport (still tracks while any pixel is visible). */
+    let frozen: number | null = null
 
     const clear = () => {
       current = 0
       target = 0
+      frozen = null
       img.style.transform = ''
     }
 
     const readTarget = () => {
       if (reduceMotion.matches) return 0
-      return Math.min(window.scrollY * PARALLAX_FACTOR, PARALLAX_MAX_PX)
+
+      // getBoundingClientRect includes transform → tracks the painted graphic.
+      const rect = img.getBoundingClientRect()
+      const visible = rect.bottom > 0 && rect.top < window.innerHeight
+
+      if (!visible) {
+        if (rect.bottom <= 0) {
+          if (frozen == null) frozen = current
+          return frozen
+        }
+        frozen = null
+        return 0
+      }
+
+      frozen = null
+      // No px cap — lag for the whole time any part of the graphic is on screen.
+      return window.scrollY * PARALLAX_FACTOR
     }
 
     const tick = () => {
@@ -97,6 +116,7 @@ export function HeroBackdrop({
   if (fitWidth) {
     return (
       <div
+        ref={rootRef}
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 w-full"
         data-component="hero-backdrop"
@@ -117,6 +137,7 @@ export function HeroBackdrop({
 
   return (
     <div
+      ref={rootRef}
       aria-hidden="true"
       className="pointer-events-none absolute inset-x-0 top-0 z-0 w-full"
       data-component="hero-backdrop"
