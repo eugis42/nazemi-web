@@ -23,13 +23,11 @@ export function HeroBackdrop({
   src?: string | null
 } = {}) {
   const imageSrc = src || '/hero-backdrop.svg'
-  const rootRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
     const img = imgRef.current
-    const root = rootRef.current
-    if (!img || !root) return undefined
+    if (!img) return undefined
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let current = 0
@@ -116,7 +114,6 @@ export function HeroBackdrop({
   if (fitWidth) {
     return (
       <div
-        ref={rootRef}
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 w-full"
         data-component="hero-backdrop"
@@ -137,7 +134,6 @@ export function HeroBackdrop({
 
   return (
     <div
-      ref={rootRef}
       aria-hidden="true"
       className="pointer-events-none absolute inset-x-0 top-0 z-0 w-full"
       data-component="hero-backdrop"
