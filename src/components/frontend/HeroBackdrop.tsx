@@ -7,12 +7,9 @@ import { useEffect, useRef } from 'react'
  * Used for every site when `SiteShell` gets `backdrop`.
  */
 /** Lag vs scroll — 0 = glued to viewport, 1 = normal document scroll. */
-const PARALLAX_FACTOR = 0.3
-/**
- * Max translate (px). Image is only this much taller than the clip — enough slack
- * so lag does not crop the graphic bottom, without the old 140% zoom.
- */
-const PARALLAX_MAX_PX = 64
+const PARALLAX_FACTOR = 0.35
+/** Cap translate (px) — fixed, not derived from % heights (main site parent had no definite height). */
+const PARALLAX_MAX_PX = 96
 /** Lerp toward target each frame — higher = snappier, lower = smoother. */
 const SMOOTHING = 0.12
 
@@ -44,9 +41,7 @@ export function HeroBackdrop({
 
     const readTarget = () => {
       if (reduceMotion.matches) return 0
-      const slack = Math.max(0, img.offsetHeight - (img.parentElement?.clientHeight ?? 0))
-      const maxOffset = Math.min(PARALLAX_MAX_PX, slack)
-      return Math.min(window.scrollY * PARALLAX_FACTOR, maxOffset)
+      return Math.min(window.scrollY * PARALLAX_FACTOR, PARALLAX_MAX_PX)
     }
 
     const tick = () => {
@@ -62,7 +57,6 @@ export function HeroBackdrop({
 
       img.style.transform = current ? `translate3d(0, ${current}px, 0)` : ''
 
-      // Keep easing while settling (trackpad / jagged wheel).
       if (current !== target) {
         raf = requestAnimationFrame(tick)
       }
@@ -97,30 +91,42 @@ export function HeroBackdrop({
     }
   }, [])
 
-  // Pre-parallax framing (object-cover object-top, fill clip) + thin bottom slack only.
-  const imgClass = fitWidth
-    ? 'w-full object-cover object-top will-change-transform'
-    : 'w-full min-h-screen object-cover object-top will-change-transform'
+  if (fitWidth) {
+    // Subsite: keep 75vh frame. No overflow-y clip on the graphic — only clip x if needed.
+    return (
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 w-full overflow-x-hidden"
+        data-component="hero-backdrop"
+        data-fit-width="true"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          ref={imgRef}
+          alt=""
+          className="block h-[75vh] w-full object-cover object-top will-change-transform"
+          height={1378}
+          src={imageSrc}
+          width={1512}
+        />
+      </div>
+    )
+  }
 
+  // Main site: show the full SVG (no overflow-y / object-cover crop). Natural width→height.
   return (
     <div
       aria-hidden="true"
-      className={
-        fitWidth
-          ? 'pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 h-[75vh] w-full overflow-hidden'
-          : 'pointer-events-none absolute inset-x-0 top-0 z-0 min-h-screen w-full overflow-hidden'
-      }
+      className="pointer-events-none absolute inset-x-0 top-0 z-0 w-full overflow-x-hidden"
       data-component="hero-backdrop"
-      data-fit-width={fitWidth ? 'true' : undefined}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imgRef}
         alt=""
-        className={imgClass}
+        className="block h-auto w-full will-change-transform"
         height={1378}
         src={imageSrc}
-        style={{ height: `calc(100% + ${PARALLAX_MAX_PX}px)` }}
         width={1512}
       />
     </div>
