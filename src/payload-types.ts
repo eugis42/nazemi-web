@@ -627,18 +627,35 @@ export interface Stranky {
             blockType: 'gallery';
           }
         | {
-            title: string;
+            title?: string | null;
             /**
              * Max. 3 sloupce.
              */
             columns?:
               | {
                   /**
-                   * Akcentová barva — např. 150+.
+                   * Akcentová barva — např. 150+. Prázdné → nezobrazí se.
                    */
-                  headline: string;
-                  title: string;
-                  body: string;
+                  headline?: string | null;
+                  /**
+                   * Prázdné → nezobrazí se.
+                   */
+                  title?: string | null;
+                  body?: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  } | null;
                   /**
                    * Volitelné, max. 1 tlačítko
                    */
@@ -701,18 +718,35 @@ export interface Stranky {
             blockType: 'threeColumns';
           }
         | {
-            title: string;
+            title?: string | null;
             /**
              * Max. 3 karty.
              */
             columns?:
               | {
                   /**
-                   * Akcentová barva — např. Co:
+                   * Akcentová barva — např. Co:. Prázdné → nezobrazí se.
                    */
                   prefix?: string | null;
-                  title: string;
-                  body: string;
+                  /**
+                   * Prázdné → nezobrazí se.
+                   */
+                  title?: string | null;
+                  body?: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  } | null;
                   /**
                    * Volitelné, max. 1 tlačítko
                    */
@@ -1268,18 +1302,35 @@ export interface Stranky {
             blockType: 'gallery';
           }
         | {
-            title: string;
+            title?: string | null;
             /**
              * Max. 3 sloupce.
              */
             columns?:
               | {
                   /**
-                   * Akcentová barva — např. 150+.
+                   * Akcentová barva — např. 150+. Prázdné → nezobrazí se.
                    */
-                  headline: string;
-                  title: string;
-                  body: string;
+                  headline?: string | null;
+                  /**
+                   * Prázdné → nezobrazí se.
+                   */
+                  title?: string | null;
+                  body?: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  } | null;
                   /**
                    * Volitelné, max. 1 tlačítko
                    */
@@ -1342,18 +1393,35 @@ export interface Stranky {
             blockType: 'threeColumns';
           }
         | {
-            title: string;
+            title?: string | null;
             /**
              * Max. 3 karty.
              */
             columns?:
               | {
                   /**
-                   * Akcentová barva — např. Co:
+                   * Akcentová barva — např. Co:. Prázdné → nezobrazí se.
                    */
                   prefix?: string | null;
-                  title: string;
-                  body: string;
+                  /**
+                   * Prázdné → nezobrazí se.
+                   */
+                  title?: string | null;
+                  body?: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  } | null;
                   /**
                    * Volitelné, max. 1 tlačítko
                    */
@@ -2610,18 +2678,35 @@ export interface Workshopy {
             blockType: 'gallery';
           }
         | {
-            title: string;
+            title?: string | null;
             /**
              * Max. 3 sloupce.
              */
             columns?:
               | {
                   /**
-                   * Akcentová barva — např. 150+.
+                   * Akcentová barva — např. 150+. Prázdné → nezobrazí se.
                    */
-                  headline: string;
-                  title: string;
-                  body: string;
+                  headline?: string | null;
+                  /**
+                   * Prázdné → nezobrazí se.
+                   */
+                  title?: string | null;
+                  body?: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  } | null;
                   /**
                    * Volitelné, max. 1 tlačítko
                    */
@@ -2684,18 +2769,35 @@ export interface Workshopy {
             blockType: 'threeColumns';
           }
         | {
-            title: string;
+            title?: string | null;
             /**
              * Max. 3 karty.
              */
             columns?:
               | {
                   /**
-                   * Akcentová barva — např. Co:
+                   * Akcentová barva — např. Co:. Prázdné → nezobrazí se.
                    */
                   prefix?: string | null;
-                  title: string;
-                  body: string;
+                  /**
+                   * Prázdné → nezobrazí se.
+                   */
+                  title?: string | null;
+                  body?: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  } | null;
                   /**
                    * Volitelné, max. 1 tlačítko
                    */
@@ -3448,18 +3550,35 @@ export interface Projekty {
         blockType: 'gallery';
       }
     | {
-        title: string;
+        title?: string | null;
         /**
          * Max. 3 sloupce.
          */
         columns?:
           | {
               /**
-               * Akcentová barva — např. 150+.
+               * Akcentová barva — např. 150+. Prázdné → nezobrazí se.
                */
-              headline: string;
-              title: string;
-              body: string;
+              headline?: string | null;
+              /**
+               * Prázdné → nezobrazí se.
+               */
+              title?: string | null;
+              body?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
               /**
                * Volitelné, max. 1 tlačítko
                */
@@ -3522,18 +3641,35 @@ export interface Projekty {
         blockType: 'threeColumns';
       }
     | {
-        title: string;
+        title?: string | null;
         /**
          * Max. 3 karty.
          */
         columns?:
           | {
               /**
-               * Akcentová barva — např. Co:
+               * Akcentová barva — např. Co:. Prázdné → nezobrazí se.
                */
               prefix?: string | null;
-              title: string;
-              body: string;
+              /**
+               * Prázdné → nezobrazí se.
+               */
+              title?: string | null;
+              body?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
               /**
                * Volitelné, max. 1 tlačítko
                */

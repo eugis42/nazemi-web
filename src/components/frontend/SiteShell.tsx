@@ -1,6 +1,6 @@
 import type { Site } from '@/payload-types'
 
-import { HeroBackdrop } from '@/components/frontend/BlockRenderers'
+import { HeroBackdrop } from '@/components/frontend/HeroBackdrop'
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/frontend/listing'
 import { SiteFooter } from '@/components/frontend/SiteFooter'
 import { SiteHeader } from '@/components/frontend/SiteHeader'
@@ -36,25 +36,31 @@ export function SiteShell({
   const isSubsite = site.siteType === 'subsite'
 
   return (
-    <div className="page-shell relative overflow-x-hidden" style={siteBrandStyle(site)}>
-      <SiteHeader
-        logoAlt={mediaAlt(logo, site.name)}
-        logoNavbarPadding={site.logoNavbarPadding}
-        logoUrl={mediaURL(logo)}
-        mainMenu={mainMenu}
-        secondaryMenu={site.secondaryMenu}
-        siteName={site.name}
-        siteSlug={site.slug}
-      />
-      {breadcrumbs?.length ? <Breadcrumbs items={breadcrumbs} /> : null}
-      {beforeMain}
+    <div className="page-shell relative" style={siteBrandStyle(site)}>
+      {/*
+        Keep overflow-x clip off page-shell: overflow-x-hidden forces overflow-y to
+        clip too, which chops parallax translateY on the homepage backdrop.
+      */}
+      <div className="relative z-20 overflow-x-hidden">
+        <SiteHeader
+          logoAlt={mediaAlt(logo, site.name)}
+          logoNavbarPadding={site.logoNavbarPadding}
+          logoUrl={mediaURL(logo)}
+          mainMenu={mainMenu}
+          secondaryMenu={site.secondaryMenu}
+          siteName={site.name}
+          siteSlug={site.slug}
+        />
+        {breadcrumbs?.length ? <Breadcrumbs items={breadcrumbs} /> : null}
+        {beforeMain}
+      </div>
       {backdrop ? (
         <HeroBackdrop
           fitWidth={isSubsite}
           src={mediaSizeURL(homepageBackground, 'hero') || mediaURL(homepageBackground)}
         />
       ) : null}
-      <main className={`relative z-10 pb-section ${mainClassName}`}>
+      <main className={`relative z-10 overflow-x-hidden pb-section ${mainClassName}`}>
         {stacked ? <div className="section-stack">{children}</div> : children}
         <div className="container mt-section">
           <SiteFooter site={site} />

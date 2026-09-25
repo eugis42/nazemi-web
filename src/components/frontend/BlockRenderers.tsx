@@ -35,43 +35,7 @@ export type ContentBlock = {
   [key: string]: unknown
 }
 
-/** Full-width wave illustration sitting behind the hero and the first section below it. */
-export function HeroBackdrop({
-  fitWidth = false,
-  src,
-}: {
-  /** Subsite: 75vh under navbar, object-cover (sides may crop). */
-  fitWidth?: boolean
-  src?: string | null
-} = {}) {
-  const imageSrc = src || '/hero-backdrop.svg'
-
-  return (
-    <div
-      aria-hidden="true"
-      className={
-        fitWidth
-          ? 'pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 h-[75vh] w-full overflow-hidden'
-          : 'pointer-events-none absolute inset-x-0 top-0 z-0 min-h-screen w-full overflow-hidden'
-      }
-      data-component="hero-backdrop"
-      data-fit-width={fitWidth ? 'true' : undefined}
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt=""
-        className={
-          fitWidth
-            ? 'h-full w-full object-cover object-top'
-            : 'h-full min-h-screen w-full object-cover object-top'
-        }
-        height={1378}
-        src={imageSrc}
-        width={1512}
-      />
-    </div>
-  )
-}
+export { HeroBackdrop } from '@/components/frontend/HeroBackdrop'
 
 export function HeroBlock({
   block,
@@ -131,7 +95,7 @@ export function HeroBlock({
           })}
         </h1>
         {subheadline ? (
-          <p className="font-saans max-w-full text-balance text-2xl leading-snug tracking-tight text-ground lg:text-3xl xl:text-3xl 2xl:text-4xl">
+          <p className="font-saans max-w-full text-balance text-xl leading-tight tracking-tight text-ground lg:text-2xl xl:text-2xl 2xl:text-3xl">
             {subheadline}
           </p>
         ) : null}
@@ -254,6 +218,7 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
   return (
     <Button
       backgroundColor={action.backgroundColor}
+      className="mt-auto self-start"
       external={action.external}
       href={action.href || '#'}
       newTab={action.newTab}
@@ -264,6 +229,12 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
   )
 }
 
+/** Desktop 3-up: same cell width always; <3 columns centered in the row. */
+const THREE_UP_ROW =
+  'flex flex-col items-stretch gap-grid lg:flex-row lg:justify-center'
+const THREE_UP_CELL =
+  'w-full min-w-0 lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
+
 export function ThreeColumnsBlock({
   block,
   siteSlug,
@@ -273,9 +244,9 @@ export function ThreeColumnsBlock({
 }) {
   const columns = (
     (block.columns as {
-      body?: string
-      headline?: string
-      title?: string
+      body?: unknown
+      headline?: string | null
+      title?: string | null
       actions?: ColumnCtaRow['actions']
     }[]) || []
   ).slice(0, 3)
@@ -285,21 +256,31 @@ export function ThreeColumnsBlock({
   return (
     <section className="flex flex-col" data-block="threeColumns">
       <BlockHeader title={(block.title as string) || undefined} />
-      <div className="grid grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
-        {columns.map((column, index) => (
-          <div
-            className="flex min-w-0 flex-col gap-card"
-            data-component="three-column"
-            key={`${column.title}-${index}`}
-          >
-            <h3 className="font-saans text-5xl leading-none tracking-tight text-ground lg:text-[74px] lg:leading-[70px] lg:tracking-[-1.48px]">
-              {column.headline ? <span className="block text-green">{column.headline}</span> : null}
-              {column.title ? <span className="block">{column.title}</span> : null}
-            </h3>
-            {column.body ? <p className="text-body-inter text-ground">{column.body}</p> : null}
-            <ColumnCta column={column} siteSlug={siteSlug} />
-          </div>
-        ))}
+      <div className={THREE_UP_ROW}>
+        {columns.map((column, index) => {
+          const headline = column.headline?.trim()
+          const title = column.title?.trim()
+          return (
+            <div
+              className={`${THREE_UP_CELL} flex h-full flex-col gap-card`}
+              data-component="three-column"
+              key={`${title || headline || 'col'}-${index}`}
+            >
+              {headline || title ? (
+                <h3 className="font-saans text-5xl leading-none tracking-tight text-ground lg:text-[74px] lg:leading-[70px] lg:tracking-[-1.48px]">
+                  {headline ? <span className="block text-green">{headline}</span> : null}
+                  {title ? <span className="block">{title}</span> : null}
+                </h3>
+              ) : null}
+              {column.body ? (
+                <div className="prose-nazemi text-body-inter text-ground">
+                  <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
+                </div>
+              ) : null}
+              <ColumnCta column={column} siteSlug={siteSlug} />
+            </div>
+          )
+        })}
       </div>
     </section>
   )
@@ -314,9 +295,9 @@ export function ThreeCardsBlock({
 }) {
   const columns = (
     (block.columns as {
-      body?: string
-      prefix?: string
-      title?: string
+      body?: unknown
+      prefix?: string | null
+      title?: string | null
       actions?: ColumnCtaRow['actions']
     }[]) || []
   ).slice(0, 3)
@@ -326,25 +307,35 @@ export function ThreeCardsBlock({
   return (
     <section className="flex flex-col" data-block="threeCards">
       <BlockHeader title={(block.title as string) || undefined} />
-      <div className="grid grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
-        {columns.map((column, index) => (
-          <article
-            className="flex h-full min-w-0 flex-col border-2 border-ground bg-sky"
-            data-component="three-card"
-            key={`${column.title}-${index}`}
-          >
-            <div className="flex h-full flex-1 flex-col justify-between gap-6 p-card">
-              <div className="flex flex-col gap-2.5">
-                <h3 className="text-display text-ground">
-                  {column.prefix ? <span className="block text-green">{column.prefix}</span> : null}
-                  {column.title ? <span className="block">{column.title}</span> : null}
-                </h3>
-                {column.body ? <p className="text-body-inter text-ground">{column.body}</p> : null}
+      <div className={THREE_UP_ROW}>
+        {columns.map((column, index) => {
+          const prefix = column.prefix?.trim()
+          const title = column.title?.trim()
+          return (
+            <article
+              className={`${THREE_UP_CELL} flex h-full flex-col border-2 border-ground bg-sky`}
+              data-component="three-card"
+              key={`${title || prefix || 'card'}-${index}`}
+            >
+              <div className="flex h-full flex-1 flex-col justify-between gap-6 p-card">
+                <div className="flex flex-col gap-2.5">
+                  {prefix || title ? (
+                    <h3 className="text-display text-ground">
+                      {prefix ? <span className="block text-green">{prefix}</span> : null}
+                      {title ? <span className="block">{title}</span> : null}
+                    </h3>
+                  ) : null}
+                  {column.body ? (
+                    <div className="prose-nazemi text-body-inter text-ground">
+                      <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
+                    </div>
+                  ) : null}
+                </div>
+                <ColumnCta column={column} siteSlug={siteSlug} />
               </div>
-              <ColumnCta column={column} siteSlug={siteSlug} />
-            </div>
-          </article>
-        ))}
+            </article>
+          )
+        })}
       </div>
     </section>
   )
