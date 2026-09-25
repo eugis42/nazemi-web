@@ -5,10 +5,13 @@ import { useEffect, useRef } from 'react'
 /**
  * Homepage background: scrolls slower than page content (subtle parallax).
  * Used for every site when `SiteShell` gets `backdrop`.
+ *
+ * Do not put overflow-x-hidden on this wrapper — CSS then forces overflow-y clip
+ * and parallax translateY chops the graphic bottom (esp. subsite / Flowmakers).
  */
 /** Lag vs scroll — 0 = glued to viewport, 1 = normal document scroll. */
 const PARALLAX_FACTOR = 0.35
-/** Cap translate (px) — fixed, not derived from % heights (main site parent had no definite height). */
+/** Cap translate (px). */
 const PARALLAX_MAX_PX = 96
 /** Lerp toward target each frame — higher = snappier, lower = smoother. */
 const SMOOTHING = 0.12
@@ -92,11 +95,10 @@ export function HeroBackdrop({
   }, [])
 
   if (fitWidth) {
-    // Subsite: keep 75vh frame. No overflow-y clip on the graphic — only clip x if needed.
     return (
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 w-full overflow-x-hidden"
+        className="pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 w-full"
         data-component="hero-backdrop"
         data-fit-width="true"
       >
@@ -113,11 +115,10 @@ export function HeroBackdrop({
     )
   }
 
-  // Main site: show the full SVG (no overflow-y / object-cover crop). Natural width→height.
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 z-0 w-full overflow-x-hidden"
+      className="pointer-events-none absolute inset-x-0 top-0 z-0 w-full"
       data-component="hero-backdrop"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
