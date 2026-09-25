@@ -35,43 +35,7 @@ export type ContentBlock = {
   [key: string]: unknown
 }
 
-/** Full-width wave illustration sitting behind the hero and the first section below it. */
-export function HeroBackdrop({
-  fitWidth = false,
-  src,
-}: {
-  /** Subsite: 75vh under navbar, object-cover (sides may crop). */
-  fitWidth?: boolean
-  src?: string | null
-} = {}) {
-  const imageSrc = src || '/hero-backdrop.svg'
-
-  return (
-    <div
-      aria-hidden="true"
-      className={
-        fitWidth
-          ? 'pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 h-[75vh] w-full overflow-hidden'
-          : 'pointer-events-none absolute inset-x-0 top-0 z-0 min-h-screen w-full overflow-hidden'
-      }
-      data-component="hero-backdrop"
-      data-fit-width={fitWidth ? 'true' : undefined}
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt=""
-        className={
-          fitWidth
-            ? 'h-full w-full object-cover object-top'
-            : 'h-full min-h-screen w-full object-cover object-top'
-        }
-        height={1378}
-        src={imageSrc}
-        width={1512}
-      />
-    </div>
-  )
-}
+export { HeroBackdrop } from '@/components/frontend/HeroBackdrop'
 
 export function HeroBlock({
   block,

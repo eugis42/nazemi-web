@@ -1,6 +1,6 @@
 import type { Site } from '@/payload-types'
 
-import { HeroBackdrop } from '@/components/frontend/BlockRenderers'
+import { HeroBackdrop } from '@/components/frontend/HeroBackdrop'
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/frontend/listing'
 import { SiteFooter } from '@/components/frontend/SiteFooter'
 import { SiteHeader } from '@/components/frontend/SiteHeader'
