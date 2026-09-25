@@ -265,6 +265,12 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
   )
 }
 
+/** Desktop 3-up: same cell width always; <3 columns centered in the row. */
+const THREE_UP_ROW =
+  'flex flex-col items-stretch gap-grid lg:flex-row lg:justify-center'
+const THREE_UP_CELL =
+  'w-full min-w-0 lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
+
 export function ThreeColumnsBlock({
   block,
   siteSlug,
@@ -286,13 +292,13 @@ export function ThreeColumnsBlock({
   return (
     <section className="flex flex-col" data-block="threeColumns">
       <BlockHeader title={(block.title as string) || undefined} />
-      <div className="grid grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
+      <div className={THREE_UP_ROW}>
         {columns.map((column, index) => {
           const headline = column.headline?.trim()
           const title = column.title?.trim()
           return (
             <div
-              className="flex h-full min-w-0 flex-col gap-card"
+              className={`${THREE_UP_CELL} flex h-full flex-col gap-card`}
               data-component="three-column"
               key={`${title || headline || 'col'}-${index}`}
             >
@@ -337,13 +343,13 @@ export function ThreeCardsBlock({
   return (
     <section className="flex flex-col" data-block="threeCards">
       <BlockHeader title={(block.title as string) || undefined} />
-      <div className="grid grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
+      <div className={THREE_UP_ROW}>
         {columns.map((column, index) => {
           const prefix = column.prefix?.trim()
           const title = column.title?.trim()
           return (
             <article
-              className="flex h-full min-w-0 flex-col border-2 border-ground bg-sky"
+              className={`${THREE_UP_CELL} flex h-full flex-col border-2 border-ground bg-sky`}
               data-component="three-card"
               key={`${title || prefix || 'card'}-${index}`}
             >
