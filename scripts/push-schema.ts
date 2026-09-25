@@ -1,57 +1,66 @@
 /**
- * One-shot schema push for local Postgres.
- * Auto-picks "create column", auto-accepts data-loss confirm.
+ * One-shot schema push for local / prod Postgres.
+ *
+ * Drizzle-kit create-vs-rename prompts use hanji (not the `prompts` package).
+ * Run via `npm run db:push` → `scripts/db-push-pty.py` so Enter selects "create".
  *
  * Usage: npm run db:push
+ *        npm run db:push:inner   # TTY only — answer prompts yourself
  */
 import 'dotenv/config'
 import { createRequire } from 'node:module'
-import { emitKeypressEvents } from 'node:readline'
 
-process.env.PAYLOAD_DATABASE_PUSH = 'true'
+process.env.PAYLOAD_DATABASE_PUSH = 'false'
 process.env.PAYLOAD_FORCE_DRIZZLE_PUSH = 'true'
 
-// Same `prompts` instance @payloadcms/drizzle uses (inject must hit that copy)
+// Accept Payload/drizzle warning confirms (`prompts` package only).
 const require = createRequire(import.meta.url)
 const prompts = require(
   require.resolve('prompts', {
     paths: [require.resolve('@payloadcms/drizzle')],
   }),
 )
-prompts.inject([true, true, true, true, true, true, true, true])
-
-emitKeypressEvents(process.stdin)
-if (process.stdin.isTTY) {
-  try {
-    process.stdin.setRawMode(true)
-  } catch {
-    // non-TTY ok
-  }
-}
-process.stdin.resume()
-
-// Drizzle create-vs-rename UI: Enter on first option ("create column")
-const tick = setInterval(() => {
-  process.stdin.emit('keypress', '\r', {
-    name: 'return',
-    ctrl: false,
-    meta: false,
-    shift: false,
-    sequence: '\r',
-  })
-}, 50)
+prompts.inject([true, true, true, true, true, true, true, true, true, true])
 
 const { getPayload } = await import('payload')
 const config = (await import('@payload-config')).default
 
 try {
   const payload = await getPayload({ config })
+  const adapter = payload.db as {
+    requireDrizzleKit: () => { pushSchema: (...args: unknown[]) => Promise<{
+      apply: () => Promise<void>
+      hasDataLoss: boolean
+      warnings: string[]
+    }> }
+    schema: unknown
+    drizzle: unknown
+    schemaName?: string
+    tablesFilter?: unknown
+    extensions?: { postgis?: boolean }
+  }
+
+  const { pushSchema } = adapter.requireDrizzleKit()
+  const { apply, hasDataLoss, warnings } = await pushSchema(
+    adapter.schema,
+    adapter.drizzle,
+    adapter.schemaName ? [adapter.schemaName] : undefined,
+    adapter.tablesFilter,
+    adapter.extensions?.postgis ? ['postgis'] : undefined,
+  )
+
+  if (warnings.length) {
+    payload.logger.warn(
+      `Schema push warnings (${warnings.length})${hasDataLoss ? ' DATA LOSS possible' : ''}`,
+    )
+  }
+
+  await apply()
   payload.logger.info('Database schema push finished.')
   await payload.db.destroy?.()
 } catch (err) {
   console.error(err)
   process.exitCode = 1
 } finally {
-  clearInterval(tick)
   process.exit(process.exitCode ?? 0)
 }

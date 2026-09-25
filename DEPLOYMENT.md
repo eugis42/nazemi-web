@@ -83,7 +83,7 @@ Default seed admin (local): `admin@nazemi.local` / `payload-demo-password` after
 
 | Command | Purpose |
 |---------|---------|
-| `npm run db:push` | Apply Payload schema to Postgres |
+| `npm run db:push` | Apply Payload schema (PTY wrapper auto-accepts drizzle create prompts) |
 | `npm run seed` | Populate demo content |
 | `npx tsx scripts/set-prod-admin.ts` | Create/update production admin (also strips seed users) |
 | `npm run db:dump-content` | Dump DB **without** `users` / `users_sessions` |
