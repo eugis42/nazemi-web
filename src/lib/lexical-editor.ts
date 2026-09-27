@@ -1,12 +1,17 @@
 import {
+  BlocksFeature,
+  FixedToolbarFeature,
   HeadingFeature,
+  LinkFeature,
   RelationshipFeature,
   UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { CollectionSlug } from 'payload'
 
-/** Collections pickable as Lexical relationship embeds. */
+import { GalleryBlock } from '@/blocks/pageBlocks'
+
+/** Collections pickable as Lexical relationship embeds / internal links. */
 export const RICH_TEXT_RELATION_COLLECTIONS = [
   'stranky',
   'kalendar',
@@ -62,14 +67,26 @@ const uploadWidthPercentField = {
   },
 }
 
-/** Shared Lexical editor — relationship picker limited to content embeds. */
+/**
+ * Shared Lexical editor (site-wide root + field editors that inherit it).
+ * - h1 disabled (page headers own H1)
+ * - LinkFeature: internal docs limited to content collections
+ * - FixedToolbarFeature: persistent top toolbar
+ * - BlocksFeature: Galerie (reuse page `gallery` block)
+ */
 export const nazemiLexicalEditor = lexicalEditor({
-  features: ({ defaultFeatures }) =>
-    defaultFeatures.map((feature) => {
+  features: ({ defaultFeatures }) => [
+    ...defaultFeatures.map((feature) => {
       // Page headers already use h1 — keep rich text at h2+ to avoid duplicate H1s.
       if (feature.key === 'heading') {
         return HeadingFeature({
           enabledHeadingSizes: ['h2', 'h3', 'h4', 'h5', 'h6'],
+        })
+      }
+      if (feature.key === 'link') {
+        return LinkFeature({
+          enabledCollections: [...RICH_TEXT_RELATION_COLLECTIONS],
+          maxDepth: 2,
         })
       }
       if (feature.key === 'relationship') {
@@ -89,4 +106,9 @@ export const nazemiLexicalEditor = lexicalEditor({
       }
       return feature
     }),
+    FixedToolbarFeature(),
+    BlocksFeature({
+      blocks: [GalleryBlock],
+    }),
+  ],
 })

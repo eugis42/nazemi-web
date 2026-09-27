@@ -1257,18 +1257,24 @@
       @apply mt-3 font-inter text-[14px] leading-snug text-ground;
     }
 
-    :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply font-inter text-ground underline underline-offset-2;
+    :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(a.rt-link):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply font-inter text-ground underline underline-offset-2 transition-opacity duration-150;
       /* Long bare URLs (WP citations) must wrap inside the prose column. */
       overflow-wrap: anywhere;
       word-break: break-word;
+
+      &:hover {
+        opacity: 0.7;
+      }
     }
 
-    /* External inline links — ↗ prefix (auto-detected by href) */
+    /* External inline links — ↗ prefix (auto-detected by href or .rt-link--external) */
     :where(a[href^='http://']):not(:where([class~='not-prose'], [class~='not-prose'] *)),
     :where(a[href^='https://']):not(:where([class~='not-prose'], [class~='not-prose'] *)),
     :where(a[href^='mailto:']):not(:where([class~='not-prose'], [class~='not-prose'] *)),
-    :where(a[href^='tel:']):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    :where(a[href^='tel:']):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(a.rt-link--external):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
       &::before {
         content: '↗\00a0';
       }
