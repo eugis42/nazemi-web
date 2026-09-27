@@ -34,6 +34,13 @@ export function SiteShell({
       : null
   const mainMenu = filterMenuByEnabledCollections(nestedMainMenu(site.mainMenu), site)
   const isSubsite = site.siteType === 'subsite'
+  // SVGs: always original file (vector). Raster: prefer hero size.
+  const bgMime = homepageBackground?.mimeType || ''
+  const bgUrl = homepageBackground?.url || homepageBackground?.filename || ''
+  const bgIsSvg = bgMime === 'image/svg+xml' || /\.svg([?#]|$)/i.test(bgUrl)
+  const backdropSrc = bgIsSvg
+    ? mediaURL(homepageBackground)
+    : mediaSizeURL(homepageBackground, 'hero') || mediaURL(homepageBackground)
 
   return (
     <div className="page-shell relative" style={siteBrandStyle(site)}>
@@ -56,8 +63,9 @@ export function SiteShell({
       </div>
       {backdrop ? (
         <HeroBackdrop
+          // All subsites share NaNebi framing (75vh cover); main keeps vh/full-bleed.
           fitWidth={isSubsite}
-          src={mediaSizeURL(homepageBackground, 'hero') || mediaURL(homepageBackground)}
+          src={backdropSrc}
         />
       ) : null}
       <main className={`relative z-10 overflow-x-hidden pb-section ${mainClassName}`}>
