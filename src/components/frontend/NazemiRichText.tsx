@@ -12,6 +12,7 @@ import type { ComponentProps, CSSProperties, ReactNode } from 'react'
 
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
+import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
@@ -35,6 +36,12 @@ type ExpandingParagraphFields = {
   blockType: 'expandingParagraph'
   body?: ComponentProps<typeof PayloadRichText>['data'] | null
   summary?: string | null
+}
+
+type LogoStripFields = {
+  blockType: 'logoStrip'
+  logos?: unknown
+  title?: string | null
 }
 
 function internalDocToHref({ linkNode }: { linkNode: SerializedLinkNode }) {
@@ -162,7 +169,7 @@ function RichTextLink({
 }
 
 /**
- * Lexical rich text with auto external links (new tab) + relationship embeds + Galerie blocks.
+ * Lexical rich text with auto external links (new tab) + relationship embeds + block embeds.
  * ↗ prefix via `.prose-nazemi` CSS for http(s)/mailto/tel.
  */
 export function NazemiRichText({ className, data, siteSlug = '', ...rest }: RichTextProps) {
@@ -193,6 +200,15 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
               />
             </div>
           ),
+          logoStrip: ({ node }: { node: SerializedBlockNode<LogoStripFields> }) => {
+            const logos = resolveLogoStripItems(node.fields.logos)
+            if (!logos.length) return null
+            return (
+              <div className="not-prose my-10 w-full" data-rt-block="logoStrip">
+                <LogoStrip logos={logos} title={node.fields.title} />
+              </div>
+            )
+          },
           expandingParagraph: ({
             node,
           }: {

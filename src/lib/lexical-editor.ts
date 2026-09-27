@@ -9,7 +9,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
-import { GalleryBlock } from '@/blocks/pageBlocks'
+import { GalleryBlock, LogoStripBlock } from '@/blocks/pageBlocks'
 import {
   RICH_TEXT_RELATION_COLLECTIONS,
   type RichTextRelationCollection,
@@ -65,7 +65,7 @@ const uploadWidthPercentField = {
  * - h1 disabled (page headers own H1)
  * - LinkFeature: internal docs limited to content collections
  * - FixedToolbarFeature: persistent top toolbar
- * - BlocksFeature: Galerie + Rozbalovací odstavec
+ * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec
  */
 export const nazemiLexicalEditor = lexicalEditor({
   features: ({ defaultFeatures }) => [
@@ -101,7 +101,7 @@ export const nazemiLexicalEditor = lexicalEditor({
     }),
     FixedToolbarFeature(),
     BlocksFeature({
-      blocks: [GalleryBlock, ExpandingParagraphBlock],
+      blocks: [GalleryBlock, LogoStripBlock, ExpandingParagraphBlock],
     }),
   ],
 })
