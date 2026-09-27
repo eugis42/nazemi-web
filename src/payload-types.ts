@@ -627,6 +627,26 @@ export interface Stranky {
             blockType: 'gallery';
           }
         | {
+            /**
+             * Volitelně — např. „Projekt podpořili“.
+             */
+            title?: string | null;
+            /**
+             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.
+             */
+            logos: {
+              image: number | Media;
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoStrip';
+          }
+        | {
             title?: string | null;
             /**
              * Max. 3 sloupce.
@@ -1300,6 +1320,26 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'gallery';
+          }
+        | {
+            /**
+             * Volitelně — např. „Projekt podpořili“.
+             */
+            title?: string | null;
+            /**
+             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.
+             */
+            logos: {
+              image: number | Media;
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoStrip';
           }
         | {
             title?: string | null;
@@ -2678,6 +2718,26 @@ export interface Workshopy {
             blockType: 'gallery';
           }
         | {
+            /**
+             * Volitelně — např. „Projekt podpořili“.
+             */
+            title?: string | null;
+            /**
+             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.
+             */
+            logos: {
+              image: number | Media;
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoStrip';
+          }
+        | {
             title?: string | null;
             /**
              * Max. 3 sloupce.
@@ -3550,6 +3610,26 @@ export interface Projekty {
         blockType: 'gallery';
       }
     | {
+        /**
+         * Volitelně — např. „Projekt podpořili“.
+         */
+        title?: string | null;
+        /**
+         * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.
+         */
+        logos: {
+          image: number | Media;
+          /**
+           * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+           */
+          href?: string | null;
+          id?: string | null;
+        }[];
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'logoStrip';
+      }
+    | {
         title?: string | null;
         /**
          * Max. 3 sloupce.
@@ -4235,6 +4315,20 @@ export interface StrankySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        logoStrip?:
+          | T
+          | {
+              title?: T;
+              logos?:
+                | T
+                | {
+                    image?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
         threeColumns?:
           | T
           | {
@@ -4483,6 +4577,20 @@ export interface StrankySelect<T extends boolean = true> {
               images?: T;
               columns?: T;
               caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        logoStrip?:
+          | T
+          | {
+              title?: T;
+              logos?:
+                | T
+                | {
+                    image?: T;
+                    href?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -4828,6 +4936,20 @@ export interface ProjektySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        logoStrip?:
+          | T
+          | {
+              title?: T;
+              logos?:
+                | T
+                | {
+                    image?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
         threeColumns?:
           | T
           | {
@@ -5116,6 +5238,20 @@ export interface WorkshopySelect<T extends boolean = true> {
               images?: T;
               columns?: T;
               caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        logoStrip?:
+          | T
+          | {
+              title?: T;
+              logos?:
+                | T
+                | {
+                    image?: T;
+                    href?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };

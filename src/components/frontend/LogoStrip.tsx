@@ -59,7 +59,7 @@ export function LogoStrip({ logos: raw, title }: LogoStripProps) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={logo.alt}
-              className="logo-strip__img h-auto max-h-16 w-auto max-w-[160px] object-contain object-left"
+              className="h-auto max-h-16 w-auto max-w-[160px] object-contain object-left"
               height={64}
               loading="lazy"
               src={logo.url}
