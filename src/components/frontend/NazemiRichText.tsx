@@ -3,14 +3,18 @@ import {
   RichText as PayloadRichText,
 } from '@payloadcms/richtext-lexical/react'
 import type {
+  SerializedBlockNode,
   SerializedLinkNode,
   SerializedRelationshipNode,
   SerializedUploadNode,
 } from '@payloadcms/richtext-lexical'
-import type { ComponentProps, CSSProperties } from 'react'
+import type { ComponentProps, CSSProperties, ReactNode } from 'react'
 
+import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
+import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
+import { resolveGalleryImages } from '@/lib/gallery'
 import { isExternalHref } from '@/lib/links'
 import type { Media } from '@/payload-types'
 
@@ -19,6 +23,19 @@ type RichTextProps = {
   data?: ComponentProps<typeof PayloadRichText>['data'] | null
   siteSlug?: string
 } & Omit<ComponentProps<typeof PayloadRichText>, 'data' | 'converters'>
+
+type GalleryFields = {
+  blockType: 'gallery'
+  caption?: string | null
+  columns?: '1' | '2' | '3' | null
+  images?: unknown
+}
+
+type ExpandingParagraphFields = {
+  blockType: 'expandingParagraph'
+  body?: ComponentProps<typeof PayloadRichText>['data'] | null
+  summary?: string | null
+}
 
 function internalDocToHref({ linkNode }: { linkNode: SerializedLinkNode }) {
   const doc = linkNode.fields?.doc
@@ -87,7 +104,7 @@ function UploadImage({ node }: { node: SerializedUploadNode }) {
 
   if (!uploadDoc.mimeType?.startsWith('image')) {
     return (
-      <a href={url} rel="noopener noreferrer">
+      <a className="rt-link rt-link--file" href={url} rel="noopener noreferrer">
         {uploadDoc.filename || url}
       </a>
     )
@@ -122,8 +139,30 @@ function UploadImage({ node }: { node: SerializedUploadNode }) {
   )
 }
 
+function RichTextLink({
+  children,
+  href,
+  newTab,
+}: {
+  children: ReactNode
+  href: string
+  newTab?: boolean | null
+}) {
+  const external = isExternalHref(href) || Boolean(newTab)
+  return (
+    <a
+      className={external ? 'rt-link rt-link--external' : 'rt-link rt-link--internal'}
+      href={href || '#'}
+      rel={external ? 'noopener noreferrer' : undefined}
+      target={external ? '_blank' : undefined}
+    >
+      {children}
+    </a>
+  )
+}
+
 /**
- * Lexical rich text with auto external links (new tab) + relationship embeds.
+ * Lexical rich text with auto external links (new tab) + relationship embeds + Galerie blocks.
  * ↗ prefix via `.prose-nazemi` CSS for http(s)/mailto/tel.
  */
 export function NazemiRichText({ className, data, siteSlug = '', ...rest }: RichTextProps) {
@@ -144,35 +183,50 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
           />
         ),
         upload: ({ node }: { node: SerializedUploadNode }) => <UploadImage node={node} />,
+        blocks: {
+          gallery: ({ node }: { node: SerializedBlockNode<GalleryFields> }) => (
+            <div className="not-prose my-10 w-full" data-rt-block="gallery">
+              <GalleryBlock
+                caption={node.fields.caption}
+                columns={node.fields.columns}
+                images={resolveGalleryImages(node.fields.images)}
+              />
+            </div>
+          ),
+          expandingParagraph: ({
+            node,
+          }: {
+            node: SerializedBlockNode<ExpandingParagraphFields>
+          }) => {
+            const summary = node.fields.summary?.trim()
+            if (!summary || !node.fields.body) return null
+            return (
+              <ExpandingParagraph
+                body={<NazemiRichText data={node.fields.body} siteSlug={siteSlug} />}
+                summary={summary}
+              />
+            )
+          },
+        },
         link: ({ node, nodesToJSX }) => {
           const children = nodesToJSX({ nodes: node.children })
           let href = node.fields.url ?? ''
           if (node.fields.linkType === 'internal') {
             href = internalDocToHref({ linkNode: node })
           }
-          const external = isExternalHref(href) || Boolean(node.fields.newTab)
           return (
-            <a
-              href={href || '#'}
-              rel={external ? 'noopener noreferrer' : undefined}
-              target={external ? '_blank' : undefined}
-            >
+            <RichTextLink href={href} newTab={node.fields.newTab}>
               {children}
-            </a>
+            </RichTextLink>
           )
         },
         autolink: ({ node, nodesToJSX }) => {
           const children = nodesToJSX({ nodes: node.children })
           const href = node.fields.url ?? ''
-          const external = isExternalHref(href) || Boolean(node.fields.newTab)
           return (
-            <a
-              href={href || '#'}
-              rel={external ? 'noopener noreferrer' : undefined}
-              target={external ? '_blank' : undefined}
-            >
+            <RichTextLink href={href} newTab={node.fields.newTab}>
               {children}
-            </a>
+            </RichTextLink>
           )
         },
       })}

@@ -1,7 +1,14 @@
 'use client'
 
 import useEmblaCarousel from 'embla-carousel-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react'
 import Lightbox, { type SlideImage } from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 
@@ -21,6 +28,20 @@ const MASONRY_COLS: Record<'1' | '2' | '3', string> = {
   '3': 'lg:columns-3',
 }
 
+const BRAND_VARS = ['--color-ground', '--color-sky', '--color-green'] as const
+
+/** YARL portals out of `.page-shell` — copy site tokens so lightbox CSS vars resolve. */
+function readBrandVars(el: Element | null): CSSProperties {
+  if (!el) return {}
+  const cs = getComputedStyle(el)
+  const style: Record<string, string> = {}
+  for (const name of BRAND_VARS) {
+    const value = cs.getPropertyValue(name).trim()
+    if (value) style[name] = value
+  }
+  return style as CSSProperties
+}
+
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false)
   useEffect(() => {
@@ -38,7 +59,9 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
     () => rawImages.filter((img): img is GalleryImage => Boolean(img?.url)),
     [rawImages],
   )
+  const hostRef = useRef<HTMLElement>(null)
   const [lightboxIndex, setLightboxIndex] = useState(-1)
+  const [portalBrandStyle, setPortalBrandStyle] = useState<CSSProperties>({})
   const reducedMotion = usePrefersReducedMotion()
   const colKey = columns === '1' || columns === '3' ? columns : '2'
 
@@ -52,6 +75,7 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
   )
 
   const openAt = useCallback((index: number) => {
+    setPortalBrandStyle(readBrandVars(hostRef.current))
     setLightboxIndex(index)
   }, [])
 
@@ -73,7 +97,12 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
   }
 
   return (
-    <figure className="w-full" data-block="gallery" data-count={images.length}>
+    <figure
+      className="w-full"
+      data-block="gallery"
+      data-count={images.length}
+      ref={hostRef}
+    >
       {/* Desktop masonry */}
       <ul className={`hidden gap-grid lg:block ${MASONRY_COLS[colKey]}`} role="list">
         {images.map((image, index) => (
@@ -123,6 +152,11 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
         controller={{ closeOnBackdropClick: true }}
         carousel={{ finite: images.length <= 1, preload: 2 }}
         className="nazemi-lightbox"
+        portal={{
+          // Prefer page-shell (inherits brand); vars also copied onto container.
+          root: () => document.querySelector('.page-shell') ?? document.body,
+          container: { style: portalBrandStyle },
+        }}
       />
     </figure>
   )
