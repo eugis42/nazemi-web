@@ -1336,13 +1336,13 @@
   }
 }
 
-/* Lexical expanding paragraph — native <details> (not-prose wrapper) */
+/* Lexical expanding paragraph — soft surface like relation embeds */
 .rt-expand {
-  @apply border-0 border-t-2 border-solid border-ground;
+  @apply bg-ground/5 p-[15px];
 }
 
 .rt-expand__summary {
-  @apply flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-inter text-[16px] font-bold leading-snug text-ground outline-none;
+  @apply flex cursor-pointer list-none items-center justify-between gap-4 font-inter text-[16px] font-bold leading-snug text-ground outline-none;
 }
 
 .rt-expand__summary::-webkit-details-marker {
@@ -1358,7 +1358,7 @@
 }
 
 .rt-expand__arrow {
-  @apply inline-flex size-4 shrink-0 items-center justify-center text-ground transition-transform duration-200;
+  @apply inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-ground text-ground transition-transform duration-200;
 }
 
 .rt-expand[open] > .rt-expand__summary .rt-expand__arrow {
@@ -1366,11 +1366,11 @@
 }
 
 .rt-expand__body {
-  @apply pb-4 pt-0;
-}
+  @apply pt-3;
 
-.rt-expand__body > :first-child {
-  margin-top: 0;
+  & > :first-child {
+    margin-top: 0;
+  }
 }
 
 /* Galerie lightbox — translucent sky + blur-in/out; matched controls */
