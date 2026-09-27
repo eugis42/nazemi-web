@@ -41,39 +41,61 @@ function shuffle<T>(items: T[]): T[] {
   return out
 }
 
-/** Stroke-dash line-draw; no-ops on fill-only / zero-length paths. */
+/** True if the shape has a visible stroke (attr, inline style, or CSS class). */
+function shapeHasStroke(el: SVGGeometryElement): boolean {
+  const attr = el.getAttribute('stroke')
+  if (attr && attr !== 'none') return true
+  const inline = el.style.stroke
+  if (inline && inline !== 'none') return true
+  // Illustrator exports often put stroke on a CSS class (Flowmakers-bg (1).svg).
+  try {
+    const computed = getComputedStyle(el).stroke
+    return Boolean(
+      computed &&
+        computed !== 'none' &&
+        computed !== 'rgba(0, 0, 0, 0)' &&
+        computed !== 'transparent',
+    )
+  } catch {
+    return false
+  }
+}
+
+/** Stroke-dash line-draw; skips fill-only / zero-length shapes. */
 function runLineDraw(svg: SVGSVGElement, reduceMotion: boolean) {
-  const paths = [...svg.querySelectorAll('path')].filter((path) => {
-    const stroke = path.getAttribute('stroke')
-    if (!stroke || stroke === 'none') return false
+  // Must run after SVG is in the document so CSS-class strokes resolve.
+  const shapes = [
+    ...svg.querySelectorAll<SVGGeometryElement>('path, circle, ellipse, line, polyline, polygon, rect'),
+  ].filter((el) => {
+    if (!shapeHasStroke(el)) return false
     try {
-      return path.getTotalLength() > 0
+      return el.getTotalLength() > 0
     } catch {
       return false
     }
   })
 
-  if (!paths.length) return () => undefined
+  if (!shapes.length) return () => undefined
 
   if (reduceMotion) {
-    for (const path of paths) {
-      path.style.strokeDasharray = ''
-      path.style.strokeDashoffset = ''
+    for (const el of shapes) {
+      el.style.strokeDasharray = ''
+      el.style.strokeDashoffset = ''
     }
     return () => undefined
   }
 
   const animations: Animation[] = []
-  for (const path of shuffle(paths)) {
-    const len = path.getTotalLength()
-    path.style.strokeDasharray = String(len)
-    path.style.strokeDashoffset = String(len)
+  for (const el of shuffle(shapes)) {
+    const len = el.getTotalLength()
+    el.style.strokeDasharray = String(len)
+    el.style.strokeDashoffset = String(len)
 
     const duration = DRAW_MIN_MS + Math.random() * (DRAW_MAX_MS - DRAW_MIN_MS)
     const delay = Math.random() * Math.max(0, DRAW_WINDOW_MS - duration)
 
     animations.push(
-      path.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], {
+      el.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], {
         duration,
         delay,
         easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
