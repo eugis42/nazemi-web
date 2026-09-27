@@ -229,11 +229,16 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
   )
 }
 
-/** Desktop 3-up: same cell width always; <3 columns centered in the row. */
+/**
+ * Desktop 3-up: equal-height row + bottom CTAs.
+ * Do NOT put `h-full` on cells — % height fights flex stretch when the row
+ * height is content-sized, so `mt-auto` on ColumnCta has no free space.
+ * Same cell width always; <3 columns centered (`lg:justify-center`).
+ */
 const THREE_UP_ROW =
-  'flex flex-col items-stretch gap-grid lg:flex-row lg:justify-center'
+  'flex flex-col gap-grid lg:flex-row lg:items-stretch lg:justify-center'
 const THREE_UP_CELL =
-  'w-full min-w-0 lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
+  'flex w-full min-w-0 flex-col lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
 
 export function ThreeColumnsBlock({
   block,
@@ -262,7 +267,7 @@ export function ThreeColumnsBlock({
           const title = column.title?.trim()
           return (
             <div
-              className={`${THREE_UP_CELL} flex h-full flex-col gap-card`}
+              className={`${THREE_UP_CELL} gap-card`}
               data-component="three-column"
               key={`${title || headline || 'col'}-${index}`}
             >
@@ -313,11 +318,11 @@ export function ThreeCardsBlock({
           const title = column.title?.trim()
           return (
             <article
-              className={`${THREE_UP_CELL} flex h-full flex-col border-2 border-ground bg-sky`}
+              className={`${THREE_UP_CELL} border-2 border-ground bg-sky`}
               data-component="three-card"
               key={`${title || prefix || 'card'}-${index}`}
             >
-              <div className="flex h-full flex-1 flex-col justify-between gap-6 p-card">
+              <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
                 <div className="flex flex-col gap-2.5">
                   {prefix || title ? (
                     <h3 className="text-display text-ground">
