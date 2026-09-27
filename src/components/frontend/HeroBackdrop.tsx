@@ -132,6 +132,9 @@ export function HeroBackdrop({
     )
   }
 
+  // Main site: mobile uses vh + object-cover (pre-parallax). Desktop keeps
+  // natural height so the SVG bottom is not cropped. No overflow-y on wrapper
+  // — that forced clip and chopped parallax translateY.
   return (
     <div
       aria-hidden="true"
@@ -142,7 +145,7 @@ export function HeroBackdrop({
       <img
         ref={imgRef}
         alt=""
-        className="block h-auto w-full will-change-transform"
+        className="block h-[100vh] w-full object-cover object-top will-change-transform md:h-auto md:object-none"
         height={1378}
         src={imageSrc}
         width={1512}
