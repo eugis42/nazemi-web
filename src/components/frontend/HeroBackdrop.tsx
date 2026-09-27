@@ -132,6 +132,9 @@ export function HeroBackdrop({
     )
   }
 
+  // Main site: mobile uses vh + object-cover (pre-parallax). Desktop scales
+  // width→height (w-full h-auto) for full-bleed — no object-none (that left
+  // side gaps past the SVG's intrinsic 1512px). No overflow-y on wrapper.
   return (
     <div
       aria-hidden="true"
@@ -142,7 +145,7 @@ export function HeroBackdrop({
       <img
         ref={imgRef}
         alt=""
-        className="block h-auto w-full will-change-transform"
+        className="block h-[100vh] w-full object-cover object-top will-change-transform md:h-auto"
         height={1378}
         src={imageSrc}
         width={1512}
