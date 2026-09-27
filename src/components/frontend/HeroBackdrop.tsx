@@ -9,8 +9,10 @@ import { useEffect, useRef } from 'react'
  * SVG sources: inline + stroke-dashoffset line-draw on load (~3s, random order/pace).
  * Bitmap / non-SVG: plain <img>.
  *
- * Mobile/tablet: 75vh clip frame + object-cover (sides may crop). Desktop (lg+)
+ * Mobile/tablet: 75vh clip frame + cover (sides may crop). Desktop (lg+)
  * main is full-bleed natural height; subsites keep the 75vh cover frame.
+ * <img> uses object-cover; inlined SVG uses preserveAspectRatio slice (object-fit
+ * is ignored on inline SVG) + a h-full host so the clip box has real height.
  * Overflow is intentional on the 75vh frame only — do not put overflow-x-hidden
  * on page-shell (that forces overflow-y clip and chops parallax outside the frame).
  */
@@ -38,13 +40,61 @@ function wrapClassName(fitWidth: boolean) {
   return `pointer-events-none absolute inset-x-0 ${top} z-0 h-[75vh] w-full overflow-hidden lg:h-auto lg:overflow-visible`
 }
 
-function graphicClassName(fitWidth: boolean) {
-  // Fill the 75vh frame; object-top = horizontally centered + top-aligned.
+/** Host fills the clip frame so absolute SVG / img children have a real height. */
+function hostClassName(fitWidth: boolean) {
+  if (fitWidth) return 'relative h-full w-full'
+  return 'relative h-full w-full lg:h-auto'
+}
+
+/** <img> — object-fit works. */
+function imgGraphicClassName(fitWidth: boolean) {
   if (fitWidth) {
     return 'block h-full w-full object-cover object-top will-change-transform'
   }
-  // Mobile/tablet: cover the clip. Desktop: natural height full-bleed.
   return 'block h-full w-full object-cover object-top will-change-transform lg:h-auto'
+}
+
+/**
+ * Inline SVG ignores object-fit. Use preserveAspectRatio slice (= cover) inside
+ * the 75vh frame; desktop main switches to meet + h-auto full-bleed.
+ */
+function applyInlineSvgFit(svg: SVGSVGElement, fitWidth: boolean): () => void {
+  // Prefer viewBox for aspect; drop fixed px attrs that fight CSS cover.
+  if (!svg.getAttribute('viewBox')) {
+    const w = svg.getAttribute('width') || '1512'
+    const h = svg.getAttribute('height') || '1378'
+    svg.setAttribute('viewBox', `0 0 ${parseFloat(w)} ${parseFloat(h)}`)
+  }
+  svg.removeAttribute('width')
+  svg.removeAttribute('height')
+  svg.setAttribute('role', 'presentation')
+  svg.setAttribute('aria-hidden', 'true')
+  svg.setAttribute('focusable', 'false')
+
+  const desktopMq = window.matchMedia('(min-width: 1024px)')
+
+  const apply = () => {
+    const desktopBleed = !fitWidth && desktopMq.matches
+    if (desktopBleed) {
+      // Full-bleed: width 100%, height from viewBox aspect.
+      svg.setAttribute('preserveAspectRatio', 'xMidYMin meet')
+      svg.setAttribute(
+        'class',
+        'relative block h-auto w-full will-change-transform',
+      )
+    } else {
+      // Cover the 75vh clip: fill box, crop sides/bottom as needed, top-center.
+      svg.setAttribute('preserveAspectRatio', 'xMidYMin slice')
+      svg.setAttribute(
+        'class',
+        'absolute inset-0 block h-full w-full max-w-none will-change-transform',
+      )
+    }
+  }
+
+  apply()
+  desktopMq.addEventListener('change', apply)
+  return () => desktopMq.removeEventListener('change', apply)
 }
 
 function shuffle<T>(items: T[]): T[] {
@@ -262,7 +312,8 @@ export function HeroBackdrop({
   const imageSrc = src || '/hero-backdrop.svg'
   const svgMode = isSvgUrl(imageSrc)
   const wrapClass = wrapClassName(fitWidth)
-  const graphicClass = graphicClassName(fitWidth)
+  const hostClass = hostClassName(fitWidth)
+  const imgGraphicClass = imgGraphicClassName(fitWidth)
 
   const imgRef = useRef<HTMLImageElement>(null)
   const hostRef = useRef<HTMLDivElement>(null)
@@ -271,6 +322,7 @@ export function HeroBackdrop({
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let stopParallax: (() => void) | undefined
     let stopDraw: (() => void) | undefined
+    let stopSvgFit: (() => void) | undefined
     let removeReduceDraw: (() => void) | undefined
     let cancelled = false
 
@@ -303,14 +355,7 @@ export function HeroBackdrop({
           throw new Error('backdrop SVG parse failed')
         }
 
-        svg.setAttribute('class', graphicClass)
-        svg.setAttribute('role', 'presentation')
-        svg.setAttribute('aria-hidden', 'true')
-        svg.setAttribute('focusable', 'false')
-        // Keep intrinsic ratio for lg:h-auto full-bleed (same as <img width/height>).
-        if (!svg.hasAttribute('width')) svg.setAttribute('width', '1512')
-        if (!svg.hasAttribute('height')) svg.setAttribute('height', '1378')
-
+        stopSvgFit = applyInlineSvgFit(svg, fitWidth)
         host.replaceChildren(svg)
         stopDraw = runLineDraw(svg, reduceMotion.matches)
         bindParallax(svg)
@@ -323,10 +368,10 @@ export function HeroBackdrop({
         removeReduceDraw = () => reduceMotion.removeEventListener('change', onReduceDraw)
       } catch {
         if (cancelled) return
-        // Fallback: bitmap-style <img> (no line-draw).
+        // Fallback: bitmap-style <img> (object-fit works).
         const img = document.createElement('img')
         img.alt = ''
-        img.className = graphicClass
+        img.className = imgGraphicClass
         img.width = 1512
         img.height = 1378
         img.src = imageSrc
@@ -339,10 +384,11 @@ export function HeroBackdrop({
       cancelled = true
       stopDraw?.()
       stopParallax?.()
+      stopSvgFit?.()
       removeReduceDraw?.()
       host.replaceChildren()
     }
-  }, [fitWidth, graphicClass, imageSrc, svgMode])
+  }, [fitWidth, imgGraphicClass, imageSrc, svgMode])
 
   if (svgMode) {
     return (
@@ -353,7 +399,7 @@ export function HeroBackdrop({
         data-fit-width={fitWidth ? 'true' : undefined}
         data-line-draw="true"
       >
-        <div ref={hostRef} />
+        <div className={hostClass} ref={hostRef} />
       </div>
     )
   }
@@ -369,7 +415,7 @@ export function HeroBackdrop({
       <img
         ref={imgRef}
         alt=""
-        className={graphicClass}
+        className={imgGraphicClass}
         height={1378}
         src={imageSrc}
         width={1512}
