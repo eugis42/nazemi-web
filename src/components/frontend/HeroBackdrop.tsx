@@ -168,11 +168,19 @@ function planTimings(count: number): { delay: number; duration: number }[] {
   return shuffle(plans)
 }
 
-/** Stroke-dash line-draw; skips fill-only / zero-length shapes. */
+/**
+ * Stroke-dash line-draw; skips fill-only / zero-length shapes.
+ *
+ * Caller must insert `svg` into the document first (CSS-class strokes need
+ * getComputedStyle) but keep it non-visible until this returns — otherwise
+ * getComputedStyle during stroke detect forces a paint of the fully-drawn
+ * graphic before dashoffsets are applied, and the draw looks like a no-op.
+ */
 function runLineDraw(svg: SVGSVGElement, reduceMotion: boolean) {
-  // Must run after SVG is in the document so CSS-class strokes resolve.
   const shapes = [
-    ...svg.querySelectorAll<SVGGeometryElement>('path, circle, ellipse, line, polyline, polygon, rect'),
+    ...svg.querySelectorAll<SVGGeometryElement>(
+      'path, circle, ellipse, line, polyline, polygon, rect',
+    ),
   ].filter((el) => {
     if (!shapeHasStroke(el)) return false
     try {
@@ -188,6 +196,7 @@ function runLineDraw(svg: SVGSVGElement, reduceMotion: boolean) {
     for (const el of shapes) {
       el.style.strokeDasharray = ''
       el.style.strokeDashoffset = ''
+      el.removeAttribute('pathLength')
     }
     return () => undefined
   }
@@ -196,15 +205,20 @@ function runLineDraw(svg: SVGSVGElement, reduceMotion: boolean) {
   const timings = planTimings(ordered.length)
   const animations: Animation[] = []
 
+  // Prime dashes while still hidden. pathLength=1 → dash units are fraction of
+  // path (scale-independent; CSS px vs SVG user-unit mismatch can't hide the draw).
+  for (let i = 0; i < ordered.length; i++) {
+    const el = ordered[i]!
+    el.setAttribute('pathLength', '1')
+    el.style.strokeDasharray = '1'
+    el.style.strokeDashoffset = '1'
+  }
+
   for (let i = 0; i < ordered.length; i++) {
     const el = ordered[i]!
     const { delay, duration } = timings[i]!
-    const len = el.getTotalLength()
-    el.style.strokeDasharray = String(len)
-    el.style.strokeDashoffset = String(len)
-
     animations.push(
-      el.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], {
+      el.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], {
         duration,
         delay,
         easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -214,7 +228,15 @@ function runLineDraw(svg: SVGSVGElement, reduceMotion: boolean) {
   }
 
   return () => {
-    for (const anim of animations) anim.cancel()
+    // Finish (don't cancel): cancel would snap back to style offset=1 (invisible)
+    // if a StrictMode remount races before the next draw primes again.
+    for (const anim of animations) {
+      try {
+        anim.finish()
+      } catch {
+        anim.cancel()
+      }
+    }
   }
 }
 
@@ -356,13 +378,19 @@ export function HeroBackdrop({
         }
 
         stopSvgFit = applyInlineSvgFit(svg, fitWidth)
+        // Hide before mount: shapeHasStroke→getComputedStyle flushes style and can
+        // paint one fully-drawn frame before dashoffsets land (= “no animation”).
+        svg.style.visibility = 'hidden'
         host.replaceChildren(svg)
         stopDraw = runLineDraw(svg, reduceMotion.matches)
+        svg.style.visibility = ''
         bindParallax(svg)
 
         const onReduceDraw = () => {
           stopDraw?.()
+          svg.style.visibility = 'hidden'
           stopDraw = runLineDraw(svg, reduceMotion.matches)
+          svg.style.visibility = ''
         }
         reduceMotion.addEventListener('change', onReduceDraw)
         removeReduceDraw = () => reduceMotion.removeEventListener('change', onReduceDraw)
