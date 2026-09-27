@@ -448,7 +448,7 @@ export function PageBlocks({
           return (
             <div className="container max-lg:px-card" key={key}>
               <LogoStrip
-                logos={resolveLogoStripItems(block.logos)}
+                logos={resolveLogoStripItems(block)}
                 title={block.title ? String(block.title) : null}
               />
             </div>
@@ -620,7 +620,7 @@ export function WorkshopContentBlocks({
           return (
             <div className="container max-lg:px-card" key={key}>
               <LogoStrip
-                logos={resolveLogoStripItems(block.logos)}
+                logos={resolveLogoStripItems(block)}
                 title={block.title ? String(block.title) : null}
               />
             </div>

@@ -80,7 +80,13 @@ export const GalleryBlock: Block = {
   ],
 }
 
-/** Funding / government support logos — left-aligned strip, no lightbox. */
+/**
+ * Funding / government support logos — left-aligned strip, no lightbox.
+ *
+ * Upload is `hasMany` (not array→upload): Lexical BlocksFeature remounts the
+ * block form when an upload drawer opens; array→upload nests break that drawer
+ * (flash open/close). Same pattern as Galerie. Optional links align by index.
+ */
 export const LogoStripBlock: Block = {
   slug: 'logoStrip',
   labels: {
@@ -101,32 +107,33 @@ export const LogoStripBlock: Block = {
       },
     },
     {
-      name: 'logos',
-      type: 'array',
+      name: 'images',
+      type: 'upload',
       label: 'Loga',
-      minRows: 1,
+      relationTo: 'media',
+      hasMany: true,
       required: true,
+      minRows: 1,
+      filterOptions: imageUploadFilter,
+      admin: {
+        description:
+          'Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.',
+      },
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Odkazy (volitelně)',
       labels: {
-        plural: 'Loga',
-        singular: 'Logo',
+        plural: 'Odkazy',
+        singular: 'Odkaz',
       },
       admin: {
-        components: {
-          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
-        },
         description:
-          'Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.',
+          'Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.',
         initCollapsed: true,
       },
       fields: [
-        {
-          name: 'image',
-          type: 'upload',
-          label: 'Logo',
-          relationTo: 'media',
-          required: true,
-          filterOptions: imageUploadFilter,
-        },
         {
           name: 'href',
           type: 'text',

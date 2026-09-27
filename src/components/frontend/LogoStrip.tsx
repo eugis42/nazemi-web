@@ -9,27 +9,73 @@ export type LogoStripItem = {
   url: string
 }
 
-/** Normalize Payload logo-strip rows into FE items. */
+type LogoStripSource = {
+  images?: unknown
+  links?: unknown
+  /** Legacy array shape (upload-per-row) — kept for old drafts. */
+  logos?: unknown
+}
+
+function asSource(raw: unknown): LogoStripSource | null {
+  if (!raw || typeof raw !== 'object') return null
+  return raw as LogoStripSource
+}
+
+function mediaFromUnknown(image: unknown): Media | null {
+  if (!image || typeof image !== 'object') return null
+  return image as Media
+}
+
+function hrefAt(links: unknown, index: number): string | null {
+  if (!Array.isArray(links)) return null
+  const row = links[index]
+  if (!row || typeof row !== 'object') return null
+  const href = (row as { href?: unknown }).href
+  if (typeof href !== 'string') return null
+  const trimmed = href.trim()
+  return trimmed || null
+}
+
+/** Normalize Payload logo-strip fields into FE items. */
 export function resolveLogoStripItems(raw: unknown): LogoStripItem[] {
-  if (!Array.isArray(raw)) return []
+  const source = asSource(raw)
+  if (!source) return []
+
+  // Legacy: logos[{ image, href }]
+  if (Array.isArray(source.logos) && source.logos.length) {
+    const out: LogoStripItem[] = []
+    for (const row of source.logos) {
+      if (!row || typeof row !== 'object') continue
+      const media = mediaFromUnknown((row as { image?: unknown }).image)
+      if (!media) continue
+      const url = mediaSizeURL(media, 'large') || mediaURL(media)
+      if (!url) continue
+      const href =
+        typeof (row as { href?: unknown }).href === 'string'
+          ? (row as { href: string }).href.trim() || null
+          : null
+      out.push({
+        alt: mediaAlt(media, media.filename || 'Logo'),
+        href,
+        url,
+      })
+    }
+    return out
+  }
+
+  if (!Array.isArray(source.images)) return []
   const out: LogoStripItem[] = []
-  for (const row of raw) {
-    if (!row || typeof row !== 'object') continue
-    const image = (row as { href?: string | null; image?: unknown }).image
-    if (!image || typeof image !== 'object') continue
-    const media = image as Media
+  source.images.forEach((image, index) => {
+    const media = mediaFromUnknown(image)
+    if (!media) return
     const url = mediaSizeURL(media, 'large') || mediaURL(media)
-    if (!url) continue
-    const href =
-      typeof (row as { href?: unknown }).href === 'string'
-        ? (row as { href: string }).href.trim() || null
-        : null
+    if (!url) return
     out.push({
       alt: mediaAlt(media, media.filename || 'Logo'),
-      href,
+      href: hrefAt(source.links, index),
       url,
     })
-  }
+  })
   return out
 }
 

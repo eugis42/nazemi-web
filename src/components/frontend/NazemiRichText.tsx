@@ -40,6 +40,8 @@ type ExpandingParagraphFields = {
 
 type LogoStripFields = {
   blockType: 'logoStrip'
+  images?: unknown
+  links?: unknown
   logos?: unknown
   title?: string | null
 }
@@ -201,7 +203,7 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
             </div>
           ),
           logoStrip: ({ node }: { node: SerializedBlockNode<LogoStripFields> }) => {
-            const logos = resolveLogoStripItems(node.fields.logos)
+            const logos = resolveLogoStripItems(node.fields)
             if (!logos.length) return null
             return (
               <div className="not-prose my-10 w-full" data-rt-block="logoStrip">

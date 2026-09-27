@@ -91,7 +91,7 @@ export async function HomepageBlocks({
         rendered.push(
           <LogoStrip
             key={key}
-            logos={resolveLogoStripItems(block.logos)}
+            logos={resolveLogoStripItems(block)}
             title={block.title ? String(block.title) : null}
           />,
         )
