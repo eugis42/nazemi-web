@@ -7,22 +7,15 @@ import {
   UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import type { CollectionSlug } from 'payload'
 
+import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
 import { GalleryBlock } from '@/blocks/pageBlocks'
+import {
+  RICH_TEXT_RELATION_COLLECTIONS,
+  type RichTextRelationCollection,
+} from '@/lib/lexical-collections'
 
-/** Collections pickable as Lexical relationship embeds / internal links. */
-export const RICH_TEXT_RELATION_COLLECTIONS = [
-  'stranky',
-  'kalendar',
-  'aktuality',
-  'projekty',
-  'publikace',
-  'lide',
-  'workshopy',
-] as const satisfies readonly CollectionSlug[]
-
-export type RichTextRelationCollection = (typeof RICH_TEXT_RELATION_COLLECTIONS)[number]
+export { RICH_TEXT_RELATION_COLLECTIONS, type RichTextRelationCollection }
 
 const uploadWidthModeField = {
   name: 'widthMode',
@@ -72,7 +65,7 @@ const uploadWidthPercentField = {
  * - h1 disabled (page headers own H1)
  * - LinkFeature: internal docs limited to content collections
  * - FixedToolbarFeature: persistent top toolbar
- * - BlocksFeature: Galerie (reuse page `gallery` block)
+ * - BlocksFeature: Galerie + Rozbalovací odstavec
  */
 export const nazemiLexicalEditor = lexicalEditor({
   features: ({ defaultFeatures }) => [
@@ -108,7 +101,7 @@ export const nazemiLexicalEditor = lexicalEditor({
     }),
     FixedToolbarFeature(),
     BlocksFeature({
-      blocks: [GalleryBlock],
+      blocks: [GalleryBlock, ExpandingParagraphBlock],
     }),
   ],
 })

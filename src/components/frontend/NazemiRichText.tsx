@@ -10,6 +10,7 @@ import type {
 } from '@payloadcms/richtext-lexical'
 import type { ComponentProps, CSSProperties, ReactNode } from 'react'
 
+import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
@@ -28,6 +29,12 @@ type GalleryFields = {
   caption?: string | null
   columns?: '1' | '2' | '3' | null
   images?: unknown
+}
+
+type ExpandingParagraphFields = {
+  blockType: 'expandingParagraph'
+  body?: ComponentProps<typeof PayloadRichText>['data'] | null
+  summary?: string | null
 }
 
 function internalDocToHref({ linkNode }: { linkNode: SerializedLinkNode }) {
@@ -186,6 +193,20 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
               />
             </div>
           ),
+          expandingParagraph: ({
+            node,
+          }: {
+            node: SerializedBlockNode<ExpandingParagraphFields>
+          }) => {
+            const summary = node.fields.summary?.trim()
+            if (!summary || !node.fields.body) return null
+            return (
+              <ExpandingParagraph
+                body={<NazemiRichText data={node.fields.body} siteSlug={siteSlug} />}
+                summary={summary}
+              />
+            )
+          },
         },
         link: ({ node, nodesToJSX }) => {
           const children = nodesToJSX({ nodes: node.children })

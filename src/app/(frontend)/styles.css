@@ -1336,6 +1336,43 @@
   }
 }
 
+/* Lexical expanding paragraph — native <details> (not-prose wrapper) */
+.rt-expand {
+  @apply border-0 border-t-2 border-solid border-ground/20;
+}
+
+.rt-expand__summary {
+  @apply flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-inter text-[16px] font-medium leading-snug text-ground outline-none;
+}
+
+.rt-expand__summary::-webkit-details-marker {
+  display: none;
+}
+
+.rt-expand__summary:focus-visible {
+  @apply outline-2 outline-offset-2 outline-ground;
+}
+
+.rt-expand__label {
+  @apply min-w-0 flex-1 text-left;
+}
+
+.rt-expand__arrow {
+  @apply inline-flex size-4 shrink-0 items-center justify-center text-ground transition-transform duration-200;
+}
+
+.rt-expand[open] > .rt-expand__summary .rt-expand__arrow {
+  transform: rotate(180deg);
+}
+
+.rt-expand__body {
+  @apply pb-4 pt-0;
+}
+
+.rt-expand__body > :first-child {
+  margin-top: 0;
+}
+
 /* Galerie lightbox — translucent sky + blur-in/out; matched controls */
 .nazemi-lightbox.yarl__root {
   --yarl__color_backdrop: color-mix(in srgb, var(--color-sky) 72%, transparent);
