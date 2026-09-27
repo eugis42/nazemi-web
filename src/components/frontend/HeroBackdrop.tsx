@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react'
  * Homepage background: scrolls slower than page content (subtle parallax).
  * Used for every site when `SiteShell` gets `backdrop`.
  *
- * SVG sources: inline + stroke-dashoffset line-draw on load (~5s, random order/pace).
+ * SVG sources: inline + stroke-dashoffset line-draw on load (~3s, random order/pace).
  * Bitmap / non-SVG: plain <img> (subsite cover framing unchanged).
  *
  * Do not put overflow-x-hidden on this wrapper — CSS then forces overflow-y clip
@@ -17,9 +17,9 @@ const PARALLAX_FACTOR = 0.175
 /** Lerp toward target each frame — higher = snappier, lower = smoother. */
 const SMOOTHING = 0.12
 /** Total window for the staggered line-draw (ms). */
-const DRAW_WINDOW_MS = 5000
-const DRAW_MIN_MS = 700
-const DRAW_MAX_MS = 2800
+const DRAW_WINDOW_MS = 3000
+const DRAW_MIN_MS = 500
+const DRAW_MAX_MS = 1800
 
 function isSvgUrl(src: string) {
   return /\.svg([?#]|$)/i.test(src)
@@ -28,8 +28,8 @@ function isSvgUrl(src: string) {
 function graphicClassName(fitWidth: boolean) {
   return fitWidth
     ? 'block h-[75vh] w-full object-cover object-top will-change-transform'
-    : // Mobile vh cover (pre-parallax); desktop w-full h-auto full-bleed — see PR #6.
-      'block h-[100vh] w-full object-cover object-top will-change-transform md:h-auto'
+    : // Mobile + tablet: vh cover. Desktop (lg+): w-full h-auto full-bleed.
+      'block h-[100vh] w-full object-cover object-top will-change-transform lg:h-auto'
 }
 
 function shuffle<T>(items: T[]): T[] {
@@ -250,7 +250,7 @@ export function HeroBackdrop({
         svg.setAttribute('role', 'presentation')
         svg.setAttribute('aria-hidden', 'true')
         svg.setAttribute('focusable', 'false')
-        // Keep intrinsic ratio for md:h-auto full-bleed (same as <img width/height>).
+        // Keep intrinsic ratio for lg:h-auto full-bleed (same as <img width/height>).
         if (!svg.hasAttribute('width')) svg.setAttribute('width', '1512')
         if (!svg.hasAttribute('height')) svg.setAttribute('height', '1378')
 
