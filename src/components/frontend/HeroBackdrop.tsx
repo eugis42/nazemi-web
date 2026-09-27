@@ -7,10 +7,12 @@ import { useEffect, useRef } from 'react'
  * Used for every site when `SiteShell` gets `backdrop`.
  *
  * SVG sources: inline + stroke-dashoffset line-draw on load (~3s, random order/pace).
- * Bitmap / non-SVG: plain <img> (subsite cover framing unchanged).
+ * Bitmap / non-SVG: plain <img>.
  *
- * Do not put overflow-x-hidden on this wrapper — CSS then forces overflow-y clip
- * and parallax translateY chops the graphic bottom (esp. subsite / Flowmakers).
+ * Mobile/tablet: 75vh clip frame + object-cover (sides may crop). Desktop (lg+)
+ * main is full-bleed natural height; subsites keep the 75vh cover frame.
+ * Overflow is intentional on the 75vh frame only — do not put overflow-x-hidden
+ * on page-shell (that forces overflow-y clip and chops parallax outside the frame).
  */
 /** Lag vs scroll — 0 = glued to viewport, 1 = normal document scroll. */
 const PARALLAX_FACTOR = 0.175
@@ -25,11 +27,24 @@ function isSvgUrl(src: string) {
   return /\.svg([?#]|$)/i.test(src)
 }
 
+function wrapClassName(fitWidth: boolean) {
+  const top = fitWidth
+    ? 'top-[var(--site-header-offset,89px)]'
+    : 'top-0'
+  // 75vh clip on mobile/tablet for every site; main drops the clip at lg+.
+  if (fitWidth) {
+    return `pointer-events-none absolute inset-x-0 ${top} z-0 h-[75vh] w-full overflow-hidden`
+  }
+  return `pointer-events-none absolute inset-x-0 ${top} z-0 h-[75vh] w-full overflow-hidden lg:h-auto lg:overflow-visible`
+}
+
 function graphicClassName(fitWidth: boolean) {
-  return fitWidth
-    ? 'block h-[75vh] w-full object-cover object-top will-change-transform'
-    : // Mobile + tablet: vh cover. Desktop (lg+): w-full h-auto full-bleed.
-      'block h-[100vh] w-full object-cover object-top will-change-transform lg:h-auto'
+  // Fill the 75vh frame; object-top = horizontally centered + top-aligned.
+  if (fitWidth) {
+    return 'block h-full w-full object-cover object-top will-change-transform'
+  }
+  // Mobile/tablet: cover the clip. Desktop: natural height full-bleed.
+  return 'block h-full w-full object-cover object-top will-change-transform lg:h-auto'
 }
 
 function shuffle<T>(items: T[]): T[] {
@@ -246,9 +261,7 @@ export function HeroBackdrop({
 } = {}) {
   const imageSrc = src || '/hero-backdrop.svg'
   const svgMode = isSvgUrl(imageSrc)
-  const wrapClass = fitWidth
-    ? 'pointer-events-none absolute inset-x-0 top-[var(--site-header-offset,89px)] z-0 w-full'
-    : 'pointer-events-none absolute inset-x-0 top-0 z-0 w-full'
+  const wrapClass = wrapClassName(fitWidth)
   const graphicClass = graphicClassName(fitWidth)
 
   const imgRef = useRef<HTMLImageElement>(null)
