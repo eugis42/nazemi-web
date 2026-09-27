@@ -1338,11 +1338,11 @@
 
 /* Lexical expanding paragraph — native <details> (not-prose wrapper) */
 .rt-expand {
-  @apply border-0 border-t-2 border-solid border-ground/20;
+  @apply border-0 border-t-2 border-solid border-ground;
 }
 
 .rt-expand__summary {
-  @apply flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-inter text-[16px] font-medium leading-snug text-ground outline-none;
+  @apply flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-inter text-[16px] font-bold leading-snug text-ground outline-none;
 }
 
 .rt-expand__summary::-webkit-details-marker {
