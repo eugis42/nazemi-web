@@ -1339,6 +1339,8 @@
 /* Lexical expanding paragraph — soft surface like relation embeds */
 .rt-expand {
   @apply bg-ground/5 p-[15px];
+  /* Enable animating to/from `auto` height where supported */
+  interpolate-size: allow-keywords;
 }
 
 .rt-expand__summary {
@@ -1358,7 +1360,8 @@
 }
 
 .rt-expand__arrow {
-  @apply inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-ground text-ground transition-transform duration-200;
+  @apply inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-ground text-ground;
+  transition: transform 0.3s ease;
 }
 
 .rt-expand[open] > .rt-expand__summary .rt-expand__arrow {
@@ -1370,6 +1373,37 @@
 
   & > :first-child {
     margin-top: 0;
+  }
+}
+
+/*
+ * CSS-only open/close — modern `::details-content` + height:auto transition.
+ * Unsupported browsers: instant toggle (still accessible).
+ */
+@supports (selector(::details-content)) {
+  .rt-expand::details-content {
+    block-size: 0;
+    opacity: 0;
+    overflow-y: clip;
+    transition:
+      block-size 0.32s ease,
+      opacity 0.24s ease,
+      content-visibility 0.32s allow-discrete;
+  }
+
+  .rt-expand[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-expand__arrow {
+    transition: none;
+  }
+
+  .rt-expand::details-content {
+    transition: none;
   }
 }
 
