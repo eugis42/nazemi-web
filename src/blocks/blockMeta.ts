@@ -13,6 +13,7 @@ export type BlockThumbSlug =
   | 'pageIntro'
   | 'richText'
   | 'gallery'
+  | 'logoStrip'
   | 'speakers'
   | 'testimonials'
   | 'threeColumns'

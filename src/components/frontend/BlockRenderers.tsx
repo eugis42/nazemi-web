@@ -3,6 +3,7 @@ import { Fragment } from 'react'
 import type { Aktuality, Kalendar, Media, Projekty } from '@/payload-types'
 import { EventCard, NewsCard, PageIntro, ProjectRow } from '@/components/frontend/cards'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
+import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { EmptyState } from '@/components/frontend/listing'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { BlockHeader, Button } from '@/components/frontend/ui'
@@ -443,6 +444,17 @@ export function PageBlocks({
           )
         }
 
+        if (block.blockType === 'logoStrip') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <LogoStrip
+                logos={resolveLogoStripItems(block.logos)}
+                title={block.title ? String(block.title) : null}
+              />
+            </div>
+          )
+        }
+
         if (block.blockType === 'richText' && block.content) {
           return (
             <div className="container max-lg:px-card" key={key}>
@@ -599,6 +611,17 @@ export function WorkshopContentBlocks({
                 caption={block.caption ? String(block.caption) : null}
                 columns={(block.columns as '1' | '2' | '3' | null) || '2'}
                 images={resolveGalleryImages(block.images)}
+              />
+            </div>
+          )
+        }
+
+        if (block.blockType === 'logoStrip') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <LogoStrip
+                logos={resolveLogoStripItems(block.logos)}
+                title={block.title ? String(block.title) : null}
               />
             </div>
           )

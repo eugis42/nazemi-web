@@ -10,6 +10,7 @@ import {
   type ContentBlock,
 } from '@/components/frontend/BlockRenderers'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
+import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { PillarsBlock } from '@/components/frontend/PillarsBlock'
 import { resolveBlockActions } from '@/lib/block-actions'
@@ -83,6 +84,15 @@ export async function HomepageBlocks({
             columns={(block.columns as '1' | '2' | '3' | null) || '2'}
             images={resolveGalleryImages(block.images)}
             key={key}
+          />,
+        )
+        break
+      case 'logoStrip':
+        rendered.push(
+          <LogoStrip
+            key={key}
+            logos={resolveLogoStripItems(block.logos)}
+            title={block.title ? String(block.title) : null}
           />,
         )
         break

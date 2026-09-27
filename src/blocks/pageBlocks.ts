@@ -7,6 +7,10 @@ import {
 import { additionalColorField } from '@/fields/additionalColor'
 import { columnCallToActionField } from '@/fields/cta'
 import { imageUploadFilter } from '@/fields/shared'
+import {
+  hrefFieldDescription,
+  validateOptionalHref,
+} from '@/fields/validateHref'
 
 export const RichTextBlock: Block = {
   slug: 'richText',
@@ -72,6 +76,67 @@ export const GalleryBlock: Block = {
       name: 'caption',
       type: 'text',
       label: 'Popisek',
+    },
+  ],
+}
+
+/** Funding / government support logos — left-aligned strip, no lightbox. */
+export const LogoStripBlock: Block = {
+  slug: 'logoStrip',
+  labels: {
+    plural: 'Pásy log',
+    singular: 'Pás log',
+  },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_PAGE,
+    thumb: 'logoStrip',
+  }),
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      label: 'Nadpis',
+      admin: {
+        description: 'Volitelně — např. „Projekt podpořili“.',
+      },
+    },
+    {
+      name: 'logos',
+      type: 'array',
+      label: 'Loga',
+      minRows: 1,
+      required: true,
+      labels: {
+        plural: 'Loga',
+        singular: 'Logo',
+      },
+      admin: {
+        components: {
+          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+        },
+        description:
+          'Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          label: 'Logo',
+          relationTo: 'media',
+          required: true,
+          filterOptions: imageUploadFilter,
+        },
+        {
+          name: 'href',
+          type: 'text',
+          label: 'Externí odkaz',
+          admin: {
+            description: hrefFieldDescription,
+          },
+          validate: validateOptionalHref,
+        },
+      ],
     },
   ],
 }
@@ -246,4 +311,11 @@ export const ThreeCardsBlock: Block = {
   ],
 }
 
-export const pageBlocks = [PageIntroBlock, RichTextBlock, GalleryBlock, ThreeColumnsBlock, ThreeCardsBlock]
+export const pageBlocks = [
+  PageIntroBlock,
+  RichTextBlock,
+  GalleryBlock,
+  LogoStripBlock,
+  ThreeColumnsBlock,
+  ThreeCardsBlock,
+]

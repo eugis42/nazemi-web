@@ -11,6 +11,7 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   about: 'O nás',
   richText: 'Textový blok',
   gallery: 'Galerie',
+  logoStrip: 'Pás log',
   pageIntro: 'Úvodní hlavička',
   pageHeader: 'Úvodní hlavička',
   speakers: 'Lektoři',
