@@ -61,6 +61,48 @@ function shapeHasStroke(el: SVGGeometryElement): boolean {
   }
 }
 
+/** Random delay/duration plans that still span the full draw window. */
+function planTimings(count: number): { delay: number; duration: number }[] {
+  if (count <= 0) return []
+
+  // Few strokes (Flowmakers = 1 compound path): occupy the whole window so
+  // perceived pace matches multi-path sites (don't finish in ~1s).
+  if (count <= 3) {
+    const plans = Array.from({ length: count }, (_, i) => {
+      const duration =
+        count === 1
+          ? DRAW_WINDOW_MS
+          : DRAW_MIN_MS + Math.random() * (DRAW_WINDOW_MS - DRAW_MIN_MS)
+      const maxDelay = Math.max(0, DRAW_WINDOW_MS - duration)
+      const delay =
+        count === 1 ? 0 : (i / Math.max(1, count - 1)) * maxDelay * (0.4 + Math.random() * 0.6)
+      return { delay, duration: Math.min(duration, DRAW_WINDOW_MS - delay) }
+    })
+    return shuffle(plans)
+  }
+
+  // Many strokes: random pace/order, then stretch so the last stroke ends at the window.
+  const plans = Array.from({ length: count }, () => {
+    const duration = DRAW_MIN_MS + Math.random() * (DRAW_MAX_MS - DRAW_MIN_MS)
+    const delay = Math.random() * Math.max(0, DRAW_WINDOW_MS - duration)
+    return { delay, duration }
+  })
+
+  const minDelay = Math.min(...plans.map((p) => p.delay))
+  for (const p of plans) p.delay -= minDelay
+
+  const maxEnd = Math.max(...plans.map((p) => p.delay + p.duration))
+  if (maxEnd > 0 && maxEnd < DRAW_WINDOW_MS) {
+    const scale = DRAW_WINDOW_MS / maxEnd
+    for (const p of plans) {
+      p.delay *= scale
+      p.duration *= scale
+    }
+  }
+
+  return shuffle(plans)
+}
+
 /** Stroke-dash line-draw; skips fill-only / zero-length shapes. */
 function runLineDraw(svg: SVGSVGElement, reduceMotion: boolean) {
   // Must run after SVG is in the document so CSS-class strokes resolve.
@@ -85,14 +127,16 @@ function runLineDraw(svg: SVGSVGElement, reduceMotion: boolean) {
     return () => undefined
   }
 
+  const ordered = shuffle(shapes)
+  const timings = planTimings(ordered.length)
   const animations: Animation[] = []
-  for (const el of shuffle(shapes)) {
+
+  for (let i = 0; i < ordered.length; i++) {
+    const el = ordered[i]!
+    const { delay, duration } = timings[i]!
     const len = el.getTotalLength()
     el.style.strokeDasharray = String(len)
     el.style.strokeDashoffset = String(len)
-
-    const duration = DRAW_MIN_MS + Math.random() * (DRAW_MAX_MS - DRAW_MIN_MS)
-    const delay = Math.random() * Math.max(0, DRAW_WINDOW_MS - duration)
 
     animations.push(
       el.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], {
