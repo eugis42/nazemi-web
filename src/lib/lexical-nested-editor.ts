@@ -2,20 +2,24 @@ import {
   HeadingFeature,
   LinkFeature,
   RelationshipFeature,
+  TextStateFeature,
   UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
 import { RICH_TEXT_RELATION_COLLECTIONS } from '@/lib/lexical-collections'
+import { textColorState } from '@/lib/lexical-text-color'
 
 /**
  * Slim Lexical editor for nested rich text inside Lexical blocks
  * (e.g. expanding-paragraph body). No BlocksFeature / FixedToolbar —
  * avoids nested expand-in-expand and keeps the drawer light.
+ * Text colour matches root editor (same TextStateFeature tokens).
  */
 export const nazemiNestedLexicalEditor = lexicalEditor({
-  features: ({ defaultFeatures }) =>
-    defaultFeatures.map((feature) => {
+  features: ({ defaultFeatures }) => [
+    ...defaultFeatures.map((feature) => {
       if (feature.key === 'heading') {
         return HeadingFeature({
           enabledHeadingSizes: ['h2', 'h3', 'h4', 'h5', 'h6'],
@@ -44,4 +48,11 @@ export const nazemiNestedLexicalEditor = lexicalEditor({
       }
       return feature
     }),
+    TextStateFeature({
+      state: {
+        color: textColorState.color,
+      },
+    }),
+    SiteTextColorVarsFeature(),
+  ],
 })

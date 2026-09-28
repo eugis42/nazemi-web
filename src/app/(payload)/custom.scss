@@ -214,3 +214,80 @@ html[data-theme='dark'] {
   top: 0;
   z-index: 1;
 }
+
+/* Admin fallbacks for Lexical text-colour swatches (overridden per document site). */
+:root {
+  --color-ground: #534741;
+  --color-sky: #f3ffff;
+  --color-green: #90d750;
+}
+
+/* Lexical TextStateFeature — compact colour swatch grid (no colour names). */
+.toolbar-popup__dropdown-items:has([data-item-key="clear-style"]) {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(6, 1.75rem);
+  padding: 0.5rem;
+  width: max-content;
+}
+
+.toolbar-popup__dropdown-items:has([data-item-key="clear-style"]) .toolbar-popup__dropdown-item {
+  justify-content: center;
+  margin: 0;
+  min-width: 0;
+  padding: 0.15rem;
+}
+
+.toolbar-popup__dropdown-items:has([data-item-key="clear-style"]) .toolbar-popup__dropdown-item .text {
+  display: none;
+}
+
+/* Hide unused doplňkové slots until SiteTextColorVars paints data-nazemi-extra-N. */
+.toolbar-popup__dropdown-item-extra-0 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-1 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-2 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-3 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-4 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-5 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-6 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-7 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-8 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-9 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-10 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-11 { display: none !important; }
+html[data-nazemi-extra-0="1"] .toolbar-popup__dropdown-item-extra-0 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-1="1"] .toolbar-popup__dropdown-item-extra-1 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-2="1"] .toolbar-popup__dropdown-item-extra-2 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-3="1"] .toolbar-popup__dropdown-item-extra-3 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-4="1"] .toolbar-popup__dropdown-item-extra-4 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-5="1"] .toolbar-popup__dropdown-item-extra-5 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-6="1"] .toolbar-popup__dropdown-item-extra-6 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-7="1"] .toolbar-popup__dropdown-item-extra-7 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-8="1"] .toolbar-popup__dropdown-item-extra-8 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-9="1"] .toolbar-popup__dropdown-item-extra-9 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-10="1"] .toolbar-popup__dropdown-item-extra-10 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-11="1"] .toolbar-popup__dropdown-item-extra-11 {
+  display: inline-flex !important;
+}

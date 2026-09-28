@@ -4,16 +4,19 @@ import {
   HeadingFeature,
   LinkFeature,
   RelationshipFeature,
+  TextStateFeature,
   UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
 import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
 import { GalleryBlock, LogoStripBlock } from '@/blocks/pageBlocks'
+import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
 import {
   RICH_TEXT_RELATION_COLLECTIONS,
   type RichTextRelationCollection,
 } from '@/lib/lexical-collections'
+import { textColorState } from '@/lib/lexical-text-color'
 
 export { RICH_TEXT_RELATION_COLLECTIONS, type RichTextRelationCollection }
 
@@ -65,6 +68,7 @@ const uploadWidthPercentField = {
  * - h1 disabled (page headers own H1)
  * - LinkFeature: internal docs limited to content collections
  * - FixedToolbarFeature: persistent top toolbar
+ * - TextStateFeature: text colour tokens from document site palette
  * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec
  */
 export const nazemiLexicalEditor = lexicalEditor({
@@ -99,6 +103,12 @@ export const nazemiLexicalEditor = lexicalEditor({
       }
       return feature
     }),
+    TextStateFeature({
+      state: {
+        color: textColorState.color,
+      },
+    }),
+    SiteTextColorVarsFeature(),
     FixedToolbarFeature(),
     BlocksFeature({
       blocks: [GalleryBlock, LogoStripBlock, ExpandingParagraphBlock],

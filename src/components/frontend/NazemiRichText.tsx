@@ -16,8 +16,28 @@ import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStri
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
+import { textColorCss } from '@/lib/lexical-text-color'
 import { isExternalHref } from '@/lib/links'
 import type { Media } from '@/payload-types'
+
+/** Lexical serializes TextStateFeature attrs under `"$"`. */
+const NODE_STATE_KEY = '$' as const
+
+function applyTextColorState(
+  node: { [NODE_STATE_KEY]?: Record<string, string> },
+  children: ReactNode,
+): ReactNode {
+  const state = node[NODE_STATE_KEY]
+  const token = state?.color
+  if (!token) return children
+  const color = textColorCss(token)
+  if (!color) return children
+  return (
+    <span className="rt-text-color" data-color={token} style={{ color }}>
+      {children}
+    </span>
+  )
+}
 
 type RichTextProps = {
   className?: string
@@ -184,6 +204,16 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
       converters={({ defaultConverters }) => ({
         ...defaultConverters,
         ...LinkJSXConverter({ internalDocToHref }),
+        text: (args) => {
+          const base =
+            typeof defaultConverters.text === 'function'
+              ? defaultConverters.text(args)
+              : args.node.text
+          return applyTextColorState(
+            args.node as { [NODE_STATE_KEY]?: Record<string, string> },
+            base,
+          )
+        },
         relationship: ({ node }: { node: SerializedRelationshipNode }) => (
           <RichTextRelation
             relationTo={node.relationTo}
