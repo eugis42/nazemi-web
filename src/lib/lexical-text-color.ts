@@ -17,7 +17,7 @@ export type TextColorBrandToken = (typeof TEXT_COLOR_BRAND_TOKENS)[number]
 export type TextColorExtraToken = `extra-${number}`
 export type TextColorToken = TextColorBrandToken | TextColorExtraToken
 
-type StyleObject = { background?: string; border?: string; color?: string }
+type StyleObject = { color?: string }
 
 export type TextColorStateValue = {
   css: StyleObject
@@ -27,26 +27,20 @@ export type TextColorStateValue = {
 export type TextColorStateConfig = Record<string, TextColorStateValue>
 
 function brandSwatch(token: TextColorBrandToken, label: string): TextColorStateValue {
-  const cssVar = `var(--color-${token})`
-  // Same fg/bg → “A” glyph invisible; box reads as a solid swatch in the toolbar.
+  // colour only — background fill made selected text vanish on coloured blocks
   return {
     label,
     css: {
-      background: cssVar,
-      border: '1px solid color-mix(in srgb, var(--theme-elevation-800) 20%, transparent)',
-      color: cssVar,
+      color: `var(--color-${token})`,
     },
   }
 }
 
 function extraSwatch(index: number): TextColorStateValue {
-  const cssVar = `var(--color-extra-${index})`
   return {
     label: `Doplňková ${index + 1}`,
     css: {
-      background: cssVar,
-      border: '1px solid color-mix(in srgb, var(--theme-elevation-800) 20%, transparent)',
-      color: cssVar,
+      color: `var(--color-extra-${index})`,
     },
   }
 }
