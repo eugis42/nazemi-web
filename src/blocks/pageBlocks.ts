@@ -183,7 +183,7 @@ export const PageIntroBlock: Block = {
 }
 
 /**
- * Sloupce — unlimited columns, max 3 per row. Slug stays `threeColumns`.
+ * Sloupce — unlimited columns, max 3 per row (exactly 4 → 2+2). Slug stays `threeColumns`.
  * `borders` on → former Karty look; off → plain columns.
  * Column titles live in Lexical `body` as H2 (no separate headline/prefix/title fields).
  */

@@ -232,6 +232,7 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
 
 /**
  * Sloupce layout: fixed third-width cells, max 3 per row, wrap.
+ * Exactly 4 columns → 2 per row (2+2), not 3+1.
  * Do NOT put `h-full` on cells — % height fights flex stretch when the row
  * height is content-sized, so `mt-auto` on ColumnCta has no free space.
  * Short rows (<3) centered (`lg:justify-center`).
@@ -278,7 +279,9 @@ export function ColumnsBlock({
   const columns = (block.columns as ColumnRow[]) || []
   if (!columns.length) return null
 
-  const rows = chunkColumns(columns, COLUMNS_PER_ROW)
+  // Exactly 4 → 2/row (2+2); else max 3/row.
+  const perRow = columns.length === 4 ? 2 : COLUMNS_PER_ROW
+  const rows = chunkColumns(columns, perRow)
   const titleAlign = columnsTitleAlignClass(rows[0]?.length || 0)
 
   const renderColumn = (column: ColumnRow, index: number) => {
@@ -325,7 +328,7 @@ export function ColumnsBlock({
       {rows.map((row, rowIndex) => (
         <div className={COLUMNS_ROW} data-row={rowIndex} key={`row-${rowIndex}`}>
           {row.map((column, colIndex) =>
-            renderColumn(column, rowIndex * COLUMNS_PER_ROW + colIndex),
+            renderColumn(column, rowIndex * perRow + colIndex),
           )}
         </div>
       ))}
