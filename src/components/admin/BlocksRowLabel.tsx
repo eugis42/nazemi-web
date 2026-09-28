@@ -17,8 +17,7 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   speakers: 'Lektoři',
   lecturers: 'Lektoři',
   testimonials: 'Reference',
-  threeColumns: '3 sloupce',
-  threeCards: '3 karty',
+  threeColumns: 'Sloupce',
 }
 
 type BlockRowData = {

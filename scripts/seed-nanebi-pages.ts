@@ -373,20 +373,17 @@ Zajistíme takový počet porcí, který odpovídá počtu lidí nahlášených 
       {
         blockType: 'threeColumns',
         title: '',
+        borders: false,
         columns: [
           {
-            headline: '590 Kč',
-            title: 'den / osoba — všechno',
             body: await lex(
-              '<p>Plná penze + káva, čaj, svačina dopoledne i odpoledne.</p>',
+              '<h2>590 Kč den / osoba — všechno</h2><p>Plná penze + káva, čaj, svačina dopoledne i odpoledne.</p>',
               payload,
             ),
           },
           {
-            headline: '450 Kč',
-            title: 'snídaně, oběd, večeře',
             body: await lex(
-              '<p>Bez svačin a kávy, čaje v průběhu dne.</p>',
+              '<h2>450 Kč snídaně, oběd, večeře</h2><p>Bez svačin a kávy, čaje v průběhu dne.</p>',
               payload,
             ),
           },
@@ -521,22 +518,23 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
       {
         blockType: 'threeColumns',
         title: 'Bauorden',
+        borders: false,
         columns: [
           {
-            headline: '2900 Kč',
-            title: 'Norbert — 8 osob / noc',
             body: await lex(
               mdToHtml(`
+## 2900 Kč Norbert — 8 osob / noc
+
 Čtyři patrové postele (90 x 200 cm) pro celkem 8 osob, v koupelně jedna toaleta s umyvadlem, dva sprchové kouty a dvě další umyvadla. Cena je 2900 Kč/pokoj/noc.
 `),
               payload,
             ),
           },
           {
-            headline: '2900 Kč',
-            title: 'Václav — 8 osob / noc',
             body: await lex(
               mdToHtml(`
+## 2900 Kč Václav — 8 osob / noc
+
 Čtyři patrové postele (90 x 200 cm) pro celkem 8 osob, v koupelně jedna toaleta, jeden sprchový kout a dvě umyvadla. Cena je 2900 Kč/pokoj/noc.
 `),
               payload,
@@ -546,14 +544,15 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
       },
       { blockType: 'richText', content: await lex(domkyIntroHtml, payload) },
       {
-        blockType: 'threeCards',
+        blockType: 'threeColumns',
         title: 'Domky',
+        borders: true,
         columns: [
           {
-            prefix: '1840 Kč/noc',
-            title: 'Domek 1 — 2–4 osoby',
             body: await lex(
               mdToHtml(`
+## 1840 Kč/noc Domek 1 — 2–4 osoby
+
 - průchozí kuchyni s rozkládacím gaučem (po rozložení 140 x 190 cm)
 - pokoj se dvěma jednolůžky 90 x 200 cm (lze spojit do dvoulůžka)
 - koupelnu se vstupem z pokoje
@@ -562,10 +561,10 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
             ),
           },
           {
-            prefix: '1840 Kč/noc',
-            title: 'Domek 2 — 2 osoby',
             body: await lex(
               mdToHtml(`
+## 1840 Kč/noc Domek 2 — 2 osoby
+
 - průchozí kuchyni s vybavením (mimo výše uvedeného navíc indukční deska se 4 plotýnkami, trouba, toustovač, mixér)
 - pokoj s jedním dvoulůžkem 160 x 200 cm
 - koupelnu se vstupem z chodby
@@ -574,10 +573,10 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
             ),
           },
           {
-            prefix: '1840 Kč/noc',
-            title: 'Domek 3 — 2–4 osoby',
             body: await lex(
               mdToHtml(`
+## 1840 Kč/noc Domek 3 — 2–4 osoby
+
 - průchozí kuchyni
 - pokoj se dvěma jednolůžky 90 x 200 cm (lze spojit do dvoulůžka) a rozkládacím gaučem (po rozložení 140 x 190 cm)
 - koupelnu se vstupem z kuchyně

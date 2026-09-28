@@ -182,11 +182,16 @@ export const PageIntroBlock: Block = {
   ],
 }
 
+/**
+ * Sloupce — 1–3 columns. Slug stays `threeColumns` (DB tables + existing rows).
+ * `borders` on → former Karty look; off → plain columns.
+ * Column titles live in Lexical `body` as H2 (no separate headline/prefix/title fields).
+ */
 export const ThreeColumnsBlock: Block = {
   slug: 'threeColumns',
   labels: {
-    plural: '3 sloupce',
-    singular: '3 sloupce',
+    plural: 'Sloupce',
+    singular: 'Sloupce',
   },
   admin: blockPickerAdmin({
     group: BLOCK_GROUP_PAGE,
@@ -197,6 +202,15 @@ export const ThreeColumnsBlock: Block = {
       name: 'title',
       type: 'text',
       label: 'Nadpis',
+    },
+    {
+      name: 'borders',
+      type: 'checkbox',
+      label: 'Ohraničení sloupců',
+      defaultValue: false,
+      admin: {
+        description: 'Zapnuto = vzhled karet (rámeček + pozadí).',
+      },
     },
     {
       name: 'columns',
@@ -212,101 +226,10 @@ export const ThreeColumnsBlock: Block = {
         components: {
           RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
         },
-        description: 'Max. 3 sloupce.',
+        description: '1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.',
         initCollapsed: true,
       },
       fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'headline',
-              type: 'text',
-              label: 'Velký nadpis (1. řádek)',
-              admin: {
-                description: 'Akcentová barva — např. 150+. Prázdné → nezobrazí se.',
-                width: '50%',
-              },
-            },
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Nadpis (2. řádek)',
-              admin: {
-                description: 'Prázdné → nezobrazí se.',
-                width: '50%',
-              },
-            },
-          ],
-        },
-        {
-          name: 'body',
-          type: 'richText',
-          label: 'Text',
-        },
-        columnCallToActionField(),
-      ],
-    },
-  ],
-}
-
-export const ThreeCardsBlock: Block = {
-  slug: 'threeCards',
-  labels: {
-    plural: '3 karty',
-    singular: '3 karty',
-  },
-  admin: blockPickerAdmin({
-    group: BLOCK_GROUP_PAGE,
-    thumb: 'threeCards',
-  }),
-  fields: [
-    {
-      name: 'title',
-      type: 'text',
-      label: 'Nadpis',
-    },
-    {
-      name: 'columns',
-      type: 'array',
-      label: 'Karty',
-      maxRows: 3,
-      minRows: 1,
-      labels: {
-        plural: 'Karty',
-        singular: 'Karta',
-      },
-      admin: {
-        components: {
-          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
-        },
-        description: 'Max. 3 karty.',
-        initCollapsed: true,
-      },
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'prefix',
-              type: 'text',
-              label: 'Prefix (1. řádek)',
-              admin: {
-                description: 'Akcentová barva — např. Co:. Prázdné → nezobrazí se.',
-                width: '35%',
-              },
-            },
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Nadpis (2. řádek)',
-              admin: {
-                description: 'Prázdné → nezobrazí se.',
-                width: '65%',
-              },
-            },
-          ],
-        },
         {
           name: 'body',
           type: 'richText',
@@ -324,5 +247,4 @@ export const pageBlocks = [
   GalleryBlock,
   LogoStripBlock,
   ThreeColumnsBlock,
-  ThreeCardsBlock,
 ]

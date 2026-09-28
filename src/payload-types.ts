@@ -632,16 +632,21 @@ export interface Stranky {
              */
             title?: string | null;
             /**
-             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.
+             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.
              */
-            logos: {
-              image: number | Media;
-              /**
-               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-               */
-              href?: string | null;
-              id?: string | null;
-            }[];
+            images: (number | Media)[];
+            /**
+             * Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.
+             */
+            links?:
+              | {
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'logoStrip';
@@ -649,18 +654,14 @@ export interface Stranky {
         | {
             title?: string | null;
             /**
-             * Max. 3 sloupce.
+             * Zapnuto = vzhled karet (rámeček + pozadí).
+             */
+            borders?: boolean | null;
+            /**
+             * 1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.
              */
             columns?:
               | {
-                  /**
-                   * Akcentová barva — např. 150+. Prázdné → nezobrazí se.
-                   */
-                  headline?: string | null;
-                  /**
-                   * Prázdné → nezobrazí se.
-                   */
-                  title?: string | null;
                   body?: {
                     root: {
                       type: string;
@@ -736,97 +737,6 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'threeColumns';
-          }
-        | {
-            title?: string | null;
-            /**
-             * Max. 3 karty.
-             */
-            columns?:
-              | {
-                  /**
-                   * Akcentová barva — např. Co:. Prázdné → nezobrazí se.
-                   */
-                  prefix?: string | null;
-                  /**
-                   * Prázdné → nezobrazí se.
-                   */
-                  title?: string | null;
-                  body?: {
-                    root: {
-                      type: string;
-                      children: {
-                        type: any;
-                        version: number;
-                        [k: string]: unknown;
-                      }[];
-                      direction: ('ltr' | 'rtl') | null;
-                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                      indent: number;
-                      version: number;
-                    };
-                    [k: string]: unknown;
-                  } | null;
-                  /**
-                   * Volitelné, max. 1 tlačítko
-                   */
-                  actions?:
-                    | {
-                        /**
-                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
-                         */
-                        label?: string | null;
-                        linkType: 'internal' | 'external';
-                        /**
-                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
-                         */
-                        reference?:
-                          | ({
-                              relationTo: 'prehledy';
-                              value: number | Prehledy;
-                            } | null)
-                          | ({
-                              relationTo: 'stranky';
-                              value: number | Stranky;
-                            } | null)
-                          | ({
-                              relationTo: 'aktuality';
-                              value: number | Aktuality;
-                            } | null)
-                          | ({
-                              relationTo: 'kalendar';
-                              value: number | Kalendar;
-                            } | null)
-                          | ({
-                              relationTo: 'workshopy';
-                              value: number | Workshopy;
-                            } | null)
-                          | ({
-                              relationTo: 'publikace';
-                              value: number | Publikace;
-                            } | null)
-                          | ({
-                              relationTo: 'projekty';
-                              value: number | Projekty;
-                            } | null);
-                        /**
-                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                         */
-                        href?: string | null;
-                        variant?: ('filled' | 'outline' | 'colored') | null;
-                        /**
-                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
-                         */
-                        backgroundColor?: string | null;
-                        id?: string | null;
-                      }[]
-                    | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'threeCards';
           }
         | {
             title: string;
@@ -1327,16 +1237,21 @@ export interface Stranky {
              */
             title?: string | null;
             /**
-             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.
+             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.
              */
-            logos: {
-              image: number | Media;
-              /**
-               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-               */
-              href?: string | null;
-              id?: string | null;
-            }[];
+            images: (number | Media)[];
+            /**
+             * Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.
+             */
+            links?:
+              | {
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'logoStrip';
@@ -1344,18 +1259,14 @@ export interface Stranky {
         | {
             title?: string | null;
             /**
-             * Max. 3 sloupce.
+             * Zapnuto = vzhled karet (rámeček + pozadí).
+             */
+            borders?: boolean | null;
+            /**
+             * 1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.
              */
             columns?:
               | {
-                  /**
-                   * Akcentová barva — např. 150+. Prázdné → nezobrazí se.
-                   */
-                  headline?: string | null;
-                  /**
-                   * Prázdné → nezobrazí se.
-                   */
-                  title?: string | null;
                   body?: {
                     root: {
                       type: string;
@@ -1431,97 +1342,6 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'threeColumns';
-          }
-        | {
-            title?: string | null;
-            /**
-             * Max. 3 karty.
-             */
-            columns?:
-              | {
-                  /**
-                   * Akcentová barva — např. Co:. Prázdné → nezobrazí se.
-                   */
-                  prefix?: string | null;
-                  /**
-                   * Prázdné → nezobrazí se.
-                   */
-                  title?: string | null;
-                  body?: {
-                    root: {
-                      type: string;
-                      children: {
-                        type: any;
-                        version: number;
-                        [k: string]: unknown;
-                      }[];
-                      direction: ('ltr' | 'rtl') | null;
-                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                      indent: number;
-                      version: number;
-                    };
-                    [k: string]: unknown;
-                  } | null;
-                  /**
-                   * Volitelné, max. 1 tlačítko
-                   */
-                  actions?:
-                    | {
-                        /**
-                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
-                         */
-                        label?: string | null;
-                        linkType: 'internal' | 'external';
-                        /**
-                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
-                         */
-                        reference?:
-                          | ({
-                              relationTo: 'prehledy';
-                              value: number | Prehledy;
-                            } | null)
-                          | ({
-                              relationTo: 'stranky';
-                              value: number | Stranky;
-                            } | null)
-                          | ({
-                              relationTo: 'aktuality';
-                              value: number | Aktuality;
-                            } | null)
-                          | ({
-                              relationTo: 'kalendar';
-                              value: number | Kalendar;
-                            } | null)
-                          | ({
-                              relationTo: 'workshopy';
-                              value: number | Workshopy;
-                            } | null)
-                          | ({
-                              relationTo: 'publikace';
-                              value: number | Publikace;
-                            } | null)
-                          | ({
-                              relationTo: 'projekty';
-                              value: number | Projekty;
-                            } | null);
-                        /**
-                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                         */
-                        href?: string | null;
-                        variant?: ('filled' | 'outline' | 'colored') | null;
-                        /**
-                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
-                         */
-                        backgroundColor?: string | null;
-                        id?: string | null;
-                      }[]
-                    | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'threeCards';
           }
         | {
             title: string;
@@ -2723,16 +2543,21 @@ export interface Workshopy {
              */
             title?: string | null;
             /**
-             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.
+             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.
              */
-            logos: {
-              image: number | Media;
-              /**
-               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-               */
-              href?: string | null;
-              id?: string | null;
-            }[];
+            images: (number | Media)[];
+            /**
+             * Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.
+             */
+            links?:
+              | {
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'logoStrip';
@@ -2740,18 +2565,14 @@ export interface Workshopy {
         | {
             title?: string | null;
             /**
-             * Max. 3 sloupce.
+             * Zapnuto = vzhled karet (rámeček + pozadí).
+             */
+            borders?: boolean | null;
+            /**
+             * 1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.
              */
             columns?:
               | {
-                  /**
-                   * Akcentová barva — např. 150+. Prázdné → nezobrazí se.
-                   */
-                  headline?: string | null;
-                  /**
-                   * Prázdné → nezobrazí se.
-                   */
-                  title?: string | null;
                   body?: {
                     root: {
                       type: string;
@@ -2827,97 +2648,6 @@ export interface Workshopy {
             id?: string | null;
             blockName?: string | null;
             blockType: 'threeColumns';
-          }
-        | {
-            title?: string | null;
-            /**
-             * Max. 3 karty.
-             */
-            columns?:
-              | {
-                  /**
-                   * Akcentová barva — např. Co:. Prázdné → nezobrazí se.
-                   */
-                  prefix?: string | null;
-                  /**
-                   * Prázdné → nezobrazí se.
-                   */
-                  title?: string | null;
-                  body?: {
-                    root: {
-                      type: string;
-                      children: {
-                        type: any;
-                        version: number;
-                        [k: string]: unknown;
-                      }[];
-                      direction: ('ltr' | 'rtl') | null;
-                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                      indent: number;
-                      version: number;
-                    };
-                    [k: string]: unknown;
-                  } | null;
-                  /**
-                   * Volitelné, max. 1 tlačítko
-                   */
-                  actions?:
-                    | {
-                        /**
-                         * Volitelné u interního odkazu — prázdné → název vybrané položky.
-                         */
-                        label?: string | null;
-                        linkType: 'internal' | 'external';
-                        /**
-                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
-                         */
-                        reference?:
-                          | ({
-                              relationTo: 'prehledy';
-                              value: number | Prehledy;
-                            } | null)
-                          | ({
-                              relationTo: 'stranky';
-                              value: number | Stranky;
-                            } | null)
-                          | ({
-                              relationTo: 'aktuality';
-                              value: number | Aktuality;
-                            } | null)
-                          | ({
-                              relationTo: 'kalendar';
-                              value: number | Kalendar;
-                            } | null)
-                          | ({
-                              relationTo: 'workshopy';
-                              value: number | Workshopy;
-                            } | null)
-                          | ({
-                              relationTo: 'publikace';
-                              value: number | Publikace;
-                            } | null)
-                          | ({
-                              relationTo: 'projekty';
-                              value: number | Projekty;
-                            } | null);
-                        /**
-                         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                         */
-                        href?: string | null;
-                        variant?: ('filled' | 'outline' | 'colored') | null;
-                        /**
-                         * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
-                         */
-                        backgroundColor?: string | null;
-                        id?: string | null;
-                      }[]
-                    | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'threeCards';
           }
         | {
             title: string;
@@ -3615,16 +3345,21 @@ export interface Projekty {
          */
         title?: string | null;
         /**
-         * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, pevný max. rozměr.
+         * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.
          */
-        logos: {
-          image: number | Media;
-          /**
-           * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-           */
-          href?: string | null;
-          id?: string | null;
-        }[];
+        images: (number | Media)[];
+        /**
+         * Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.
+         */
+        links?:
+          | {
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
+              href?: string | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'logoStrip';
@@ -3632,18 +3367,14 @@ export interface Projekty {
     | {
         title?: string | null;
         /**
-         * Max. 3 sloupce.
+         * Zapnuto = vzhled karet (rámeček + pozadí).
+         */
+        borders?: boolean | null;
+        /**
+         * 1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.
          */
         columns?:
           | {
-              /**
-               * Akcentová barva — např. 150+. Prázdné → nezobrazí se.
-               */
-              headline?: string | null;
-              /**
-               * Prázdné → nezobrazí se.
-               */
-              title?: string | null;
               body?: {
                 root: {
                   type: string;
@@ -3719,97 +3450,6 @@ export interface Projekty {
         id?: string | null;
         blockName?: string | null;
         blockType: 'threeColumns';
-      }
-    | {
-        title?: string | null;
-        /**
-         * Max. 3 karty.
-         */
-        columns?:
-          | {
-              /**
-               * Akcentová barva — např. Co:. Prázdné → nezobrazí se.
-               */
-              prefix?: string | null;
-              /**
-               * Prázdné → nezobrazí se.
-               */
-              title?: string | null;
-              body?: {
-                root: {
-                  type: string;
-                  children: {
-                    type: any;
-                    version: number;
-                    [k: string]: unknown;
-                  }[];
-                  direction: ('ltr' | 'rtl') | null;
-                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                  indent: number;
-                  version: number;
-                };
-                [k: string]: unknown;
-              } | null;
-              /**
-               * Volitelné, max. 1 tlačítko
-               */
-              actions?:
-                | {
-                    /**
-                     * Volitelné u interního odkazu — prázdné → název vybrané položky.
-                     */
-                    label?: string | null;
-                    linkType: 'internal' | 'external';
-                    /**
-                     * Přehled kolekce (domovská), stránka nebo záznam obsahu.
-                     */
-                    reference?:
-                      | ({
-                          relationTo: 'prehledy';
-                          value: number | Prehledy;
-                        } | null)
-                      | ({
-                          relationTo: 'stranky';
-                          value: number | Stranky;
-                        } | null)
-                      | ({
-                          relationTo: 'aktuality';
-                          value: number | Aktuality;
-                        } | null)
-                      | ({
-                          relationTo: 'kalendar';
-                          value: number | Kalendar;
-                        } | null)
-                      | ({
-                          relationTo: 'workshopy';
-                          value: number | Workshopy;
-                        } | null)
-                      | ({
-                          relationTo: 'publikace';
-                          value: number | Publikace;
-                        } | null)
-                      | ({
-                          relationTo: 'projekty';
-                          value: number | Projekty;
-                        } | null);
-                    /**
-                     * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                     */
-                    href?: string | null;
-                    variant?: ('filled' | 'outline' | 'colored') | null;
-                    /**
-                     * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
-                     */
-                    backgroundColor?: string | null;
-                    id?: string | null;
-                  }[]
-                | null;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'threeCards';
       }
     | {
         title: string;
@@ -4319,10 +3959,10 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              logos?:
+              images?: T;
+              links?:
                 | T
                 | {
-                    image?: T;
                     href?: T;
                     id?: T;
                   };
@@ -4333,37 +3973,10 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              borders?: T;
               columns?:
                 | T
                 | {
-                    headline?: T;
-                    title?: T;
-                    body?: T;
-                    actions?:
-                      | T
-                      | {
-                          label?: T;
-                          linkType?: T;
-                          reference?: T;
-                          href?: T;
-                          variant?: T;
-                          backgroundColor?: T;
-                          id?: T;
-                        };
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        threeCards?:
-          | T
-          | {
-              title?: T;
-              columns?:
-                | T
-                | {
-                    prefix?: T;
-                    title?: T;
                     body?: T;
                     actions?:
                       | T
@@ -4584,10 +4197,10 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              logos?:
+              images?: T;
+              links?:
                 | T
                 | {
-                    image?: T;
                     href?: T;
                     id?: T;
                   };
@@ -4598,37 +4211,10 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              borders?: T;
               columns?:
                 | T
                 | {
-                    headline?: T;
-                    title?: T;
-                    body?: T;
-                    actions?:
-                      | T
-                      | {
-                          label?: T;
-                          linkType?: T;
-                          reference?: T;
-                          href?: T;
-                          variant?: T;
-                          backgroundColor?: T;
-                          id?: T;
-                        };
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        threeCards?:
-          | T
-          | {
-              title?: T;
-              columns?:
-                | T
-                | {
-                    prefix?: T;
-                    title?: T;
                     body?: T;
                     actions?:
                       | T
@@ -4940,10 +4526,10 @@ export interface ProjektySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              logos?:
+              images?: T;
+              links?:
                 | T
                 | {
-                    image?: T;
                     href?: T;
                     id?: T;
                   };
@@ -4954,37 +4540,10 @@ export interface ProjektySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              borders?: T;
               columns?:
                 | T
                 | {
-                    headline?: T;
-                    title?: T;
-                    body?: T;
-                    actions?:
-                      | T
-                      | {
-                          label?: T;
-                          linkType?: T;
-                          reference?: T;
-                          href?: T;
-                          variant?: T;
-                          backgroundColor?: T;
-                          id?: T;
-                        };
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        threeCards?:
-          | T
-          | {
-              title?: T;
-              columns?:
-                | T
-                | {
-                    prefix?: T;
-                    title?: T;
                     body?: T;
                     actions?:
                       | T
@@ -5245,10 +4804,10 @@ export interface WorkshopySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              logos?:
+              images?: T;
+              links?:
                 | T
                 | {
-                    image?: T;
                     href?: T;
                     id?: T;
                   };
@@ -5259,37 +4818,10 @@ export interface WorkshopySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              borders?: T;
               columns?:
                 | T
                 | {
-                    headline?: T;
-                    title?: T;
-                    body?: T;
-                    actions?:
-                      | T
-                      | {
-                          label?: T;
-                          linkType?: T;
-                          reference?: T;
-                          href?: T;
-                          variant?: T;
-                          backgroundColor?: T;
-                          id?: T;
-                        };
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        threeCards?:
-          | T
-          | {
-              title?: T;
-              columns?:
-                | T
-                | {
-                    prefix?: T;
-                    title?: T;
                     body?: T;
                     actions?:
                       | T

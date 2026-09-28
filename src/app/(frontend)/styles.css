@@ -1327,6 +1327,11 @@
   }
 }
 
+/* Bordered Sloupce cards: prose already has p-card — zero first heading mt. */
+[data-component='column-card'] .prose-nazemi .payload-richtext > :is(h1, h2, h3, h4, h5, h6):first-child {
+  margin-top: 0;
+}
+
 @variant max-lg {
   @layer utilities {
     #site-nav [data-component='nav-link'],

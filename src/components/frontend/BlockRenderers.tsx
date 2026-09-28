@@ -230,24 +230,29 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
   )
 }
 
-/** Desktop 3-up: same cell width always; <3 columns centered in the row. */
-const THREE_UP_ROW =
-  'flex flex-col items-stretch gap-grid lg:flex-row lg:justify-center'
-const THREE_UP_CELL =
-  'w-full min-w-0 lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
+/**
+ * Desktop 1–3 up: equal-height row + bottom CTAs.
+ * Do NOT put `h-full` on cells — % height fights flex stretch when the row
+ * height is content-sized, so `mt-auto` on ColumnCta has no free space.
+ * Same cell width always; <3 columns centered (`lg:justify-center`).
+ */
+const COLUMNS_ROW =
+  'flex flex-col gap-grid lg:flex-row lg:items-stretch lg:justify-center'
+const COLUMNS_CELL =
+  'flex w-full min-w-0 flex-col lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
 
-export function ThreeColumnsBlock({
+/** Sloupce (`threeColumns`) — optional borders = former Karty look. */
+export function ColumnsBlock({
   block,
   siteSlug,
 }: {
   block: ContentBlock
   siteSlug: string
 }) {
+  const borders = Boolean(block.borders)
   const columns = (
     (block.columns as {
       body?: unknown
-      headline?: string | null
-      title?: string | null
       actions?: ColumnCtaRow['actions']
     }[]) || []
   ).slice(0, 3)
@@ -255,29 +260,42 @@ export function ThreeColumnsBlock({
   if (!columns.length) return null
 
   return (
-    <section className="flex flex-col" data-block="threeColumns">
+    <section
+      className="flex flex-col"
+      data-block="threeColumns"
+      data-borders={borders ? 'true' : undefined}
+    >
       <BlockHeader title={(block.title as string) || undefined} />
-      <div className={THREE_UP_ROW}>
+      <div className={COLUMNS_ROW}>
         {columns.map((column, index) => {
-          const headline = column.headline?.trim()
-          const title = column.title?.trim()
+          const body = column.body ? (
+            <div className="prose-nazemi text-body-inter text-ground">
+              <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
+            </div>
+          ) : null
+
+          if (borders) {
+            return (
+              <article
+                className={`${COLUMNS_CELL} border-2 border-ground bg-sky`}
+                data-component="column-card"
+                key={`col-${index}`}
+              >
+                <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
+                  {body}
+                  <ColumnCta column={column} siteSlug={siteSlug} />
+                </div>
+              </article>
+            )
+          }
+
           return (
             <div
-              className={`${THREE_UP_CELL} flex h-full flex-col gap-card`}
-              data-component="three-column"
-              key={`${title || headline || 'col'}-${index}`}
+              className={`${COLUMNS_CELL} gap-card`}
+              data-component="column"
+              key={`col-${index}`}
             >
-              {headline || title ? (
-                <h3 className="font-saans text-5xl leading-none tracking-tight text-ground lg:text-[74px] lg:leading-[70px] lg:tracking-[-1.48px]">
-                  {headline ? <span className="block text-green">{headline}</span> : null}
-                  {title ? <span className="block">{title}</span> : null}
-                </h3>
-              ) : null}
-              {column.body ? (
-                <div className="prose-nazemi text-body-inter text-ground">
-                  <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
-                </div>
-              ) : null}
+              {body}
               <ColumnCta column={column} siteSlug={siteSlug} />
             </div>
           )
@@ -287,60 +305,8 @@ export function ThreeColumnsBlock({
   )
 }
 
-export function ThreeCardsBlock({
-  block,
-  siteSlug,
-}: {
-  block: ContentBlock
-  siteSlug: string
-}) {
-  const columns = (
-    (block.columns as {
-      body?: unknown
-      prefix?: string | null
-      title?: string | null
-      actions?: ColumnCtaRow['actions']
-    }[]) || []
-  ).slice(0, 3)
-
-  if (!columns.length) return null
-
-  return (
-    <section className="flex flex-col" data-block="threeCards">
-      <BlockHeader title={(block.title as string) || undefined} />
-      <div className={THREE_UP_ROW}>
-        {columns.map((column, index) => {
-          const prefix = column.prefix?.trim()
-          const title = column.title?.trim()
-          return (
-            <article
-              className={`${THREE_UP_CELL} flex h-full flex-col border-2 border-ground bg-sky`}
-              data-component="three-card"
-              key={`${title || prefix || 'card'}-${index}`}
-            >
-              <div className="flex h-full flex-1 flex-col justify-between gap-6 p-card">
-                <div className="flex flex-col gap-2.5">
-                  {prefix || title ? (
-                    <h3 className="text-display text-ground">
-                      {prefix ? <span className="block text-green">{prefix}</span> : null}
-                      {title ? <span className="block">{title}</span> : null}
-                    </h3>
-                  ) : null}
-                  {column.body ? (
-                    <div className="prose-nazemi text-body-inter text-ground">
-                      <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
-                    </div>
-                  ) : null}
-                </div>
-                <ColumnCta column={column} siteSlug={siteSlug} />
-              </div>
-            </article>
-          )
-        })}
-      </div>
-    </section>
-  )
-}
+/** @deprecated Prefer ColumnsBlock — same renderer. */
+export const ThreeColumnsBlock = ColumnsBlock
 
 export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug: string }) {
   const image = block.image && typeof block.image === 'object' ? (block.image as Media) : null
@@ -468,15 +434,7 @@ export function PageBlocks({
         if (block.blockType === 'threeColumns') {
           return (
             <div className="container max-lg:px-card" key={key}>
-              <ThreeColumnsBlock block={block} siteSlug={siteSlug} />
-            </div>
-          )
-        }
-
-        if (block.blockType === 'threeCards') {
-          return (
-            <div className="container max-lg:px-card" key={key}>
-              <ThreeCardsBlock block={block} siteSlug={siteSlug} />
+              <ColumnsBlock block={block} siteSlug={siteSlug} />
             </div>
           )
         }
@@ -640,15 +598,7 @@ export function WorkshopContentBlocks({
         if (block.blockType === 'threeColumns') {
           return (
             <div className="container max-lg:px-card" key={key}>
-              <ThreeColumnsBlock block={block} siteSlug={siteSlug} />
-            </div>
-          )
-        }
-
-        if (block.blockType === 'threeCards') {
-          return (
-            <div className="container max-lg:px-card" key={key}>
-              <ThreeCardsBlock block={block} siteSlug={siteSlug} />
+              <ColumnsBlock block={block} siteSlug={siteSlug} />
             </div>
           )
         }
