@@ -470,14 +470,7 @@ Na ***Bauordenu*** je počet ubytovacích kapacit 16 osob ve dvou větších pok
 Na ***Domcích*** nabízíme 12–18 míst na spaní v apartmánech s vlastním vstupem, sociálním zařízením (sprchový kout, toaleta, umyvadlo vybavené mýdlem a ručníkem) a kuchyňským koutem (indukční deska se dvěma plotýnkami, lednice, rychlovarná konvice, základní nádobí). Pokoje jsou vybaveny základním nábytkem a lampičkami.
 `.replace(/\*\*\*/g, '**'))
 
-  const domek5Html = mdToHtml(`
-- **Domek 5**: apartmán celkem pro 6–8 osob. Cena je 3920 Kč/apartmán/noc. Najdete zde:
-  - průchozí kuchyni společnou pro oba pokoje
-  - menší pokoj se dvěma jednolůžky 90 x 200 cm a rozkládacím gaučem (po rozložení 140 x 190 cm)
-  - větší pokoj se dvěma jednolůžky 90 x 200 cm a jedním dvoulůžkem 160 x 200 cm
-  - koupelnu se vstupem z kuchyně
-  - vchod z chodby, kde se nachází i úklidová místnost společná pro všechny apartmány, seminární místnost a toaleta
-
+  const afterDomkyHtml = mdToHtml(`
 Lze zajistit i další místa na spaní v různých stupních komfortu – pro více informací nás kontaktujte. Pro více informací nás kontaktujte.
 `)
 
@@ -641,9 +634,23 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
 `,
             }),
           },
+          {
+            body: await roomCardBody(payload, {
+              name: 'Domek 5',
+              capacity: '6–8 osob',
+              price: '3920 Kč/apartmán/noc',
+              bodyMd: `
+- průchozí kuchyni společnou pro oba pokoje
+- menší pokoj se dvěma jednolůžky 90 x 200 cm a rozkládacím gaučem (po rozložení 140 x 190 cm)
+- větší pokoj se dvěma jednolůžky 90 x 200 cm a jedním dvoulůžkem 160 x 200 cm
+- koupelnu se vstupem z kuchyně
+- vchod z chodby, kde se nachází i úklidová místnost společná pro všechny apartmány, seminární místnost a toaleta
+`,
+            }),
+          },
         ],
       },
-      { blockType: 'richText', content: await lex(domek5Html, payload) },
+      { blockType: 'richText', content: await lex(afterDomkyHtml, payload) },
       { blockType: 'richText', content: await lex(podminkyHtml, payload) },
       { blockType: 'richText', content: prostoryIntro },
       { blockType: 'richText', content: await lex(afterProstoryHtml, payload) },
