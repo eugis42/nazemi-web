@@ -223,7 +223,7 @@ export const ThreeColumnsBlock: Block = {
       },
       admin: {
         components: {
-          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+          RowLabel: '/components/admin/ArrayFieldRowLabel#SloupecRowLabel',
         },
         description: 'Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.',
         initCollapsed: true,

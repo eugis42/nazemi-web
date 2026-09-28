@@ -35,3 +35,10 @@ export function ArrayFieldRowLabel() {
   const text = pickLabel(data)
   return <span>{text || `Položka ${String(rowNumber ?? 0).padStart(2, '0')}`}</span>
 }
+
+/** Sloupce columns array — fallback „Sloupec 01“ (no title field on rows). */
+export function SloupecRowLabel() {
+  const { data, rowNumber } = useRowLabel<Record<string, unknown>>()
+  const text = pickLabel(data)
+  return <span>{text || `Sloupec ${String(rowNumber ?? 0).padStart(2, '0')}`}</span>
+}
