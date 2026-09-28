@@ -5,8 +5,7 @@ import {
   HeroBlock,
   NewsGrid,
   ProjectsBlock,
-  ThreeCardsBlock,
-  ThreeColumnsBlock,
+  ColumnsBlock,
   type ContentBlock,
 } from '@/components/frontend/BlockRenderers'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
@@ -63,10 +62,7 @@ export async function HomepageBlocks({
         rendered.push(<AboutBlock key={key} block={block} siteSlug={site.slug} />)
         break
       case 'threeColumns':
-        rendered.push(<ThreeColumnsBlock key={key} block={block} siteSlug={site.slug} />)
-        break
-      case 'threeCards':
-        rendered.push(<ThreeCardsBlock key={key} block={block} siteSlug={site.slug} />)
+        rendered.push(<ColumnsBlock key={key} block={block} siteSlug={site.slug} />)
         break
       case 'richText':
         if (block.content) {

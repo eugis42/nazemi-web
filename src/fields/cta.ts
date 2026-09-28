@@ -93,7 +93,7 @@ export const callToActionField = (overrides?: Partial<Field>): Field =>
     ...overrides,
   }) as Field
 
-/** Optional single CTA — one per column in 3 sloupce / 3 karty. */
+/** Optional single CTA — one per column in Sloupce. */
 export const columnCallToActionField = (): Field =>
   callToActionField({
     admin: {
