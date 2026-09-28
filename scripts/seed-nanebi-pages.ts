@@ -188,6 +188,67 @@ function appendNodes(doc: LexicalValue, nodes: Record<string, unknown>[]) {
   return doc
 }
 
+/** Lexical text node; optional TextStateFeature colour token (e.g. extra-0). */
+function lexText(text: string, color?: string): Record<string, unknown> {
+  const node: Record<string, unknown> = {
+    type: 'text',
+    text,
+    mode: 'normal',
+    style: '',
+    detail: 0,
+    format: 0,
+    version: 1,
+  }
+  if (color) node.$ = { color }
+  return node
+}
+
+/**
+ * Ubytování card pattern (Norbert template):
+ * H2 = accent name + linebreak + capacity; H3 = price; then body nodes from markdown.
+ */
+async function roomCardBody(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  opts: { name: string; capacity: string; price: string; bodyMd: string },
+): Promise<LexicalValue> {
+  const body = await lex(mdToHtml(opts.bodyMd), payload)
+  const bodyKids = ((body.root as { children?: unknown[] })?.children || []) as unknown[]
+  return {
+    root: {
+      type: 'root',
+      format: '',
+      indent: 0,
+      version: 1,
+      direction: 'ltr',
+      children: [
+        {
+          tag: 'h2',
+          type: 'heading',
+          format: '',
+          indent: 0,
+          version: 1,
+          direction: 'ltr',
+          children: [
+            lexText(opts.name, 'extra-0'),
+            { type: 'linebreak', version: 1 },
+            lexText(opts.capacity),
+          ],
+        },
+        {
+          tag: 'h3',
+          type: 'heading',
+          format: '',
+          indent: 0,
+          version: 1,
+          direction: null,
+          children: [lexText(opts.price)],
+        },
+        ...bodyKids,
+      ],
+    },
+  }
+}
+
 async function ensureFunderMedia(payload: Awaited<ReturnType<typeof getPayload>>) {
   const ids: number[] = []
   for (const filename of FUNDER_FILES) {
@@ -518,27 +579,23 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
       {
         blockType: 'threeColumns',
         title: 'Bauorden',
-        borders: false,
+        borders: true,
         columns: [
           {
-            body: await lex(
-              mdToHtml(`
-## 2900 Kč Norbert — 8 osob / noc
-
-Čtyři patrové postele (90 x 200 cm) pro celkem 8 osob, v koupelně jedna toaleta s umyvadlem, dva sprchové kouty a dvě další umyvadla. Cena je 2900 Kč/pokoj/noc.
-`),
-              payload,
-            ),
+            body: await roomCardBody(payload, {
+              name: 'Norbert',
+              capacity: '8 osob / noc',
+              price: '2900 Kč',
+              bodyMd: `Čtyři patrové postele (90 x 200 cm) pro celkem 8 osob, v koupelně jedna toaleta s umyvadlem, dva sprchové kouty a dvě další umyvadla. Cena je 2900 Kč/pokoj/noc.`,
+            }),
           },
           {
-            body: await lex(
-              mdToHtml(`
-## 2900 Kč Václav — 8 osob / noc
-
-Čtyři patrové postele (90 x 200 cm) pro celkem 8 osob, v koupelně jedna toaleta, jeden sprchový kout a dvě umyvadla. Cena je 2900 Kč/pokoj/noc.
-`),
-              payload,
-            ),
+            body: await roomCardBody(payload, {
+              name: 'Václav',
+              capacity: '8 osob / noc',
+              price: '2900 Kč',
+              bodyMd: `Čtyři patrové postele (90 x 200 cm) pro celkem 8 osob, v koupelně jedna toaleta, jeden sprchový kout a dvě umyvadla. Cena je 2900 Kč/pokoj/noc.`,
+            }),
           },
         ],
       },
@@ -549,40 +606,40 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
         borders: true,
         columns: [
           {
-            body: await lex(
-              mdToHtml(`
-## 1840 Kč/noc Domek 1 — 2–4 osoby
-
+            body: await roomCardBody(payload, {
+              name: 'Domek 1',
+              capacity: '2–4 osoby',
+              price: '1840 Kč/noc',
+              bodyMd: `
 - průchozí kuchyni s rozkládacím gaučem (po rozložení 140 x 190 cm)
 - pokoj se dvěma jednolůžky 90 x 200 cm (lze spojit do dvoulůžka)
 - koupelnu se vstupem z pokoje
-`),
-              payload,
-            ),
+`,
+            }),
           },
           {
-            body: await lex(
-              mdToHtml(`
-## 1840 Kč/noc Domek 2 — 2 osoby
-
+            body: await roomCardBody(payload, {
+              name: 'Domek 2',
+              capacity: '2 osoby',
+              price: '1840 Kč/noc',
+              bodyMd: `
 - průchozí kuchyni s vybavením (mimo výše uvedeného navíc indukční deska se 4 plotýnkami, trouba, toustovač, mixér)
 - pokoj s jedním dvoulůžkem 160 x 200 cm
 - koupelnu se vstupem z chodby
-`),
-              payload,
-            ),
+`,
+            }),
           },
           {
-            body: await lex(
-              mdToHtml(`
-## 1840 Kč/noc Domek 3 — 2–4 osoby
-
+            body: await roomCardBody(payload, {
+              name: 'Domek 3',
+              capacity: '2–4 osoby',
+              price: '1840 Kč/noc',
+              bodyMd: `
 - průchozí kuchyni
 - pokoj se dvěma jednolůžky 90 x 200 cm (lze spojit do dvoulůžka) a rozkládacím gaučem (po rozložení 140 x 190 cm)
 - koupelnu se vstupem z kuchyně
-`),
-              payload,
-            ),
+`,
+            }),
           },
         ],
       },
