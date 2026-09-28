@@ -658,7 +658,7 @@ export interface Stranky {
              */
             borders?: boolean | null;
             /**
-             * 1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.
+             * Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.
              */
             columns?:
               | {
@@ -1263,7 +1263,7 @@ export interface Stranky {
              */
             borders?: boolean | null;
             /**
-             * 1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.
+             * Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.
              */
             columns?:
               | {
@@ -2569,7 +2569,7 @@ export interface Workshopy {
              */
             borders?: boolean | null;
             /**
-             * 1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.
+             * Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.
              */
             columns?:
               | {
@@ -3371,7 +3371,7 @@ export interface Projekty {
          */
         borders?: boolean | null;
         /**
-         * 1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.
+         * Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.
          */
         columns?:
           | {
