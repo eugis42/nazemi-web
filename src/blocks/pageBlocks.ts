@@ -183,7 +183,7 @@ export const PageIntroBlock: Block = {
 }
 
 /**
- * Sloupce — 1–3 columns. Slug stays `threeColumns` (DB tables + existing rows).
+ * Sloupce — unlimited columns, max 3 per row. Slug stays `threeColumns`.
  * `borders` on → former Karty look; off → plain columns.
  * Column titles live in Lexical `body` as H2 (no separate headline/prefix/title fields).
  */
@@ -216,7 +216,6 @@ export const ThreeColumnsBlock: Block = {
       name: 'columns',
       type: 'array',
       label: 'Sloupce',
-      maxRows: 3,
       minRows: 1,
       labels: {
         plural: 'Sloupce',
@@ -226,7 +225,7 @@ export const ThreeColumnsBlock: Block = {
         components: {
           RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
         },
-        description: '1–3 sloupce. Nadpis sloupce dejte do Textu jako H2.',
+        description: 'Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.',
         initCollapsed: true,
       },
       fields: [

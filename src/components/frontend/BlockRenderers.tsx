@@ -231,15 +231,40 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
 }
 
 /**
- * Desktop 1–3 up: equal-height row + bottom CTAs.
+ * Sloupce layout: fixed third-width cells, max 3 per row, wrap.
  * Do NOT put `h-full` on cells — % height fights flex stretch when the row
  * height is content-sized, so `mt-auto` on ColumnCta has no free space.
- * Same cell width always; <3 columns centered (`lg:justify-center`).
+ * Short rows (<3) centered (`lg:justify-center`).
  */
+const COLUMNS_PER_ROW = 3
 const COLUMNS_ROW =
   'flex flex-col gap-grid lg:flex-row lg:items-stretch lg:justify-center'
 const COLUMNS_CELL =
   'flex w-full min-w-0 flex-col lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
+
+/** Desktop: pad title so its left edge matches the first column when the row is centered. */
+function columnsTitleAlignClass(firstRowCount: number): string {
+  if (firstRowCount >= COLUMNS_PER_ROW) return ''
+  // cell = (100% - 2g) / 3
+  if (firstRowCount === 1) {
+    return 'lg:ps-[calc((100%-(100%-2*var(--spacing-grid))/3)/2)]'
+  }
+  // 2 cols: (100% - 2*cell - g) / 2
+  return 'lg:ps-[calc((100%-2*((100%-2*var(--spacing-grid))/3)-var(--spacing-grid))/2)]'
+}
+
+function chunkColumns<T>(items: T[], size: number): T[][] {
+  const rows: T[][] = []
+  for (let i = 0; i < items.length; i += size) {
+    rows.push(items.slice(i, i + size))
+  }
+  return rows
+}
+
+type ColumnRow = {
+  body?: unknown
+  actions?: ColumnCtaRow['actions']
+}
 
 /** Sloupce (`threeColumns`) — optional borders = former Karty look. */
 export function ColumnsBlock({
@@ -250,57 +275,60 @@ export function ColumnsBlock({
   siteSlug: string
 }) {
   const borders = Boolean(block.borders)
-  const columns = (
-    (block.columns as {
-      body?: unknown
-      actions?: ColumnCtaRow['actions']
-    }[]) || []
-  ).slice(0, 3)
-
+  const columns = (block.columns as ColumnRow[]) || []
   if (!columns.length) return null
+
+  const rows = chunkColumns(columns, COLUMNS_PER_ROW)
+  const titleAlign = columnsTitleAlignClass(rows[0]?.length || 0)
+
+  const renderColumn = (column: ColumnRow, index: number) => {
+    const body = column.body ? (
+      <div className="prose-nazemi text-body-inter text-ground">
+        <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
+      </div>
+    ) : null
+
+    if (borders) {
+      return (
+        <article
+          className={`${COLUMNS_CELL} border-2 border-ground bg-sky`}
+          data-component="column-card"
+          key={`col-${index}`}
+        >
+          <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
+            {body}
+            <ColumnCta column={column} siteSlug={siteSlug} />
+          </div>
+        </article>
+      )
+    }
+
+    return (
+      <div className={`${COLUMNS_CELL} gap-card`} data-component="column" key={`col-${index}`}>
+        {body}
+        <ColumnCta column={column} siteSlug={siteSlug} />
+      </div>
+    )
+  }
 
   return (
     <section
-      className="flex flex-col"
+      className="flex flex-col gap-grid"
       data-block="threeColumns"
       data-borders={borders ? 'true' : undefined}
+      data-cols={columns.length}
     >
-      <BlockHeader title={(block.title as string) || undefined} />
-      <div className={COLUMNS_ROW}>
-        {columns.map((column, index) => {
-          const body = column.body ? (
-            <div className="prose-nazemi text-body-inter text-ground">
-              <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
-            </div>
-          ) : null
-
-          if (borders) {
-            return (
-              <article
-                className={`${COLUMNS_CELL} border-2 border-ground bg-sky`}
-                data-component="column-card"
-                key={`col-${index}`}
-              >
-                <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
-                  {body}
-                  <ColumnCta column={column} siteSlug={siteSlug} />
-                </div>
-              </article>
-            )
-          }
-
-          return (
-            <div
-              className={`${COLUMNS_CELL} gap-card`}
-              data-component="column"
-              key={`col-${index}`}
-            >
-              {body}
-              <ColumnCta column={column} siteSlug={siteSlug} />
-            </div>
-          )
-        })}
-      </div>
+      <BlockHeader
+        className={titleAlign}
+        title={(block.title as string) || undefined}
+      />
+      {rows.map((row, rowIndex) => (
+        <div className={COLUMNS_ROW} data-row={rowIndex} key={`row-${rowIndex}`}>
+          {row.map((column, colIndex) =>
+            renderColumn(column, rowIndex * COLUMNS_PER_ROW + colIndex),
+          )}
+        </div>
+      ))}
     </section>
   )
 }
