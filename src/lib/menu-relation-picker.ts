@@ -2,11 +2,22 @@ import type { CollectionBeforeOperationHook, Where } from 'payload'
 
 import { withDiacriticInsensitiveSearch } from '@/lib/diacritic-admin-search'
 
-/** Upcoming events — same rule as homepage listing (`startDate >= now`). */
+/** Upcoming events — same rule as homepage /kalendar listing (`startDate >= now`). */
 export function upcomingEventsWhere(now = new Date().toISOString()): Where {
   return {
     startDate: { greater_than_equal: now },
   }
+}
+
+/** Workshop detail join: only upcoming termíny count for „Aktuální termíny“ CTA. */
+export function upcomingScheduledWorkshopsJoin(now = new Date().toISOString()) {
+  return {
+    scheduledWorkshops: {
+      count: true,
+      limit: 1,
+      where: upcomingEventsWhere(now),
+    },
+  } as const
 }
 
 export function whereHasLike(node: unknown): boolean {

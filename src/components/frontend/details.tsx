@@ -398,7 +398,7 @@ function WorkshopSpec({ label, value }: { label: string; value?: string | null }
   )
 }
 
-/** True when workshop join has ≥1 linked Kalendář termín. */
+/** True when join has ≥1 upcoming Kalendář termín (page must use upcomingScheduledWorkshopsJoin). */
 export function workshopHasScheduledTerms(item: Pick<Workshopy, 'scheduledWorkshops'>): boolean {
   const join = item.scheduledWorkshops
   if (!join) return false

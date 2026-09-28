@@ -10,6 +10,7 @@ import { draftFindOptions,
   getListingWhere,
   getPayloadClient,
   resolveSiteFromCurrentRequest } from '@/lib/frontend'
+import { upcomingScheduledWorkshopsJoin } from '@/lib/menu-relation-picker'
 import { buildPageMetadata } from '@/lib/metadata'
 
 export async function generateMetadata({
@@ -63,8 +64,7 @@ export default async function WorkshopDetailPage({
     payload.find({
       collection: 'workshopy',
       depth: 2,
-      // count alone is enough for Aktuální termíny visibility; keep 1 doc as fallback shape
-      joins: { scheduledWorkshops: { count: true, limit: 1 } },
+      joins: upcomingScheduledWorkshopsJoin(),
       limit: 1,
       pagination: false,
       ...(await draftFindOptions()),
