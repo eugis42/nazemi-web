@@ -1,7 +1,7 @@
 /**
  * Unify threeColumns + threeCards → one Sloupce block (`threeColumns` slug).
  *
- * - Add `borders` on threeColumns (false default; true for former cards)
+ * - Add `style` on threeColumns (`clean` default; `bordered` for former cards)
  * - Move column headline/prefix/title into Lexical body as leading H2
  * - Copy threeCards rows → threeColumns (+ nested columns + actions)
  * - Clear old headline/prefix/title (db:push drops those columns later)
@@ -122,17 +122,30 @@ async function hasColumn(client: pg.Client, table: string, column: string): Prom
   return r.rowCount !== null && r.rowCount > 0
 }
 
-async function ensureBordersColumn(client: pg.Client, table: string): Promise<void> {
+async function ensureStyleColumn(client: pg.Client, table: string): Promise<void> {
   if (!(await tableExists(client, table))) return
-  if (await hasColumn(client, table, 'borders')) return
+  if (await hasColumn(client, table, 'style')) return
+  const enumName = `enum_${table}_style`
+  const enumExists = await client.query(
+    `SELECT 1 FROM pg_type WHERE typname = $1`,
+    [enumName],
+  )
   if (dryRun) {
-    console.log(`[dry-run] ALTER ${table} ADD borders boolean DEFAULT false`)
+    if (!enumExists.rowCount) {
+      console.log(`[dry-run] CREATE TYPE ${enumName} AS ENUM (clean, bordered, table)`)
+    }
+    console.log(`[dry-run] ALTER ${table} ADD style ${enumName} DEFAULT 'clean'`)
     return
   }
+  if (!enumExists.rowCount) {
+    await client.query(
+      `CREATE TYPE "${enumName}" AS ENUM ('clean', 'bordered', 'table')`,
+    )
+  }
   await client.query(
-    `ALTER TABLE "${table}" ADD COLUMN borders boolean DEFAULT false NOT NULL`,
+    `ALTER TABLE "${table}" ADD COLUMN style "${enumName}" DEFAULT 'clean' NOT NULL`,
   )
-  console.log(`${table}: added borders`)
+  console.log(`${table}: added style`)
 }
 
 async function migrateColumnsHeadings(
@@ -227,7 +240,7 @@ async function migrateCardsPair(client: pg.Client, pair: BlockPair): Promise<num
     return 0
   }
 
-  await ensureBordersColumn(client, pair.columns)
+  await ensureStyleColumn(client, pair.columns)
 
   const blocks = await client.query<Record<string, unknown>>(
     `SELECT * FROM "${pair.cards}" ORDER BY id`,
@@ -240,7 +253,7 @@ async function migrateCardsPair(client: pg.Client, pair: BlockPair): Promise<num
 
     if (dryRun) {
       console.log(
-        `[dry-run] ${pair.cards} id=${blockId} → ${pair.columns} borders=true title=${block.title ?? ''}`,
+        `[dry-run] ${pair.cards} id=${blockId} → ${pair.columns} style=bordered title=${block.title ?? ''}`,
       )
       moved += 1
       continue
@@ -256,21 +269,24 @@ async function migrateCardsPair(client: pg.Client, pair: BlockPair): Promise<num
 
     if (slot.rowCount) {
       newBlockId = slot.rows[0]!.id
-      // Ensure borders=true on the occupying row (live UUID reuse case).
-      await client.query(`UPDATE "${pair.columns}" SET borders = true WHERE id = $1`, [
-        newBlockId,
-      ])
+      // Ensure style=bordered on the occupying row (live UUID reuse case).
+      const styleEnum = await enumType(client, pair.columns, 'style')
+      await client.query(
+        `UPDATE "${pair.columns}" SET style = 'bordered'::${styleEnum} WHERE id = $1`,
+        [newBlockId],
+      )
       console.log(
-        `slot ${_parentPath(block)} already in ${pair.columns} id=${newBlockId} — set borders`,
+        `slot ${_parentPath(block)} already in ${pair.columns} id=${newBlockId} — set style=bordered`,
       )
     } else if (pair.version) {
       // Version tables use per-table serial ints — never reuse cards id (collides).
       const hasUuid = await hasColumn(client, pair.columns, '_uuid')
+      const styleEnum = await enumType(client, pair.columns, 'style')
       const inserted = hasUuid
         ? await client.query<{ id: number }>(
             `INSERT INTO "${pair.columns}"
-               (_order, _parent_id, _path, title, borders, _uuid, block_name)
-             VALUES ($1, $2, $3, $4, true, $5, $6)
+               (_order, _parent_id, _path, title, style, _uuid, block_name)
+             VALUES ($1, $2, $3, $4, 'bordered'::${styleEnum}, $5, $6)
              RETURNING id`,
             [
               block._order,
@@ -283,18 +299,19 @@ async function migrateCardsPair(client: pg.Client, pair: BlockPair): Promise<num
           )
         : await client.query<{ id: number }>(
             `INSERT INTO "${pair.columns}"
-               (_order, _parent_id, _path, title, borders, block_name)
-             VALUES ($1, $2, $3, $4, true, $5)
+               (_order, _parent_id, _path, title, style, block_name)
+             VALUES ($1, $2, $3, $4, 'bordered'::${styleEnum}, $5)
              RETURNING id`,
             [block._order, block._parent_id, block._path, block.title, block.block_name],
           )
       newBlockId = inserted.rows[0]!.id
     } else {
       // Live: keep same varchar id so rels paths stay valid.
+      const styleEnum = await enumType(client, pair.columns, 'style')
       await client.query(
         `INSERT INTO "${pair.columns}"
-           (_order, _parent_id, _path, id, title, borders, block_name)
-         VALUES ($1, $2, $3, $4, $5, true, $6)`,
+           (_order, _parent_id, _path, id, title, style, block_name)
+         VALUES ($1, $2, $3, $4, $5, 'bordered'::${styleEnum}, $6)`,
         [
           block._order,
           block._parent_id,
@@ -537,7 +554,7 @@ async function main() {
 
     for (const collection of COLLECTIONS) {
       for (const pair of pairsFor(collection)) {
-        await ensureBordersColumn(client, pair.columns)
+        await ensureStyleColumn(client, pair.columns)
 
         // 1) Headings on existing threeColumns
         const nCols = await migrateColumnsHeadings(client, pair.columnsCols, 'columns')

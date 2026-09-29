@@ -184,7 +184,7 @@ export const PageIntroBlock: Block = {
 
 /**
  * Sloupce — unlimited columns, max 3 per row (exactly 4 → 2+2). Slug stays `threeColumns`.
- * `borders` on → former Karty look; off → plain columns.
+ * `style`: clean (plain) | bordered (former Karty) | table (bordered, collapsed gaps).
  * Column titles live in Lexical `body` as H2 (no separate headline/prefix/title fields).
  */
 export const ThreeColumnsBlock: Block = {
@@ -204,12 +204,18 @@ export const ThreeColumnsBlock: Block = {
       label: 'Nadpis',
     },
     {
-      name: 'borders',
-      type: 'checkbox',
-      label: 'Ohraničení sloupců',
-      defaultValue: false,
+      name: 'style',
+      type: 'select',
+      label: 'Styl',
+      defaultValue: 'clean',
+      options: [
+        { label: 'Čisté sloupce', value: 'clean' },
+        { label: 'Sloupce s ohraničením', value: 'bordered' },
+        { label: 'Tabulka', value: 'table' },
+      ],
       admin: {
-        description: 'Zapnuto = vzhled karet (rámeček + pozadí).',
+        description:
+          'Čisté = bez rámečků. Ohraničení = karty s mezerami. Tabulka = ohraničení bez mezer (sdílené linky).',
       },
     },
     {

@@ -294,7 +294,17 @@ function ColumnImage({
   )
 }
 
-/** Sloupce (`threeColumns`) — optional borders = former Karty look. */
+type ColumnsStyle = 'clean' | 'bordered' | 'table'
+
+function resolveColumnsStyle(block: ContentBlock): ColumnsStyle {
+  const raw = block.style
+  if (raw === 'bordered' || raw === 'table' || raw === 'clean') return raw
+  // Legacy checkbox → select (pre-migrate API payloads).
+  if (block.borders === true) return 'bordered'
+  return 'clean'
+}
+
+/** Sloupce (`threeColumns`) — style: clean | bordered | table. */
 export function ColumnsBlock({
   block,
   siteSlug,
@@ -302,14 +312,16 @@ export function ColumnsBlock({
   block: ContentBlock
   siteSlug: string
 }) {
-  const borders = Boolean(block.borders)
+  const style = resolveColumnsStyle(block)
   const columns = (block.columns as ColumnRow[]) || []
   if (!columns.length) return null
 
   // Exactly 4 → 2/row (2+2); else max 3/row.
   const perRow = columns.length === 4 ? 2 : COLUMNS_PER_ROW
   const rows = chunkColumns(columns, perRow)
-  const titleAlign = columnsTitleAlignClass(rows[0]?.length || 0)
+  const isTable = style === 'table'
+  const isFramed = style === 'bordered' || isTable
+  const titleAlign = isTable ? '' : columnsTitleAlignClass(rows[0]?.length || 0)
 
   const renderColumn = (column: ColumnRow, index: number) => {
     const body = column.body ? (
@@ -318,10 +330,14 @@ export function ColumnsBlock({
       </div>
     ) : null
 
-    if (borders) {
+    if (isFramed) {
+      // Table: no per-cell border — shared 2px dividers via gap+[bg-ground] parent.
+      const cellClass = isTable
+        ? 'flex min-w-0 flex-1 flex-col overflow-hidden bg-sky'
+        : `${COLUMNS_CELL} overflow-hidden border-2 border-ground bg-sky`
       return (
         <article
-          className={`${COLUMNS_CELL} overflow-hidden border-2 border-ground bg-sky`}
+          className={cellClass}
           data-component="column-card"
           key={`col-${index}`}
         >
@@ -344,24 +360,43 @@ export function ColumnsBlock({
     )
   }
 
+  const rowClass = isTable
+    ? 'flex flex-col gap-[2px] bg-ground lg:flex-row lg:items-stretch'
+    : COLUMNS_ROW
+
   return (
     <section
       className="flex flex-col gap-grid"
       data-block="threeColumns"
-      data-borders={borders ? 'true' : undefined}
       data-cols={columns.length}
+      data-style={style}
     >
       <BlockHeader
         className={titleAlign}
         title={(block.title as string) || undefined}
       />
-      {rows.map((row, rowIndex) => (
-        <div className={COLUMNS_ROW} data-row={rowIndex} key={`row-${rowIndex}`}>
-          {row.map((column, colIndex) =>
-            renderColumn(column, rowIndex * perRow + colIndex),
-          )}
+      {isTable ? (
+        <div
+          className="flex flex-col gap-[2px] overflow-hidden border-2 border-ground bg-ground"
+          data-component="columns-table"
+        >
+          {rows.map((row, rowIndex) => (
+            <div className={rowClass} data-row={rowIndex} key={`row-${rowIndex}`}>
+              {row.map((column, colIndex) =>
+                renderColumn(column, rowIndex * perRow + colIndex),
+              )}
+            </div>
+          ))}
         </div>
-      ))}
+      ) : (
+        rows.map((row, rowIndex) => (
+          <div className={rowClass} data-row={rowIndex} key={`row-${rowIndex}`}>
+            {row.map((column, colIndex) =>
+              renderColumn(column, rowIndex * perRow + colIndex),
+            )}
+          </div>
+        ))
+      )}
     </section>
   )
 }

@@ -654,9 +654,9 @@ export interface Stranky {
         | {
             title?: string | null;
             /**
-             * Zapnuto = vzhled karet (rámeček + pozadí).
+             * Čisté = bez rámečků. Ohraničení = karty s mezerami. Tabulka = ohraničení bez mezer (sdílené linky).
              */
-            borders?: boolean | null;
+            style?: ('clean' | 'bordered' | 'table') | null;
             /**
              * Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.
              */
@@ -1263,9 +1263,9 @@ export interface Stranky {
         | {
             title?: string | null;
             /**
-             * Zapnuto = vzhled karet (rámeček + pozadí).
+             * Čisté = bez rámečků. Ohraničení = karty s mezerami. Tabulka = ohraničení bez mezer (sdílené linky).
              */
-            borders?: boolean | null;
+            style?: ('clean' | 'bordered' | 'table') | null;
             /**
              * Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.
              */
@@ -2544,9 +2544,9 @@ export interface Workshopy {
         | {
             title?: string | null;
             /**
-             * Zapnuto = vzhled karet (rámeček + pozadí).
+             * Čisté = bez rámečků. Ohraničení = karty s mezerami. Tabulka = ohraničení bez mezer (sdílené linky).
              */
-            borders?: boolean | null;
+            style?: ('clean' | 'bordered' | 'table') | null;
             /**
              * Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.
              */
@@ -3350,9 +3350,9 @@ export interface Projekty {
     | {
         title?: string | null;
         /**
-         * Zapnuto = vzhled karet (rámeček + pozadí).
+         * Čisté = bez rámečků. Ohraničení = karty s mezerami. Tabulka = ohraničení bez mezer (sdílené linky).
          */
-        borders?: boolean | null;
+        style?: ('clean' | 'bordered' | 'table') | null;
         /**
          * Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.
          */
@@ -3960,7 +3960,7 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              borders?: T;
+              style?: T;
               columns?:
                 | T
                 | {
@@ -4199,7 +4199,7 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              borders?: T;
+              style?: T;
               columns?:
                 | T
                 | {
@@ -4529,7 +4529,7 @@ export interface ProjektySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              borders?: T;
+              style?: T;
               columns?:
                 | T
                 | {
@@ -4808,7 +4808,7 @@ export interface WorkshopySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              borders?: T;
+              style?: T;
               columns?:
                 | T
                 | {

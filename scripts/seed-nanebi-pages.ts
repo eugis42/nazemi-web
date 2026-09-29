@@ -434,7 +434,7 @@ Zajistíme takový počet porcí, který odpovídá počtu lidí nahlášených 
       {
         blockType: 'threeColumns',
         title: '',
-        borders: false,
+        style: 'clean',
         columns: [
           {
             body: await lex(
@@ -572,7 +572,7 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
       {
         blockType: 'threeColumns',
         title: 'Bauorden',
-        borders: true,
+        style: 'bordered',
         columns: [
           {
             body: await roomCardBody(payload, {
@@ -596,7 +596,7 @@ Podrobné obchodní a storno podmínky NaNebi najdete [zde](https://drive.google
       {
         blockType: 'threeColumns',
         title: 'Domky',
-        borders: true,
+        style: 'bordered',
         columns: [
           {
             body: await roomCardBody(payload, {
