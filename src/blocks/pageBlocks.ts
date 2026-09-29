@@ -230,6 +230,16 @@ export const ThreeColumnsBlock: Block = {
       },
       fields: [
         {
+          name: 'image',
+          type: 'upload',
+          label: 'Obrázek',
+          relationTo: 'media',
+          filterOptions: imageUploadFilter,
+          admin: {
+            description: 'Volitelné. Zobrazí se nahoře ve formátu 4:3.',
+          },
+        },
+        {
           name: 'body',
           type: 'richText',
           label: 'Text',

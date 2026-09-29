@@ -662,6 +662,10 @@ export interface Stranky {
              */
             columns?:
               | {
+                  /**
+                   * Volitelné. Zobrazí se nahoře ve formátu 4:3.
+                   */
+                  image?: (number | null) | Media;
                   body?: {
                     root: {
                       type: string;
@@ -1267,6 +1271,10 @@ export interface Stranky {
              */
             columns?:
               | {
+                  /**
+                   * Volitelné. Zobrazí se nahoře ve formátu 4:3.
+                   */
+                  image?: (number | null) | Media;
                   body?: {
                     root: {
                       type: string;
@@ -2544,6 +2552,10 @@ export interface Workshopy {
              */
             columns?:
               | {
+                  /**
+                   * Volitelné. Zobrazí se nahoře ve formátu 4:3.
+                   */
+                  image?: (number | null) | Media;
                   body?: {
                     root: {
                       type: string;
@@ -3346,6 +3358,10 @@ export interface Projekty {
          */
         columns?:
           | {
+              /**
+               * Volitelné. Zobrazí se nahoře ve formátu 4:3.
+               */
+              image?: (number | null) | Media;
               body?: {
                 root: {
                   type: string;
@@ -3948,6 +3964,7 @@ export interface StrankySelect<T extends boolean = true> {
               columns?:
                 | T
                 | {
+                    image?: T;
                     body?: T;
                     actions?:
                       | T
@@ -4186,6 +4203,7 @@ export interface StrankySelect<T extends boolean = true> {
               columns?:
                 | T
                 | {
+                    image?: T;
                     body?: T;
                     actions?:
                       | T
@@ -4515,6 +4533,7 @@ export interface ProjektySelect<T extends boolean = true> {
               columns?:
                 | T
                 | {
+                    image?: T;
                     body?: T;
                     actions?:
                       | T
@@ -4793,6 +4812,7 @@ export interface WorkshopySelect<T extends boolean = true> {
               columns?:
                 | T
                 | {
+                    image?: T;
                     body?: T;
                     actions?:
                       | T

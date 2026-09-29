@@ -263,8 +263,27 @@ function chunkColumns<T>(items: T[], size: number): T[][] {
 }
 
 type ColumnRow = {
+  image?: number | Media | null
   body?: unknown
   actions?: ColumnCtaRow['actions']
+}
+
+function ColumnImage({ image }: { image?: number | Media | null }) {
+  const media = image && typeof image === 'object' ? image : null
+  const src = media ? mediaSizeURL(media, 'landscape') : null
+  if (!media || !src) return null
+  return (
+    <div className="relative aspect-4/3 w-full shrink-0 overflow-hidden bg-ground">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt={mediaAlt(media)}
+        className="size-full object-cover"
+        loading="lazy"
+        src={src}
+        style={mediaFocalStyle(media)}
+      />
+    </div>
+  )
 }
 
 /** Sloupce (`threeColumns`) — optional borders = former Karty look. */
@@ -285,6 +304,7 @@ export function ColumnsBlock({
   const titleAlign = columnsTitleAlignClass(rows[0]?.length || 0)
 
   const renderColumn = (column: ColumnRow, index: number) => {
+    const image = <ColumnImage image={column.image} />
     const body = column.body ? (
       <div className="prose-nazemi text-body-inter text-ground">
         <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
@@ -294,10 +314,12 @@ export function ColumnsBlock({
     if (borders) {
       return (
         <article
-          className={`${COLUMNS_CELL} border-2 border-ground bg-sky`}
+          className={`${COLUMNS_CELL} overflow-hidden border-2 border-ground bg-sky`}
           data-component="column-card"
           key={`col-${index}`}
         >
+          {/* Image flush to card edges (no p-card on top/sides). */}
+          {image}
           <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
             {body}
             <ColumnCta column={column} siteSlug={siteSlug} />
@@ -308,6 +330,7 @@ export function ColumnsBlock({
 
     return (
       <div className={`${COLUMNS_CELL} gap-card`} data-component="column" key={`col-${index}`}>
+        {image}
         {body}
         <ColumnCta column={column} siteSlug={siteSlug} />
       </div>
