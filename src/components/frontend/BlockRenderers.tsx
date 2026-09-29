@@ -268,12 +268,20 @@ type ColumnRow = {
   actions?: ColumnCtaRow['actions']
 }
 
-function ColumnImage({ image }: { image?: number | Media | null }) {
+function ColumnImage({
+  image,
+  bordered = false,
+}: {
+  image?: number | Media | null
+  bordered?: boolean
+}) {
   const media = image && typeof image === 'object' ? image : null
   const src = media ? mediaSizeURL(media, 'landscape') : null
   if (!media || !src) return null
   return (
-    <div className="relative aspect-4/3 w-full shrink-0 overflow-hidden bg-ground">
+    <div
+      className={`relative aspect-4/3 w-full shrink-0 overflow-hidden bg-ground${bordered ? ' border-b-2 border-ground' : ''}`}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={mediaAlt(media)}
@@ -304,7 +312,6 @@ export function ColumnsBlock({
   const titleAlign = columnsTitleAlignClass(rows[0]?.length || 0)
 
   const renderColumn = (column: ColumnRow, index: number) => {
-    const image = <ColumnImage image={column.image} />
     const body = column.body ? (
       <div className="prose-nazemi text-body-inter text-ground">
         <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
@@ -318,8 +325,8 @@ export function ColumnsBlock({
           data-component="column-card"
           key={`col-${index}`}
         >
-          {/* Image flush to card edges (no p-card on top/sides). */}
-          {image}
+          {/* Image flush to card edges; bottom border separates from body. */}
+          <ColumnImage bordered image={column.image} />
           <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
             {body}
             <ColumnCta column={column} siteSlug={siteSlug} />
@@ -330,7 +337,7 @@ export function ColumnsBlock({
 
     return (
       <div className={`${COLUMNS_CELL} gap-card`} data-component="column" key={`col-${index}`}>
-        {image}
+        <ColumnImage image={column.image} />
         {body}
         <ColumnCta column={column} siteSlug={siteSlug} />
       </div>
