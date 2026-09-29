@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { ContactBlock, TeamMemberCard } from '@/components/frontend/cards'
 import { SiteShell } from '@/components/frontend/SiteShell'
+import { Button } from '@/components/frontend/ui'
 import { withSiteQuery } from '@/lib/content'
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
 import { getListingWhere, getPayloadClient, resolveSiteFromCurrentRequest } from '@/lib/frontend'
@@ -65,19 +66,17 @@ export default async function KontaktPage({
                 <div className="flex flex-col gap-[2px] bg-ground">
                   {socials.length ? (
                     <div
-                      className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-sky p-card"
+                      className="flex flex-wrap items-center gap-2.5 bg-sky p-card"
                       data-component="contact-social"
                     >
                       {socials.map((link, index) => (
-                        <a
-                          className="font-inter text-sm font-medium leading-snug text-ground underline"
+                        <Button
                           href={link.url!}
                           key={`${link.network}-${index}`}
-                          rel="noopener noreferrer"
-                          target="_blank"
+                          variant="outline-ground"
                         >
                           {link.network}
-                        </a>
+                        </Button>
                       ))}
                     </div>
                   ) : null}
