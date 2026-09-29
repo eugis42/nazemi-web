@@ -3,8 +3,7 @@
 import { useEffect, useRef } from 'react'
 
 /**
- * Homepage background: scrolls slower than page content (subtle parallax).
- * Used for every site when `SiteShell` gets `backdrop`.
+ * Homepage background for every site when `SiteShell` gets `backdrop`.
  *
  * SVG sources: inline + stroke-dashoffset line-draw on load (~3s, random order/pace).
  * Bitmap / non-SVG: plain <img>.
@@ -13,13 +12,7 @@ import { useEffect, useRef } from 'react'
  * main is full-bleed natural height; subsites keep the 75vh cover frame.
  * <img> uses object-cover; inlined SVG uses preserveAspectRatio slice (object-fit
  * is ignored on inline SVG) + a h-full host so the clip box has real height.
- * Overflow is intentional on the 75vh frame only — do not put overflow-x-hidden
- * on page-shell (that forces overflow-y clip and chops parallax outside the frame).
  */
-/** Lag vs scroll — 0 = glued to viewport, 1 = normal document scroll. */
-const PARALLAX_FACTOR = 0.175
-/** Lerp toward target each frame — higher = snappier, lower = smoother. */
-const SMOOTHING = 0.12
 /** Total window for the staggered line-draw (ms). */
 const DRAW_WINDOW_MS = 3000
 const DRAW_MIN_MS = 500
@@ -49,9 +42,9 @@ function hostClassName(fitWidth: boolean) {
 /** <img> — object-fit works. */
 function imgGraphicClassName(fitWidth: boolean) {
   if (fitWidth) {
-    return 'block h-full w-full object-cover object-top will-change-transform'
+    return 'block h-full w-full object-cover object-top'
   }
-  return 'block h-full w-full object-cover object-top will-change-transform lg:h-auto'
+  return 'block h-full w-full object-cover object-top lg:h-auto'
 }
 
 /**
@@ -78,16 +71,13 @@ function applyInlineSvgFit(svg: SVGSVGElement, fitWidth: boolean): () => void {
     if (desktopBleed) {
       // Full-bleed: width 100%, height from viewBox aspect.
       svg.setAttribute('preserveAspectRatio', 'xMidYMin meet')
-      svg.setAttribute(
-        'class',
-        'relative block h-auto w-full will-change-transform',
-      )
+      svg.setAttribute('class', 'relative block h-auto w-full')
     } else {
       // Cover the 75vh clip: fill box, crop sides/bottom as needed, top-center.
       svg.setAttribute('preserveAspectRatio', 'xMidYMin slice')
       svg.setAttribute(
         'class',
-        'absolute inset-0 block h-full w-full max-w-none will-change-transform',
+        'absolute inset-0 block h-full w-full max-w-none',
       )
     }
   }
@@ -240,89 +230,6 @@ function runLineDraw(svg: SVGSVGElement, reduceMotion: boolean) {
   }
 }
 
-function attachParallax(
-  el: HTMLElement | SVGSVGElement,
-  reduceMotion: MediaQueryList,
-): () => void {
-  let current = 0
-  let target = 0
-  let raf = 0
-  /** Freeze translate once the graphic has fully left the viewport. */
-  let frozen: number | null = null
-
-  const clear = () => {
-    current = 0
-    target = 0
-    frozen = null
-    el.style.transform = ''
-  }
-
-  const readTarget = () => {
-    if (reduceMotion.matches) return 0
-
-    const rect = el.getBoundingClientRect()
-    const visible = rect.bottom > 0 && rect.top < window.innerHeight
-
-    if (!visible) {
-      if (rect.bottom <= 0) {
-        if (frozen == null) frozen = current
-        return frozen
-      }
-      frozen = null
-      return 0
-    }
-
-    frozen = null
-    return window.scrollY * PARALLAX_FACTOR
-  }
-
-  const tick = () => {
-    raf = 0
-    if (reduceMotion.matches) {
-      clear()
-      return
-    }
-
-    target = readTarget()
-    current += (target - current) * SMOOTHING
-    if (Math.abs(target - current) < 0.15) current = target
-
-    el.style.transform = current ? `translate3d(0, ${current}px, 0)` : ''
-
-    if (current !== target) {
-      raf = requestAnimationFrame(tick)
-    }
-  }
-
-  const onScrollOrResize = () => {
-    target = readTarget()
-    if (!raf) raf = requestAnimationFrame(tick)
-  }
-
-  const onReduceChange = () => {
-    if (reduceMotion.matches) {
-      clear()
-      if (raf) cancelAnimationFrame(raf)
-      raf = 0
-      return
-    }
-    onScrollOrResize()
-  }
-
-  onScrollOrResize()
-  window.addEventListener('scroll', onScrollOrResize, { passive: true })
-  window.addEventListener('resize', onScrollOrResize, { passive: true })
-  reduceMotion.addEventListener('change', onReduceChange)
-
-  return () => {
-    window.removeEventListener('scroll', onScrollOrResize)
-    window.removeEventListener('resize', onScrollOrResize)
-    reduceMotion.removeEventListener('change', onReduceChange)
-    if (raf) cancelAnimationFrame(raf)
-    clear()
-  }
-}
-
 export function HeroBackdrop({
   fitWidth = false,
   src,
@@ -337,29 +244,16 @@ export function HeroBackdrop({
   const hostClass = hostClassName(fitWidth)
   const imgGraphicClass = imgGraphicClassName(fitWidth)
 
-  const imgRef = useRef<HTMLImageElement>(null)
   const hostRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (!svgMode) return undefined
+
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
-    let stopParallax: (() => void) | undefined
     let stopDraw: (() => void) | undefined
     let stopSvgFit: (() => void) | undefined
     let removeReduceDraw: (() => void) | undefined
     let cancelled = false
-
-    const bindParallax = (el: HTMLElement | SVGSVGElement) => {
-      stopParallax?.()
-      stopParallax = attachParallax(el, reduceMotion)
-    }
-
-    if (!svgMode) {
-      const img = imgRef.current
-      if (img) bindParallax(img)
-      return () => {
-        stopParallax?.()
-      }
-    }
 
     const host = hostRef.current
     if (!host) return undefined
@@ -384,7 +278,6 @@ export function HeroBackdrop({
         host.replaceChildren(svg)
         stopDraw = runLineDraw(svg, reduceMotion.matches)
         svg.style.visibility = ''
-        bindParallax(svg)
 
         const onReduceDraw = () => {
           stopDraw?.()
@@ -404,14 +297,12 @@ export function HeroBackdrop({
         img.height = 1378
         img.src = imageSrc
         host.replaceChildren(img)
-        bindParallax(img)
       }
     })()
 
     return () => {
       cancelled = true
       stopDraw?.()
-      stopParallax?.()
       stopSvgFit?.()
       removeReduceDraw?.()
       host.replaceChildren()
@@ -441,7 +332,6 @@ export function HeroBackdrop({
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        ref={imgRef}
         alt=""
         className={imgGraphicClass}
         height={1378}

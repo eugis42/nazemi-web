@@ -44,10 +44,6 @@ export function SiteShell({
 
   return (
     <div className="page-shell relative" style={siteBrandStyle(site)}>
-      {/*
-        Keep overflow-x clip off page-shell: overflow-x-hidden forces overflow-y to
-        clip too, which chops parallax translateY on the homepage backdrop.
-      */}
       <div className="relative z-20 overflow-x-hidden">
         <SiteHeader
           logoAlt={mediaAlt(logo, site.name)}
