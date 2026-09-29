@@ -21,10 +21,10 @@ const thumbs: { slug: string; icon: string }[] = [
   { slug: 'pageIntro', icon: 'section' },
   { slug: 'richText', icon: 'file-text' },
   { slug: 'gallery', icon: 'photo' },
+  { slug: 'logoStrip', icon: 'grip-horizontal' },
   { slug: 'speakers', icon: 'microphone' },
   { slug: 'testimonials', icon: 'quote' },
   { slug: 'threeColumns', icon: 'columns-3' },
-  { slug: 'threeCards', icon: 'layout-cards' },
 ]
 
 function iconInner(iconName: string): string {

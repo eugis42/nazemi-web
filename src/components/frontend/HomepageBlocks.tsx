@@ -5,11 +5,11 @@ import {
   HeroBlock,
   NewsGrid,
   ProjectsBlock,
-  ThreeCardsBlock,
-  ThreeColumnsBlock,
+  ColumnsBlock,
   type ContentBlock,
 } from '@/components/frontend/BlockRenderers'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
+import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { PillarsBlock } from '@/components/frontend/PillarsBlock'
 import { resolveBlockActions } from '@/lib/block-actions'
@@ -62,10 +62,7 @@ export async function HomepageBlocks({
         rendered.push(<AboutBlock key={key} block={block} siteSlug={site.slug} />)
         break
       case 'threeColumns':
-        rendered.push(<ThreeColumnsBlock key={key} block={block} siteSlug={site.slug} />)
-        break
-      case 'threeCards':
-        rendered.push(<ThreeCardsBlock key={key} block={block} siteSlug={site.slug} />)
+        rendered.push(<ColumnsBlock key={key} block={block} siteSlug={site.slug} />)
         break
       case 'richText':
         if (block.content) {
@@ -83,6 +80,15 @@ export async function HomepageBlocks({
             columns={(block.columns as '1' | '2' | '3' | null) || '2'}
             images={resolveGalleryImages(block.images)}
             key={key}
+          />,
+        )
+        break
+      case 'logoStrip':
+        rendered.push(
+          <LogoStrip
+            key={key}
+            logos={resolveLogoStripItems(block)}
+            title={block.title ? String(block.title) : null}
           />,
         )
         break

@@ -1,23 +1,24 @@
 import {
+  BlocksFeature,
+  FixedToolbarFeature,
   HeadingFeature,
+  LinkFeature,
   RelationshipFeature,
+  TextStateFeature,
   UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import type { CollectionSlug } from 'payload'
 
-/** Collections pickable as Lexical relationship embeds. */
-export const RICH_TEXT_RELATION_COLLECTIONS = [
-  'stranky',
-  'kalendar',
-  'aktuality',
-  'projekty',
-  'publikace',
-  'lide',
-  'workshopy',
-] as const satisfies readonly CollectionSlug[]
+import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
+import { GalleryBlock, LogoStripBlock } from '@/blocks/pageBlocks'
+import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
+import {
+  RICH_TEXT_RELATION_COLLECTIONS,
+  type RichTextRelationCollection,
+} from '@/lib/lexical-collections'
+import { textColorState } from '@/lib/lexical-text-color'
 
-export type RichTextRelationCollection = (typeof RICH_TEXT_RELATION_COLLECTIONS)[number]
+export { RICH_TEXT_RELATION_COLLECTIONS, type RichTextRelationCollection }
 
 const uploadWidthModeField = {
   name: 'widthMode',
@@ -62,14 +63,27 @@ const uploadWidthPercentField = {
   },
 }
 
-/** Shared Lexical editor — relationship picker limited to content embeds. */
+/**
+ * Shared Lexical editor (site-wide root + field editors that inherit it).
+ * - h1 disabled (page headers own H1)
+ * - LinkFeature: internal docs limited to content collections
+ * - FixedToolbarFeature: persistent top toolbar
+ * - TextStateFeature: text colour tokens from document site palette
+ * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec
+ */
 export const nazemiLexicalEditor = lexicalEditor({
-  features: ({ defaultFeatures }) =>
-    defaultFeatures.map((feature) => {
+  features: ({ defaultFeatures }) => [
+    ...defaultFeatures.map((feature) => {
       // Page headers already use h1 — keep rich text at h2+ to avoid duplicate H1s.
       if (feature.key === 'heading') {
         return HeadingFeature({
           enabledHeadingSizes: ['h2', 'h3', 'h4', 'h5', 'h6'],
+        })
+      }
+      if (feature.key === 'link') {
+        return LinkFeature({
+          enabledCollections: [...RICH_TEXT_RELATION_COLLECTIONS],
+          maxDepth: 2,
         })
       }
       if (feature.key === 'relationship') {
@@ -89,4 +103,15 @@ export const nazemiLexicalEditor = lexicalEditor({
       }
       return feature
     }),
+    TextStateFeature({
+      state: {
+        color: textColorState.color,
+      },
+    }),
+    SiteTextColorVarsFeature(),
+    FixedToolbarFeature(),
+    BlocksFeature({
+      blocks: [GalleryBlock, LogoStripBlock, ExpandingParagraphBlock],
+    }),
+  ],
 })

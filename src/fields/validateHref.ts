@@ -36,31 +36,3 @@ export const validateOptionalHref: Validate = (value) => {
   if (typeof value !== 'string') return 'Neplatná URL.'
   return hrefFormatError(value) || true
 }
-
-/** Require href when any sibling donate field is filled. */
-export const validateDonateHref: Validate = (value, { siblingData, data }) => {
-  const fromSiblings = siblingData as {
-    title?: string | null
-    body?: string | null
-    buttonLabel?: string | null
-  } | null
-  const fromDoc = (data as { donateCta?: typeof fromSiblings } | undefined)?.donateCta
-  // Group field validate: prefer same-level siblings; fall back to doc.donateCta.
-  const group =
-    fromSiblings &&
-    ('title' in fromSiblings || 'body' in fromSiblings || 'buttonLabel' in fromSiblings)
-      ? fromSiblings
-      : fromDoc
-
-  const anyFilled = Boolean(
-    (typeof group?.title === 'string' && group.title.trim()) ||
-      (typeof group?.body === 'string' && group.body.trim()) ||
-      (typeof group?.buttonLabel === 'string' && group.buttonLabel.trim()) ||
-      (typeof value === 'string' && value.trim()),
-  )
-  if (!anyFilled) return true
-  if (typeof value !== 'string' || !value.trim()) {
-    return 'URL tlačítka je povinná, pokud je vyplněn hlavní call to action patičky.'
-  }
-  return hrefFormatError(value) || true
-}

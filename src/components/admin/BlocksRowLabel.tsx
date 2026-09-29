@@ -11,13 +11,13 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   about: 'O nás',
   richText: 'Textový blok',
   gallery: 'Galerie',
+  logoStrip: 'Pás log',
   pageIntro: 'Úvodní hlavička',
   pageHeader: 'Úvodní hlavička',
   speakers: 'Lektoři',
   lecturers: 'Lektoři',
   testimonials: 'Reference',
-  threeColumns: '3 sloupce',
-  threeCards: '3 karty',
+  threeColumns: 'Sloupce',
 }
 
 type BlockRowData = {

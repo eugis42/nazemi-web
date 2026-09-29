@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 
 import type { Media, Site } from '@/payload-types'
 
+import { additionalColorsToCssVars } from '@/lib/lexical-text-color'
 import { nestedMainMenu, resolveMenuItem } from '@/lib/menu'
 import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
@@ -111,9 +112,10 @@ export function crossPostOriginSite({
   return site
 }
 
-/** Remap design tokens like SiteShell (ground / sky / green). */
+/** Remap design tokens like SiteShell (ground / sky / green + doplňkové extras). */
 export function siteBrandStyle(site: {
   accentColor?: string | null
+  additionalColors?: { value?: string | null }[] | null
   primaryBackgroundColor?: string | null
   primaryColor?: string | null
 }): CSSProperties {
@@ -123,6 +125,7 @@ export function siteBrandStyle(site: {
       ? { ['--color-sky' as string]: site.primaryBackgroundColor }
       : {}),
     ...(site.accentColor ? { ['--color-green' as string]: site.accentColor } : {}),
+    ...additionalColorsToCssVars(site.additionalColors),
   }
 }
 

@@ -3,6 +3,7 @@ import { Fragment } from 'react'
 import type { Aktuality, Kalendar, Media, Projekty } from '@/payload-types'
 import { EventCard, NewsCard, PageIntro, ProjectRow } from '@/components/frontend/cards'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
+import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { EmptyState } from '@/components/frontend/listing'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { BlockHeader, Button } from '@/components/frontend/ui'
@@ -229,117 +230,179 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
   )
 }
 
-/** Desktop 3-up: same cell width always; <3 columns centered in the row. */
-const THREE_UP_ROW =
-  'flex flex-col items-stretch gap-grid lg:flex-row lg:justify-center'
-const THREE_UP_CELL =
-  'w-full min-w-0 lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
+/**
+ * Sloupce layout: fixed third-width cells, max 3 per row, wrap.
+ * Exactly 4 columns → 2 per row (2+2), not 3+1.
+ * Do NOT put `h-full` on cells — % height fights flex stretch when the row
+ * height is content-sized, so `mt-auto` on ColumnCta has no free space.
+ * Short rows (<3) centered (`lg:justify-center`).
+ */
+const COLUMNS_PER_ROW = 3
+const COLUMNS_ROW =
+  'flex flex-col gap-grid lg:flex-row lg:items-stretch lg:justify-center'
+const COLUMNS_CELL =
+  'flex w-full min-w-0 flex-col lg:w-[calc((100%-2*var(--spacing-grid))/3)] lg:shrink-0'
 
-export function ThreeColumnsBlock({
+/** Desktop: pad title so its left edge matches the first column when the row is centered. */
+function columnsTitleAlignClass(firstRowCount: number): string {
+  if (firstRowCount >= COLUMNS_PER_ROW) return ''
+  // cell = (100% - 2g) / 3
+  if (firstRowCount === 1) {
+    return 'lg:ps-[calc((100%-(100%-2*var(--spacing-grid))/3)/2)]'
+  }
+  // 2 cols: (100% - 2*cell - g) / 2
+  return 'lg:ps-[calc((100%-2*((100%-2*var(--spacing-grid))/3)-var(--spacing-grid))/2)]'
+}
+
+function chunkColumns<T>(items: T[], size: number): T[][] {
+  const rows: T[][] = []
+  for (let i = 0; i < items.length; i += size) {
+    rows.push(items.slice(i, i + size))
+  }
+  return rows
+}
+
+type ColumnRow = {
+  image?: number | Media | null
+  body?: unknown
+  actions?: ColumnCtaRow['actions']
+}
+
+function ColumnImage({
+  image,
+  bordered = false,
+}: {
+  image?: number | Media | null
+  bordered?: boolean
+}) {
+  const media = image && typeof image === 'object' ? image : null
+  const src = media ? mediaSizeURL(media, 'landscape') : null
+  if (!media || !src) return null
+  return (
+    <div
+      className={`relative aspect-4/3 w-full shrink-0 overflow-hidden bg-ground${bordered ? ' border-b-2 border-ground' : ''}`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt={mediaAlt(media)}
+        className="size-full object-cover"
+        loading="lazy"
+        src={src}
+        style={mediaFocalStyle(media)}
+      />
+    </div>
+  )
+}
+
+type ColumnsStyle = 'clean' | 'bordered' | 'table'
+
+function resolveColumnsStyle(block: ContentBlock): ColumnsStyle {
+  const raw = block.style
+  if (raw === 'bordered' || raw === 'table' || raw === 'clean') return raw
+  // Legacy checkbox → select (pre-migrate API payloads).
+  if (block.borders === true) return 'bordered'
+  return 'clean'
+}
+
+/** Sloupce (`threeColumns`) — style: clean | bordered | table. */
+export function ColumnsBlock({
   block,
   siteSlug,
 }: {
   block: ContentBlock
   siteSlug: string
 }) {
-  const columns = (
-    (block.columns as {
-      body?: unknown
-      headline?: string | null
-      title?: string | null
-      actions?: ColumnCtaRow['actions']
-    }[]) || []
-  ).slice(0, 3)
-
+  const style = resolveColumnsStyle(block)
+  const columns = (block.columns as ColumnRow[]) || []
   if (!columns.length) return null
 
+  // Exactly 4 → 2/row (2+2); else max 3/row.
+  const perRow = columns.length === 4 ? 2 : COLUMNS_PER_ROW
+  const rows = chunkColumns(columns, perRow)
+  const isTable = style === 'table'
+  const isFramed = style === 'bordered' || isTable
+  const titleAlign = isTable ? '' : columnsTitleAlignClass(rows[0]?.length || 0)
+
+  const renderColumn = (column: ColumnRow, index: number) => {
+    const body = column.body ? (
+      <div className="prose-nazemi text-body-inter text-ground">
+        <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
+      </div>
+    ) : null
+
+    if (isFramed) {
+      // Table: no per-cell border — shared 2px dividers via gap+[bg-ground] parent.
+      const cellClass = isTable
+        ? 'flex min-w-0 flex-1 flex-col overflow-hidden bg-sky'
+        : `${COLUMNS_CELL} overflow-hidden border-2 border-ground bg-sky`
+      return (
+        <article
+          className={cellClass}
+          data-component="column-card"
+          key={`col-${index}`}
+        >
+          {/* Image flush to card edges; bottom border separates from body. */}
+          <ColumnImage bordered image={column.image} />
+          <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
+            {body}
+            <ColumnCta column={column} siteSlug={siteSlug} />
+          </div>
+        </article>
+      )
+    }
+
+    return (
+      <div className={`${COLUMNS_CELL} gap-card`} data-component="column" key={`col-${index}`}>
+        <ColumnImage image={column.image} />
+        {body}
+        <ColumnCta column={column} siteSlug={siteSlug} />
+      </div>
+    )
+  }
+
+  const rowClass = isTable
+    ? 'flex flex-col gap-[2px] bg-ground lg:flex-row lg:items-stretch'
+    : COLUMNS_ROW
+
   return (
-    <section className="flex flex-col" data-block="threeColumns">
-      <BlockHeader title={(block.title as string) || undefined} />
-      <div className={THREE_UP_ROW}>
-        {columns.map((column, index) => {
-          const headline = column.headline?.trim()
-          const title = column.title?.trim()
-          return (
-            <div
-              className={`${THREE_UP_CELL} flex h-full flex-col gap-card`}
-              data-component="three-column"
-              key={`${title || headline || 'col'}-${index}`}
-            >
-              {headline || title ? (
-                <h3 className="font-saans text-5xl leading-none tracking-tight text-ground lg:text-[74px] lg:leading-[70px] lg:tracking-[-1.48px]">
-                  {headline ? <span className="block text-green">{headline}</span> : null}
-                  {title ? <span className="block">{title}</span> : null}
-                </h3>
-              ) : null}
-              {column.body ? (
-                <div className="prose-nazemi text-body-inter text-ground">
-                  <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
-                </div>
-              ) : null}
-              <ColumnCta column={column} siteSlug={siteSlug} />
+    <section
+      className="flex flex-col gap-grid"
+      data-block="threeColumns"
+      data-cols={columns.length}
+      data-style={style}
+    >
+      <BlockHeader
+        className={titleAlign}
+        title={(block.title as string) || undefined}
+      />
+      {isTable ? (
+        <div
+          className="flex flex-col gap-[2px] overflow-hidden border-2 border-ground bg-ground"
+          data-component="columns-table"
+        >
+          {rows.map((row, rowIndex) => (
+            <div className={rowClass} data-row={rowIndex} key={`row-${rowIndex}`}>
+              {row.map((column, colIndex) =>
+                renderColumn(column, rowIndex * perRow + colIndex),
+              )}
             </div>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        rows.map((row, rowIndex) => (
+          <div className={rowClass} data-row={rowIndex} key={`row-${rowIndex}`}>
+            {row.map((column, colIndex) =>
+              renderColumn(column, rowIndex * perRow + colIndex),
+            )}
+          </div>
+        ))
+      )}
     </section>
   )
 }
 
-export function ThreeCardsBlock({
-  block,
-  siteSlug,
-}: {
-  block: ContentBlock
-  siteSlug: string
-}) {
-  const columns = (
-    (block.columns as {
-      body?: unknown
-      prefix?: string | null
-      title?: string | null
-      actions?: ColumnCtaRow['actions']
-    }[]) || []
-  ).slice(0, 3)
-
-  if (!columns.length) return null
-
-  return (
-    <section className="flex flex-col" data-block="threeCards">
-      <BlockHeader title={(block.title as string) || undefined} />
-      <div className={THREE_UP_ROW}>
-        {columns.map((column, index) => {
-          const prefix = column.prefix?.trim()
-          const title = column.title?.trim()
-          return (
-            <article
-              className={`${THREE_UP_CELL} flex h-full flex-col border-2 border-ground bg-sky`}
-              data-component="three-card"
-              key={`${title || prefix || 'card'}-${index}`}
-            >
-              <div className="flex h-full flex-1 flex-col justify-between gap-6 p-card">
-                <div className="flex flex-col gap-2.5">
-                  {prefix || title ? (
-                    <h3 className="text-display text-ground">
-                      {prefix ? <span className="block text-green">{prefix}</span> : null}
-                      {title ? <span className="block">{title}</span> : null}
-                    </h3>
-                  ) : null}
-                  {column.body ? (
-                    <div className="prose-nazemi text-body-inter text-ground">
-                      <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
-                    </div>
-                  ) : null}
-                </div>
-                <ColumnCta column={column} siteSlug={siteSlug} />
-              </div>
-            </article>
-          )
-        })}
-      </div>
-    </section>
-  )
-}
+/** @deprecated Prefer ColumnsBlock — same renderer. */
+export const ThreeColumnsBlock = ColumnsBlock
 
 export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug: string }) {
   const image = block.image && typeof block.image === 'object' ? (block.image as Media) : null
@@ -443,6 +506,17 @@ export function PageBlocks({
           )
         }
 
+        if (block.blockType === 'logoStrip') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <LogoStrip
+                logos={resolveLogoStripItems(block)}
+                title={block.title ? String(block.title) : null}
+              />
+            </div>
+          )
+        }
+
         if (block.blockType === 'richText' && block.content) {
           return (
             <div className="container max-lg:px-card" key={key}>
@@ -456,15 +530,7 @@ export function PageBlocks({
         if (block.blockType === 'threeColumns') {
           return (
             <div className="container max-lg:px-card" key={key}>
-              <ThreeColumnsBlock block={block} siteSlug={siteSlug} />
-            </div>
-          )
-        }
-
-        if (block.blockType === 'threeCards') {
-          return (
-            <div className="container max-lg:px-card" key={key}>
-              <ThreeCardsBlock block={block} siteSlug={siteSlug} />
+              <ColumnsBlock block={block} siteSlug={siteSlug} />
             </div>
           )
         }
@@ -604,6 +670,17 @@ export function WorkshopContentBlocks({
           )
         }
 
+        if (block.blockType === 'logoStrip') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <LogoStrip
+                logos={resolveLogoStripItems(block)}
+                title={block.title ? String(block.title) : null}
+              />
+            </div>
+          )
+        }
+
         if (block.blockType === 'richText' && block.content) {
           return (
             <div className="container max-lg:px-card" key={key}>
@@ -617,15 +694,7 @@ export function WorkshopContentBlocks({
         if (block.blockType === 'threeColumns') {
           return (
             <div className="container max-lg:px-card" key={key}>
-              <ThreeColumnsBlock block={block} siteSlug={siteSlug} />
-            </div>
-          )
-        }
-
-        if (block.blockType === 'threeCards') {
-          return (
-            <div className="container max-lg:px-card" key={key}>
-              <ThreeCardsBlock block={block} siteSlug={siteSlug} />
+              <ColumnsBlock block={block} siteSlug={siteSlug} />
             </div>
           )
         }

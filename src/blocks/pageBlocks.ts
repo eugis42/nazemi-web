@@ -7,6 +7,10 @@ import {
 import { additionalColorField } from '@/fields/additionalColor'
 import { columnCallToActionField } from '@/fields/cta'
 import { imageUploadFilter } from '@/fields/shared'
+import {
+  hrefFieldDescription,
+  validateOptionalHref,
+} from '@/fields/validateHref'
 
 export const RichTextBlock: Block = {
   slug: 'richText',
@@ -76,6 +80,74 @@ export const GalleryBlock: Block = {
   ],
 }
 
+/**
+ * Funding / government support logos — left-aligned strip, no lightbox.
+ *
+ * Upload is `hasMany` (not array→upload): Lexical BlocksFeature remounts the
+ * block form when an upload drawer opens; array→upload nests break that drawer
+ * (flash open/close). Same pattern as Galerie. Optional links align by index.
+ */
+export const LogoStripBlock: Block = {
+  slug: 'logoStrip',
+  labels: {
+    plural: 'Pásy log',
+    singular: 'Pás log',
+  },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_PAGE,
+    thumb: 'logoStrip',
+  }),
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      label: 'Nadpis',
+      admin: {
+        description: 'Volitelně — např. „Projekt podpořili“.',
+      },
+    },
+    {
+      name: 'images',
+      type: 'upload',
+      label: 'Loga',
+      relationTo: 'media',
+      hasMany: true,
+      required: true,
+      minRows: 1,
+      filterOptions: imageUploadFilter,
+      admin: {
+        description:
+          'Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.',
+      },
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Odkazy (volitelně)',
+      labels: {
+        plural: 'Odkazy',
+        singular: 'Odkaz',
+      },
+      admin: {
+        description:
+          'Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'href',
+          type: 'text',
+          label: 'Externí odkaz',
+          admin: {
+            description: hrefFieldDescription,
+          },
+          validate: validateOptionalHref,
+        },
+      ],
+    },
+  ],
+}
+
 export const PageIntroBlock: Block = {
   slug: 'pageIntro',
   labels: {
@@ -110,11 +182,16 @@ export const PageIntroBlock: Block = {
   ],
 }
 
+/**
+ * Sloupce — unlimited columns, max 3 per row (exactly 4 → 2+2). Slug stays `threeColumns`.
+ * `style`: clean (plain) | bordered (former Karty) | table (bordered, collapsed gaps).
+ * Column titles live in Lexical `body` as H2 (no separate headline/prefix/title fields).
+ */
 export const ThreeColumnsBlock: Block = {
   slug: 'threeColumns',
   labels: {
-    plural: '3 sloupce',
-    singular: '3 sloupce',
+    plural: 'Sloupce',
+    singular: 'Sloupce',
   },
   admin: blockPickerAdmin({
     group: BLOCK_GROUP_PAGE,
@@ -127,10 +204,24 @@ export const ThreeColumnsBlock: Block = {
       label: 'Nadpis',
     },
     {
+      name: 'style',
+      type: 'select',
+      label: 'Styl',
+      defaultValue: 'clean',
+      options: [
+        { label: 'Čisté sloupce', value: 'clean' },
+        { label: 'Sloupce s ohraničením', value: 'bordered' },
+        { label: 'Tabulka', value: 'table' },
+      ],
+      admin: {
+        description:
+          'Čisté = bez rámečků. Ohraničení = karty s mezerami. Tabulka = ohraničení bez mezer (sdílené linky).',
+      },
+    },
+    {
       name: 'columns',
       type: 'array',
       label: 'Sloupce',
-      maxRows: 3,
       minRows: 1,
       labels: {
         plural: 'Sloupce',
@@ -138,34 +229,21 @@ export const ThreeColumnsBlock: Block = {
       },
       admin: {
         components: {
-          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
+          RowLabel: '/components/admin/ArrayFieldRowLabel#SloupecRowLabel',
         },
-        description: 'Max. 3 sloupce.',
+        description: 'Libovolný počet sloupců (max. 3 v řadě). Nadpis sloupce dejte do Textu jako H2.',
         initCollapsed: true,
       },
       fields: [
         {
-          type: 'row',
-          fields: [
-            {
-              name: 'headline',
-              type: 'text',
-              label: 'Velký nadpis (1. řádek)',
-              admin: {
-                description: 'Akcentová barva — např. 150+. Prázdné → nezobrazí se.',
-                width: '50%',
-              },
-            },
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Nadpis (2. řádek)',
-              admin: {
-                description: 'Prázdné → nezobrazí se.',
-                width: '50%',
-              },
-            },
-          ],
+          name: 'image',
+          type: 'upload',
+          label: 'Obrázek',
+          relationTo: 'media',
+          filterOptions: imageUploadFilter,
+          admin: {
+            description: 'Volitelné. Zobrazí se nahoře ve formátu 4:3.',
+          },
         },
         {
           name: 'body',
@@ -178,72 +256,10 @@ export const ThreeColumnsBlock: Block = {
   ],
 }
 
-export const ThreeCardsBlock: Block = {
-  slug: 'threeCards',
-  labels: {
-    plural: '3 karty',
-    singular: '3 karty',
-  },
-  admin: blockPickerAdmin({
-    group: BLOCK_GROUP_PAGE,
-    thumb: 'threeCards',
-  }),
-  fields: [
-    {
-      name: 'title',
-      type: 'text',
-      label: 'Nadpis',
-    },
-    {
-      name: 'columns',
-      type: 'array',
-      label: 'Karty',
-      maxRows: 3,
-      minRows: 1,
-      labels: {
-        plural: 'Karty',
-        singular: 'Karta',
-      },
-      admin: {
-        components: {
-          RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
-        },
-        description: 'Max. 3 karty.',
-        initCollapsed: true,
-      },
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'prefix',
-              type: 'text',
-              label: 'Prefix (1. řádek)',
-              admin: {
-                description: 'Akcentová barva — např. Co:. Prázdné → nezobrazí se.',
-                width: '35%',
-              },
-            },
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Nadpis (2. řádek)',
-              admin: {
-                description: 'Prázdné → nezobrazí se.',
-                width: '65%',
-              },
-            },
-          ],
-        },
-        {
-          name: 'body',
-          type: 'richText',
-          label: 'Text',
-        },
-        columnCallToActionField(),
-      ],
-    },
-  ],
-}
-
-export const pageBlocks = [PageIntroBlock, RichTextBlock, GalleryBlock, ThreeColumnsBlock, ThreeCardsBlock]
+export const pageBlocks = [
+  PageIntroBlock,
+  RichTextBlock,
+  GalleryBlock,
+  LogoStripBlock,
+  ThreeColumnsBlock,
+]

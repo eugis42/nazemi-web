@@ -10,6 +10,7 @@ import { draftFindOptions,
   getListingWhere,
   getPayloadClient,
   resolveSiteFromCurrentRequest } from '@/lib/frontend'
+import { upcomingScheduledWorkshopsJoin } from '@/lib/menu-relation-picker'
 import { buildPageMetadata } from '@/lib/metadata'
 
 export async function generateMetadata({
@@ -63,6 +64,7 @@ export default async function WorkshopDetailPage({
     payload.find({
       collection: 'workshopy',
       depth: 2,
+      joins: upcomingScheduledWorkshopsJoin(),
       limit: 1,
       pagination: false,
       ...(await draftFindOptions()),

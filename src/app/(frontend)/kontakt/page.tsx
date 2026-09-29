@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { ContactBlock, TeamMemberCard } from '@/components/frontend/cards'
 import { SiteShell } from '@/components/frontend/SiteShell'
+import { Button } from '@/components/frontend/ui'
 import { withSiteQuery } from '@/lib/content'
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
 import { getListingWhere, getPayloadClient, resolveSiteFromCurrentRequest } from '@/lib/frontend'
@@ -38,8 +39,11 @@ export default async function KontaktPage({
   })
 
   const blocks = site.contactDetails || []
-  const primary = blocks.slice(0, 2)
-  const secondary = blocks.slice(2)
+  const socials = (site.socialLinks || []).filter((link) => link.url)
+  const single = blocks.length === 1
+  const primary = single ? blocks : blocks.slice(0, 2)
+  const secondary = single ? [] : blocks.slice(2)
+  const showContacts = blocks.length > 0 || socials.length > 0
 
   return (
     <SiteShell
@@ -56,23 +60,41 @@ export default async function KontaktPage({
           <h1 className="text-display text-ground">Kontakty</h1>
 
           <div className="flex flex-col gap-section" data-component="contact-directory">
-            {blocks.length ? (
+            {showContacts ? (
               <section className="overflow-hidden border-2 border-ground" data-block="contact-info">
+                {/* gap-[2px] bg-ground = shared 2px divider (no double borders). */}
                 <div className="flex flex-col gap-[2px] bg-ground">
+                  {socials.length ? (
+                    <div
+                      className="flex flex-wrap items-center gap-2.5 bg-sky p-card"
+                      data-component="contact-social"
+                    >
+                      {socials.map((link, index) => (
+                        <Button
+                          href={link.url!}
+                          key={`${link.network}-${index}`}
+                          variant="outline-ground"
+                        >
+                          {link.network}
+                        </Button>
+                      ))}
+                    </div>
+                  ) : null}
                   {primary.length ? (
-                    <div className="flex flex-wrap gap-[2px] bg-ground">
+                    <div className="flex flex-wrap items-stretch gap-[2px] bg-ground">
                       {primary.map((block, index) => (
                         <ContactBlock
                           block={block}
-                          className="w-full lg:w-[calc((100%-2px)/2)]"
+                          className={
+                            single ? 'w-full' : 'w-full lg:w-[calc((100%-2px)/2)]'
+                          }
                           key={block.id || `${block.title}-${index}`}
-                          variant={index === 0 ? 'green' : 'blue'}
                         />
                       ))}
                     </div>
                   ) : null}
                   {secondary.length ? (
-                    <div className="flex flex-wrap gap-[2px] bg-ground">
+                    <div className="flex flex-wrap items-stretch gap-[2px] bg-ground">
                       {secondary.map((block, index) => (
                         <ContactBlock
                           block={block}

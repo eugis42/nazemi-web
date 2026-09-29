@@ -214,3 +214,113 @@ html[data-theme='dark'] {
   top: 0;
   z-index: 1;
 }
+
+/* Admin fallbacks for Lexical text-colour swatches (overridden per document site). */
+:root {
+  --color-ground: #534741;
+  --color-sky: #f3ffff;
+  --color-green: #90d750;
+}
+
+/*
+ * TextStateFeature toolbar trigger → Tabler palette
+ * (https://tabler.io/icons?icon=palette). Mask the default “A” icon.
+ */
+.toolbar-popup__dropdown-textState > span {
+  background-color: var(--theme-elevation-600) !important;
+  border: none !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  height: 20px !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25'/%3E%3Cpath d='M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/%3E%3Cpath d='M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/%3E%3Cpath d='M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/%3E%3C/svg%3E")
+    center / 18px 18px no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25'/%3E%3Cpath d='M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/%3E%3Cpath d='M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/%3E%3Cpath d='M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/%3E%3C/svg%3E")
+    center / 18px 18px no-repeat !important;
+  width: 20px !important;
+}
+
+/* Dropdown swatches: coloured “A” (text colour only — no fill). */
+.toolbar-popup__dropdown-items:has([data-item-key='clear-style'])
+  .toolbar-popup__dropdown-item
+  > .btn__icon
+  span,
+.toolbar-popup__dropdown-items:has([data-item-key='clear-style'])
+  .toolbar-popup__dropdown-item
+  span[style] {
+  background: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--theme-elevation-800) 18%, transparent);
+  border-radius: 4px;
+  font-size: 14px !important;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Lexical TextStateFeature — compact colour swatch grid (no colour names). */
+.toolbar-popup__dropdown-items:has([data-item-key="clear-style"]) {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(6, 1.75rem);
+  padding: 0.5rem;
+  width: max-content;
+}
+
+.toolbar-popup__dropdown-items:has([data-item-key="clear-style"]) .toolbar-popup__dropdown-item {
+  justify-content: center;
+  margin: 0;
+  min-width: 0;
+  padding: 0.15rem;
+}
+
+.toolbar-popup__dropdown-items:has([data-item-key="clear-style"]) .toolbar-popup__dropdown-item .text {
+  display: none;
+}
+
+/* Hide unused doplňkové slots until SiteTextColorVars paints data-nazemi-extra-N. */
+.toolbar-popup__dropdown-item-extra-0 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-1 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-2 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-3 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-4 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-5 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-6 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-7 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-8 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-9 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-10 { display: none !important; }
+.toolbar-popup__dropdown-item-extra-11 { display: none !important; }
+html[data-nazemi-extra-0="1"] .toolbar-popup__dropdown-item-extra-0 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-1="1"] .toolbar-popup__dropdown-item-extra-1 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-2="1"] .toolbar-popup__dropdown-item-extra-2 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-3="1"] .toolbar-popup__dropdown-item-extra-3 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-4="1"] .toolbar-popup__dropdown-item-extra-4 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-5="1"] .toolbar-popup__dropdown-item-extra-5 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-6="1"] .toolbar-popup__dropdown-item-extra-6 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-7="1"] .toolbar-popup__dropdown-item-extra-7 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-8="1"] .toolbar-popup__dropdown-item-extra-8 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-9="1"] .toolbar-popup__dropdown-item-extra-9 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-10="1"] .toolbar-popup__dropdown-item-extra-10 {
+  display: inline-flex !important;
+}
+html[data-nazemi-extra-11="1"] .toolbar-popup__dropdown-item-extra-11 {
+  display: inline-flex !important;
+}

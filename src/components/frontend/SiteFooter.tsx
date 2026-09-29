@@ -35,12 +35,15 @@ function donateBannerSurface(color?: string | null): {
 
 export function SiteFooter({ site }: { site: Site }) {
   const donate = site.donateCta
+  const donateButtonLabel = donate?.buttonLabel?.trim() || ''
+  const donateHref = donate?.href?.trim() || ''
+  const showDonateButton = Boolean(donateButtonLabel && donateHref)
   const showDonate = Boolean(
-    donate?.title?.trim() || donate?.body?.trim() || donate?.buttonLabel?.trim() || donate?.href?.trim(),
+    donate?.title?.trim() || donate?.body?.trim() || showDonateButton,
   )
   const newsletters = site.newsletters || []
-  /** Design footer stays compact — only the two primary contacts. */
-  const contacts = (site.contactDetails || []).slice(0, 2)
+  /** Design footer stays compact — only the first contact block. */
+  const contacts = (site.contactDetails || []).slice(0, 1)
   const logo = site.logo && typeof site.logo === 'object' ? site.logo : null
   const logoUrl = mediaURL(logo)
   const donateSurface = donateBannerSurface(donate?.backgroundColor)
@@ -57,9 +60,9 @@ export function SiteFooter({ site }: { site: Site }) {
           <div className="flex flex-col gap-2.5 p-card text-ground">
             {donate?.title ? <h2 className="text-card-title text-ground">{donate.title}</h2> : null}
             {donate?.body ? <p className="text-body-inter text-ground">{donate.body}</p> : null}
-            {donate?.href ? (
-              <Button href={donate.href} newTab variant="filled-sky">
-                {donate?.buttonLabel || 'Podpořit'}
+            {showDonateButton ? (
+              <Button href={donateHref} newTab variant="filled-sky">
+                {donateButtonLabel}
               </Button>
             ) : null}
           </div>

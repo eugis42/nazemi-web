@@ -398,6 +398,14 @@ function WorkshopSpec({ label, value }: { label: string; value?: string | null }
   )
 }
 
+/** True when join has ≥1 upcoming Kalendář termín (page must use upcomingScheduledWorkshopsJoin). */
+export function workshopHasScheduledTerms(item: Pick<Workshopy, 'scheduledWorkshops'>): boolean {
+  const join = item.scheduledWorkshops
+  if (!join) return false
+  if (typeof join.totalDocs === 'number') return join.totalDocs > 0
+  return Boolean(join.docs?.length)
+}
+
 export function WorkshopHeader({
   children,
   item,
@@ -415,16 +423,17 @@ export function WorkshopHeader({
   const topicTags = taxonomyFilterTags(item.topics, '/workshopy', 'topic', siteSlug)
   const hasTags = audienceTags.length > 0 || topicTags.length > 0
 
-  const datesButton = (
+  const datesButton = workshopHasScheduledTerms(item) ? (
     <Button href={withSiteQuery(`/kalendar?workshop=${item.slug}`, siteSlug)} variant="outline-ground">
       Aktuální termíny
     </Button>
-  )
+  ) : null
   const orderButton = orderCta ? (
     <Button external href={orderCta.url} variant="filled-green">
       {orderCta.title}
     </Button>
   ) : null
+  const hasCtas = Boolean(datesButton || orderButton)
 
   return (
     <WorkshopHeaderMotion>
@@ -482,10 +491,12 @@ export function WorkshopHeader({
                   </ul>
                 </section>
               ) : null}
-              <section className="flex flex-wrap items-center gap-3 p-card">
-                {datesButton}
-                {orderButton}
-              </section>
+              {hasCtas ? (
+                <section className="flex flex-wrap items-center gap-3 p-card">
+                  {datesButton}
+                  {orderButton}
+                </section>
+              ) : null}
             </div>
           </div>
         </div>
@@ -503,10 +514,12 @@ export function WorkshopHeader({
               <p className={`${STICKY_BANNER_TITLE_CLASS} flex-1 text-ground`}>
                 {item.title}
               </p>
-              <div className="flex shrink-0 flex-wrap items-center gap-3 self-start lg:self-center">
-                {datesButton}
-                {orderButton}
-              </div>
+              {hasCtas ? (
+                <div className="flex shrink-0 flex-wrap items-center gap-3 self-start lg:self-center">
+                  {datesButton}
+                  {orderButton}
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

@@ -14,7 +14,6 @@ import {
   withSiteQuery,
 } from '@/lib/content'
 import { formatDate, formatDateRange } from '@/lib/format'
-import { isExternalHref } from '@/lib/links'
 
 const PROJECT_COLOR_CLASS: Record<string, string> = {
   blue: 'bg-blue text-ground',
@@ -460,10 +459,30 @@ export function ProjectHeader({
   )
 }
 
-const CONTACT_VARIANT_CLASS: Record<string, { bg: string; note: string; text: string }> = {
-  blue: { bg: 'bg-blue', note: 'text-ground/80', text: 'text-ground' },
-  green: { bg: 'bg-green', note: 'text-ground/80', text: 'text-ground' },
-  sky: { bg: 'bg-sky', note: 'text-ground/80', text: 'text-ground' },
+const CONTACT_BG_CLASS: Record<string, string> = {
+  sky: 'bg-sky',
+  green: 'bg-green',
+  violet: 'bg-violet',
+  orange: 'bg-orange',
+  turquoise: 'bg-turquoise',
+  blue: 'bg-blue',
+  nerust: 'bg-nerust',
+  pink: 'bg-pink',
+  brown: 'bg-brown',
+  gray: 'bg-gray',
+}
+
+function contactBlockSurface(color?: string | null): {
+  className: string
+  style?: CSSProperties
+} {
+  const value = color?.trim() || 'sky'
+  if (isColorToken(value) && CONTACT_BG_CLASS[value]) {
+    return { className: CONTACT_BG_CLASS[value] }
+  }
+  const resolved = resolveColor(value)
+  if (resolved) return { className: '', style: { backgroundColor: resolved } }
+  return { className: 'bg-sky' }
 }
 
 type ContactDetail = NonNullable<Site['contactDetails']>[number]
@@ -471,83 +490,78 @@ type ContactDetail = NonNullable<Site['contactDetails']>[number]
 export function ContactBlock({
   block,
   className = '',
-  variant = 'sky',
 }: {
   block: ContactDetail
   className?: string
-  variant?: 'sky' | 'green' | 'blue'
 }) {
-  const colors = CONTACT_VARIANT_CLASS[variant]
+  const surface = contactBlockSurface(block.backgroundColor)
+  const links = block.links || []
 
   return (
     <article
-      className={`box-border flex shrink-0 grow-0 flex-col gap-2.5 ${colors.bg} p-card ${className}`}
+      className={`box-border flex min-h-0 shrink-0 grow-0 flex-col gap-2.5 ${surface.className} p-card text-ground ${className}`}
       data-component="contact-block"
-      data-variant={variant}
+      style={surface.style}
     >
-      <h2 className={`text-section-title ${colors.text}`}>{block.title}</h2>
-      {block.email ? (
-        <a className={`text-card-title ${colors.text} underline`} href={`mailto:${block.email}`}>
-          {block.email}
-        </a>
-      ) : null}
-      {block.addressLines?.length ? (
-        <p className={`text-body-inter ${colors.text}`}>
-          {block.addressLines.map((row, index) => (
-            <span key={`${row.line}-${index}`}>
-              {index > 0 ? <br /> : null}
-              {row.line}
-            </span>
-          ))}
-        </p>
-      ) : null}
-      {block.note ? <p className={`text-body-inter ${colors.note}`}>{block.note}</p> : null}
-      {block.phone ? (
-        <p className={`text-body-inter ${colors.text}`}>
-          <a className="underline" href={`tel:${block.phone.replace(/\s/g, '')}`}>
-            {block.phone}
+      <div className="flex flex-col gap-2.5">
+        <h2 className="text-section-title text-ground">{block.title}</h2>
+        {block.email ? (
+          <a className="text-card-title text-ground underline" href={`mailto:${block.email}`}>
+            {block.email}
           </a>
-        </p>
-      ) : null}
-      {block.links?.length ? (
-        <p className={`text-body-inter ${colors.text}`}>
-          {block.links.map((link, index) => {
-            const external = isExternalHref(link.href)
-            return (
-              <span key={`${link.href}-${index}`}>
+        ) : null}
+        {block.addressLines?.length ? (
+          <p className="text-body-inter text-ground">
+            {block.addressLines.map((row, index) => (
+              <span key={`${row.line}-${index}`}>
                 {index > 0 ? <br /> : null}
-                <a
-                  className="underline"
-                  href={link.href || '#'}
-                  rel={external ? 'noopener noreferrer' : undefined}
-                  target={external ? '_blank' : undefined}
-                >
-                  {external ? `↗ ${link.label}` : link.label}
-                </a>
+                {row.line}
               </span>
-            )
-          })}
-        </p>
-      ) : null}
-      {block.extras?.length ? (
-        <p className={`text-body-inter ${colors.text}`}>
-          {block.extras.map((extra, index) => (
-            <span key={`${extra.label}-${index}`}>
-              {index > 0 ? <br /> : null}
-              {extra.label ? (
-                <>
-                  {extra.label}
-                  {extra.value ? `: ${extra.value}` : ''}
-                </>
-              ) : (
-                extra.value
-              )}
-            </span>
+            ))}
+          </p>
+        ) : null}
+        {block.note ? <p className="text-body-inter text-ground/80">{block.note}</p> : null}
+        {block.phone ? (
+          <p className="text-body-inter text-ground">
+            <a className="underline" href={`tel:${block.phone.replace(/\s/g, '')}`}>
+              {block.phone}
+            </a>
+          </p>
+        ) : null}
+        {block.extras?.length ? (
+          <p className="text-body-inter text-ground">
+            {block.extras.map((extra, index) => (
+              <span key={`${extra.label}-${index}`}>
+                {index > 0 ? <br /> : null}
+                {extra.label ? (
+                  <>
+                    {extra.label}
+                    {extra.value ? `: ${extra.value}` : ''}
+                  </>
+                ) : (
+                  extra.value
+                )}
+              </span>
+            ))}
+          </p>
+        ) : null}
+        {block.legacyPlainText ? (
+          <p className="text-body-inter text-ground">{block.legacyPlainText}</p>
+        ) : null}
+      </div>
+      {links.length ? (
+        <div className="mt-auto flex flex-wrap gap-2.5 pt-2.5">
+          {links.map((link, index) => (
+            <Button
+              className="self-start"
+              href={link.href || '#'}
+              key={`${link.href}-${index}`}
+              variant="outline-ground"
+            >
+              {link.label}
+            </Button>
           ))}
-        </p>
-      ) : null}
-      {block.legacyPlainText ? (
-        <p className={`text-body-inter ${colors.text}`}>{block.legacyPlainText}</p>
+        </div>
       ) : null}
     </article>
   )

@@ -13,10 +13,10 @@ export type BlockThumbSlug =
   | 'pageIntro'
   | 'richText'
   | 'gallery'
+  | 'logoStrip'
   | 'speakers'
   | 'testimonials'
   | 'threeColumns'
-  | 'threeCards'
 
 const THUMB_BASE = '/block-thumbs'
 

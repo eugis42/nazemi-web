@@ -215,7 +215,7 @@ export const socialLinkField: Field = {
     components: {
       RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
     },
-    description: 'Odkazy v patičce webu.',
+    description: 'Odkazy v patičce a na stránce Kontakt.',
     initCollapsed: true,
   },
   label: 'Sociální sítě',
