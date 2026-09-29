@@ -1669,7 +1669,7 @@ export interface Site {
       }[]
     | null;
   /**
-   * Odkazy v patičce webu.
+   * Odkazy v patičce a na stránce Kontakt.
    */
   socialLinks?:
     | {
@@ -1714,39 +1714,10 @@ export interface Site {
          * Zpětná kompatibilita — preferujte e-mail, telefon a řádky adresy.
          */
         legacyPlainText?: string | null;
+        backgroundColor?: string | null;
         id?: string | null;
       }[]
     | null;
-  fullAddress?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  additionalContent?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   donateCta?: {
     title?: string | null;
     body?: string | null;
@@ -5185,10 +5156,9 @@ export interface SitesSelect<T extends boolean = true> {
               id?: T;
             };
         legacyPlainText?: T;
+        backgroundColor?: T;
         id?: T;
       };
-  fullAddress?: T;
-  additionalContent?: T;
   donateCta?:
     | T
     | {

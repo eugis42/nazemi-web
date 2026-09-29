@@ -38,8 +38,11 @@ export default async function KontaktPage({
   })
 
   const blocks = site.contactDetails || []
-  const primary = blocks.slice(0, 2)
-  const secondary = blocks.slice(2)
+  const socials = (site.socialLinks || []).filter((link) => link.url)
+  const single = blocks.length === 1
+  const primary = single ? blocks : blocks.slice(0, 2)
+  const secondary = single ? [] : blocks.slice(2)
+  const showContacts = blocks.length > 0 || socials.length > 0
 
   return (
     <SiteShell
@@ -56,23 +59,43 @@ export default async function KontaktPage({
           <h1 className="text-display text-ground">Kontakty</h1>
 
           <div className="flex flex-col gap-section" data-component="contact-directory">
-            {blocks.length ? (
+            {showContacts ? (
               <section className="overflow-hidden border-2 border-ground" data-block="contact-info">
+                {/* gap-[2px] bg-ground = shared 2px divider (no double borders). */}
                 <div className="flex flex-col gap-[2px] bg-ground">
+                  {socials.length ? (
+                    <div
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-sky p-card"
+                      data-component="contact-social"
+                    >
+                      {socials.map((link, index) => (
+                        <a
+                          className="font-inter text-sm font-medium leading-snug text-ground underline"
+                          href={link.url!}
+                          key={`${link.network}-${index}`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          {link.network}
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
                   {primary.length ? (
-                    <div className="flex flex-wrap gap-[2px] bg-ground">
+                    <div className="flex flex-wrap items-stretch gap-[2px] bg-ground">
                       {primary.map((block, index) => (
                         <ContactBlock
                           block={block}
-                          className="w-full lg:w-[calc((100%-2px)/2)]"
+                          className={
+                            single ? 'w-full' : 'w-full lg:w-[calc((100%-2px)/2)]'
+                          }
                           key={block.id || `${block.title}-${index}`}
-                          variant={index === 0 ? 'green' : 'blue'}
                         />
                       ))}
                     </div>
                   ) : null}
                   {secondary.length ? (
-                    <div className="flex flex-wrap gap-[2px] bg-ground">
+                    <div className="flex flex-wrap items-stretch gap-[2px] bg-ground">
                       {secondary.map((block, index) => (
                         <ContactBlock
                           block={block}

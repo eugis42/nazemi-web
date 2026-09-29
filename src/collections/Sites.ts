@@ -460,17 +460,13 @@ export const Sites: CollectionConfig = {
                     description: 'Zpětná kompatibilita — preferujte e-mail, telefon a řádky adresy.',
                   },
                 },
+                additionalColorField({
+                  allowNone: true,
+                  defaultValue: 'sky',
+                  label: 'Barva pozadí',
+                  name: 'backgroundColor',
+                }),
               ],
-            },
-            {
-              name: 'fullAddress',
-              type: 'richText',
-              label: 'Plná adresa',
-            },
-            {
-              name: 'additionalContent',
-              type: 'richText',
-              label: 'Doplňující obsah',
             },
           ],
         },

@@ -185,8 +185,9 @@ const seed = async () => {
     })),
   ).map(({ depth, ...item }) => ({ ...item, depth: depth ?? 0 }))
 
-  const contactDetails = CONTACT_BLOCKS.map((block) => ({
+  const contactDetails = CONTACT_BLOCKS.map((block, index) => ({
     title: block.title,
+    backgroundColor: index === 0 ? 'green' : index === 1 ? 'blue' : 'sky',
     ...(block.email ? { email: block.email } : {}),
     ...(block.phone ? { phone: block.phone } : {}),
     ...(block.addressLines?.length
@@ -212,9 +213,6 @@ const seed = async () => {
       _status: 'published',
       accentColor: '#90d750',
       additionalColors: [...DEFAULT_ADDITIONAL_COLORS],
-      additionalContent: richText(
-        'Jsme nezisková nevládní organizace se sídlem v Brně, která funguje od roku 2003.',
-      ),
       canonicalURL: 'https://nazemi.cz',
       contactDetails,
       description:
@@ -228,7 +226,6 @@ const seed = async () => {
         publikace: true,
         workshopy: true,
       },
-      fullAddress: richText('NaZemi, Kounicova 42, 602 00 Brno'),
       homepageBackground: heroBackdrop.id,
       logo: mainLogo.id,
       favicon: {
@@ -268,7 +265,6 @@ const seed = async () => {
       _status: 'published',
       accentColor: '#90d750',
       additionalColors: [...DEFAULT_ADDITIONAL_COLORS],
-      additionalContent: richText('Lokální aktivity NaZemi v Brně a okolí.'),
       canonicalURL: 'https://brno.nazemi.cz',
       contactDetails: [
         {
@@ -276,6 +272,7 @@ const seed = async () => {
           email: 'brno@nazemi.cz',
           phone: '+420 735 033 417',
           addressLines: [{ line: 'Kounicova 42' }, { line: '602 00 Brno' }],
+          backgroundColor: 'sky',
         },
       ],
       description: 'Sub web NaZemi pro brněnské aktivity a komunitní setkání.',
@@ -294,7 +291,6 @@ const seed = async () => {
         publikace: true,
         workshopy: true,
       },
-      fullAddress: richText('NaZemi Brno, Kounicova 42, 602 00 Brno'),
       homepageBackground: heroBackdrop.id,
       logo: subLogo.id,
       mainMenu: [
