@@ -24,6 +24,16 @@ Seed assets for a fresh install: `public/seed/` (in repo) + `npm run seed`.
 
 Content restore script always snapshots `users`/`users_sessions` first. SMTP (`SMTP_*` in `.env`) is independent of DB dumps — leave it alone when restoring content.
 
+## Post–PR #13 content migrations
+
+Before `npm run db:push` on an existing DB that still has Karty / `borders`:
+
+1. `npx tsx scripts/migrate-sloupce-unify.ts` (Karty → Sloupce; keep titles)
+2. `npx tsx scripts/migrate-sloupce-style.ts` (`borders` → `style`)
+3. Then `npm run db:push`
+
+Full production order (standalone build on laptop, media symlink, seeds, Kontakt field drops, what **not** to re-seed): see Project store **`docs/production-deploy-checklist.md`**.
+
 ## Staging checklist (`novy.nazemi.cz`)
 
 1. **Clone** on the VPS and install deps:
@@ -44,17 +54,12 @@ Content restore script always snapshots `users`/`users_sessions` first. SMTP (`S
    docker compose -f docker-compose.prod.yml up -d
    ```
 
-4. **Schema** (after first deploy or schema changes):
+4. **Schema** (after first deploy or schema changes — run data migrations first if needed, see above):
    ```bash
    npm run db:push
    ```
 
-5. **Build & run**:
-   ```bash
-   npm run build
-   npm run start
-   ```
-   Use systemd/pm2 in production; expose port 3000 behind nginx/Caddy with TLS.
+5. **Build & run** — build **locally** (not on the VPS), upload standalone output, start with `./start-standalone.sh` (creates `media` symlink under `.next/standalone`). Use systemd/pm2; expose port 3000 behind nginx/Caddy with TLS.
 
 6. **First admin** (once, with `PROD_ADMIN_*` in `.env`):
    ```bash
