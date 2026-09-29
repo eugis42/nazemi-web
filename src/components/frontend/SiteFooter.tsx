@@ -42,8 +42,8 @@ export function SiteFooter({ site }: { site: Site }) {
     donate?.title?.trim() || donate?.body?.trim() || showDonateButton,
   )
   const newsletters = site.newsletters || []
-  /** Design footer stays compact — only the two primary contacts. */
-  const contacts = (site.contactDetails || []).slice(0, 2)
+  /** Design footer stays compact — only the first contact block. */
+  const contacts = (site.contactDetails || []).slice(0, 1)
   const logo = site.logo && typeof site.logo === 'object' ? site.logo : null
   const logoUrl = mediaURL(logo)
   const donateSurface = donateBannerSurface(donate?.backgroundColor)
