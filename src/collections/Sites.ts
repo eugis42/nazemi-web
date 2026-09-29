@@ -6,7 +6,6 @@ import { mainMenuArrayAdmin, menuArrayAdmin, menuItemFields } from '@/fields/men
 import { draftStatusListCellField, imageUploadFilter, socialLinkField } from '@/fields/shared'
 import {
   hrefFieldDescription,
-  validateDonateHref,
   validateOptionalHref,
   validateRequiredHref,
 } from '@/fields/validateHref'
@@ -516,7 +515,7 @@ export const Sites: CollectionConfig = {
                         description: hrefFieldDescription,
                         width: '60%',
                       },
-                      validate: validateDonateHref,
+                      validate: validateOptionalHref,
                     },
                   ],
                 },
