@@ -2,6 +2,46 @@
 
 NaZemi runs as Next.js + Payload on the host (Node), Postgres in Docker (`docker-compose.prod.yml`). **CMS uploads and DB content are not in git** — they live on the server.
 
+## Sanctioned deploy paths (only these)
+
+| Path | When | What runs on VPS |
+|------|------|------------------|
+| **(A) Mac/CI → upload** | **Default / always preferred** | Extract tarball, `media` symlink, `pm2 restart` — **never** `next build` |
+| **(B) Emergency lowmem** | Mac unavailable + must rebuild | `./scripts/build-on-server.sh` (stops pm2, `ALLOW_LOWMEM_BUILD=1`, heap 1792, cpus=1) + swap |
+
+**Hard rule:** do **not** run unrestricted / fat `next build` on `novy` (4 GiB). That caused the 2026-09-30 OOM.
+
+### (A) Happy path
+
+```bash
+# Mac
+export NEXT_PUBLIC_SERVER_URL=https://novy.nazemi.cz
+npm run build          # lowmem-safe default (or: npm run build:fast on a big Mac)
+npm run deploy:novy    # = ./scripts/deploy-standalone.sh
+```
+
+`deploy-standalone.sh` packs lean standalone (no `media/`), uploads, extracts, `ln -sfn …/media .next/standalone/media`, `pm2 restart` + `pm2 save`.
+
+### (B) Emergency on VPS
+
+```bash
+./scripts/build-on-server.sh
+# then media symlink + pm2 start (script prints reminders)
+```
+
+Complementary once (root): **1–2 GiB swap** so lowmem has headroom — see recipe below.
+
+### Build scripts
+
+| Command | Behavior |
+|---------|----------|
+| `npm run build` | **Default = lowmem-safe** (heap 1792, `cpus:1`). On Linux with &lt; 6 GiB RAM: **refuses** unless `ALLOW_LOWMEM_BUILD=1` |
+| `npm run build:lowmem` | Alias of `build` |
+| `npm run build:fast` | Parallel / heap 8000 — Mac/CI only. On &lt; 6 GiB: **refuses** unless `ALLOW_FAT_BUILD=1` |
+| `scripts/assert-not-vps-build.sh` | Guard used by the wrappers above |
+
+---
+
 ## What stays on the server (not in git)
 
 | Path / data | Purpose |
@@ -36,7 +76,7 @@ Full production order (standalone build on laptop, media symlink, seeds, Kontakt
 
 ## Staging checklist (`novy.nazemi.cz`)
 
-1. **Clone** on the VPS and install deps:
+1. **Clone** on the VPS and install deps (for scripts/migrations — **not** for building the site):
    ```bash
    git clone https://github.com/eugis42/nazemi-web.git nazemi
    cd nazemi
@@ -59,15 +99,18 @@ Full production order (standalone build on laptop, media symlink, seeds, Kontakt
    npm run db:push
    ```
 
-5. **Build & run** — build **locally on Mac** (not on the VPS), upload lean standalone output, start with `./start-standalone.sh` (creates `media` symlink under `.next/standalone`). Use systemd/pm2; expose port 3000 behind nginx/Caddy with TLS.
+5. **Build & run** — use path **(A)** above. Start with `./start-standalone.sh` / pm2. Expose port 3000 behind nginx/Caddy with TLS.
 
-   - Default `npm run build` uses `--max-old-space-size=8000` — fine on a laptop, **fatal** on the 4 GiB CT with no swap.
-   - **Do not** run a normal build on `novy`. Prefer the Mac → tarball path.
-   - **Emergency only** (VPS build unavoidable): stop the app, then `npm run build:lowmem` or `./scripts/build-on-server.sh` (heap ~1.8 GiB, `experimental.cpus=1`). Still needs ~1–2 GiB free; Next+Payload is not magic-zero-RAM.
-   - Complementary ops on the CT (once, as root): add **1–2 GiB swap** so a lowmem build has headroom:
+   - After CT reboot: app must come back. Once as the deploy user (or root, depending on host):
+     ```bash
+     pm2 start ./start-standalone.sh --name nazemi
+     pm2 save
+     # print + run the systemd line pm2 suggests (often needs sudo):
+     pm2 startup
+     ```
+   - Optional swap on the CT (once, as root) for emergency lowmem builds:
 
      ```bash
-     # example — adjust size/path to host policy
      fallocate -l 2G /swapfile
      chmod 600 /swapfile
      mkswap /swapfile
@@ -102,9 +145,12 @@ Default seed admin (local): `admin@nazemi.local` / `payload-demo-password` after
 
 | Command | Purpose |
 |---------|---------|
-| `npm run build` | Mac/CI build (heap up to 8 GiB) — **not** for the 4 GiB VPS |
-| `npm run build:lowmem` | Emergency low-RAM build (heap 1792 MB, 1 worker) |
-| `./scripts/build-on-server.sh` | Stop pm2 → `build:lowmem` → remind media symlink |
+| `npm run build` | **Default lowmem-safe** build (also OK on Mac) |
+| `npm run build:fast` | Full parallel / 8 GiB heap — Mac/CI only |
+| `npm run build:lowmem` | Alias of `build` |
+| `npm run deploy:novy` | Pack + upload standalone + pm2 restart (**no** VPS build) |
+| `./scripts/build-on-server.sh` | Emergency: stop pm2 → lowmem build |
+| `scripts/assert-not-vps-build.sh` | RAM guard for build wrappers |
 | `npm run db:push` | Apply Payload schema (PTY wrapper auto-accepts drizzle create prompts) |
 | `npm run seed` | Populate demo content |
 | `npx tsx scripts/set-prod-admin.ts` | Create/update production admin (also strips seed users) |
