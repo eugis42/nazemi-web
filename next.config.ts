@@ -6,9 +6,16 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
+// NEXT_BUILD_LOWMEM=1 (via npm run build:lowmem) — 1 compile worker for 4 GiB boxes.
+const lowmem = process.env.NEXT_BUILD_LOWMEM === '1'
+
 const nextConfig: NextConfig = {
   // Required by Dockerfile (Next standalone output).
   output: 'standalone',
+  // Uploads live on disk / symlink (start-standalone.sh). Never ship media into standalone.
+  outputFileTracingExcludes: {
+    '*': ['./media/**/*'],
+  },
   images: {
     localPatterns: [
       {
@@ -16,6 +23,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  ...(lowmem
+    ? {
+        experimental: {
+          cpus: 1,
+        },
+      }
+    : {}),
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
