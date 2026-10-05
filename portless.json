@@ -1,0 +1,5 @@
+{
+  "name": "nazemi",
+  "script": "dev:app",
+  "appPort": 4100
+}
