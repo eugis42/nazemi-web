@@ -481,8 +481,12 @@ export function SpeakersBlockView({
     typeof block.title === 'string' && block.title.trim()
       ? block.title
       : 'Lektoři a facilitátoři'
-  // ≤2: 3-col track so cards keep ~1/3 width (no stretch). 3+: responsive 2/3 grid.
-  const few = people.length <= 2
+  // 1: lg 3-col track so single card doesn’t stretch. 2+: same sm:2 as 3+ so a pair
+  // stays on one row whenever a 3-entry block still shows two across.
+  const gridClass =
+    people.length === 1
+      ? 'grid grid-cols-1 gap-grid lg:grid-cols-3'
+      : 'grid grid-cols-1 gap-grid sm:grid-cols-2 lg:grid-cols-3'
   const section = (
     <section
       className={`flex flex-col gap-grid${fullWidth ? '' : ' mx-auto w-full max-w-[874px]'}`}
@@ -491,13 +495,7 @@ export function SpeakersBlockView({
       data-layout={fullWidth ? 'full' : 'prose'}
     >
       <h2 className="text-section-title text-ground">{title}</h2>
-      <div
-        className={
-          few
-            ? 'grid grid-cols-1 gap-grid lg:grid-cols-3'
-            : 'grid grid-cols-1 gap-grid sm:grid-cols-2 lg:grid-cols-3'
-        }
-      >
+      <div className={gridClass}>
         {people.map((person, personIndex) => {
           const img =
             person.image && typeof person.image === 'object' ? (person.image as Media) : null
