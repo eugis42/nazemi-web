@@ -462,7 +462,7 @@ type TestimonialItems = { quote?: string; author?: string; role?: string }[]
 
 /**
  * Lektoři / Reference layout:
- * - Off homepage (`fullWidth` false): always prose column (`max-w-[874px]`), left-aligned.
+ * - Off homepage (`fullWidth` false): always prose column (`max-w-[874px]`), centered.
  * - Homepage (`fullWidth` true): no prose cap — same full width as other homepage blocks.
  * - `bare`: skip outer `.container` when parent already wraps (HomepageBlocks).
  */
@@ -485,7 +485,7 @@ export function SpeakersBlockView({
   const few = people.length <= 2
   const section = (
     <section
-      className={`flex flex-col gap-grid${fullWidth ? '' : ' w-full max-w-[874px]'}`}
+      className={`flex flex-col gap-grid${fullWidth ? '' : ' mx-auto w-full max-w-[874px]'}`}
       data-block="workshop-speakers"
       data-count={people.length}
       data-layout={fullWidth ? 'full' : 'prose'}
@@ -571,7 +571,7 @@ export function TestimonialsBlockView({
           : 'grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2 lg:gap-10'
   const section = (
     <section
-      className={`flex flex-col gap-grid${fullWidth ? '' : ' w-full max-w-[874px]'}`}
+      className={`flex flex-col gap-grid${fullWidth ? '' : ' mx-auto w-full max-w-[874px]'}`}
       data-block="workshop-testimonials"
       data-count={items.length}
       data-layout={fullWidth ? 'full' : 'prose'}
