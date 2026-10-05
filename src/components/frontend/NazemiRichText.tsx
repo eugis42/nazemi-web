@@ -12,6 +12,11 @@ import type { ComponentProps, CSSProperties, ReactNode } from 'react'
 
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
+import {
+  ColumnsBlock,
+  SpeakersBlockView,
+  type ContentBlock,
+} from '@/components/frontend/BlockRenderers'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
@@ -63,6 +68,20 @@ type LogoStripFields = {
   images?: unknown
   links?: unknown
   logos?: unknown
+  title?: string | null
+}
+
+type SpeakersFields = {
+  blockType: 'speakers'
+  people?: unknown
+  title?: string | null
+}
+
+type ThreeColumnsFields = {
+  blockType: 'threeColumns'
+  borders?: boolean | null
+  columns?: unknown
+  style?: string | null
   title?: string | null
 }
 
@@ -255,6 +274,23 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
               />
             )
           },
+          speakers: ({ node }: { node: SerializedBlockNode<SpeakersFields> }) => (
+            <div className="not-prose my-10 w-full" data-rt-block="speakers">
+              <SpeakersBlockView
+                bare
+                block={node.fields as ContentBlock}
+                fullWidth
+              />
+            </div>
+          ),
+          threeColumns: ({ node }: { node: SerializedBlockNode<ThreeColumnsFields> }) => (
+            <div className="not-prose my-10 w-full" data-rt-block="threeColumns">
+              <ColumnsBlock
+                block={{ ...node.fields, blockType: 'threeColumns' } as ContentBlock}
+                siteSlug={siteSlug}
+              />
+            </div>
+          ),
         },
         link: ({ node, nodesToJSX }) => {
           const children = nodesToJSX({ nodes: node.children })

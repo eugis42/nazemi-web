@@ -10,7 +10,8 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
-import { GalleryBlock, LogoStripBlock } from '@/blocks/pageBlocks'
+import { GalleryBlock, LogoStripBlock, ThreeColumnsBlock } from '@/blocks/pageBlocks'
+import { SpeakersBlock } from '@/blocks/workshopBlocks'
 import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
 import {
   RICH_TEXT_RELATION_COLLECTIONS,
@@ -69,7 +70,7 @@ const uploadWidthPercentField = {
  * - LinkFeature: internal docs limited to content collections
  * - FixedToolbarFeature: persistent top toolbar
  * - TextStateFeature: text colour tokens from document site palette
- * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec
+ * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec + Lidé + Sloupce
  */
 export const nazemiLexicalEditor = lexicalEditor({
   features: ({ defaultFeatures }) => [
@@ -111,7 +112,13 @@ export const nazemiLexicalEditor = lexicalEditor({
     SiteTextColorVarsFeature(),
     FixedToolbarFeature(),
     BlocksFeature({
-      blocks: [GalleryBlock, LogoStripBlock, ExpandingParagraphBlock],
+      blocks: [
+        GalleryBlock,
+        LogoStripBlock,
+        ExpandingParagraphBlock,
+        SpeakersBlock,
+        ThreeColumnsBlock,
+      ],
     }),
   ],
 })
