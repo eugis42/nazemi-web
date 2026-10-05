@@ -569,11 +569,23 @@ export function WorkshopContentBlocks({
             typeof block.title === 'string' && block.title.trim()
               ? block.title
               : 'Lektoři a facilitátoři'
+          // 1–2: prose-width, left-align; lg 3-col cells (no stretch). 3+: full grid.
+          const few = people.length <= 2
           return (
             <div className="container max-lg:px-card" key={key}>
-              <section className="flex flex-col gap-grid" data-block="workshop-speakers">
+              <section
+                className={`flex flex-col gap-grid${few ? ' w-full max-w-[874px]' : ''}`}
+                data-block="workshop-speakers"
+                data-count={people.length}
+              >
                 <h2 className="text-section-title text-ground">{title}</h2>
-                <div className="grid grid-cols-1 gap-grid sm:grid-cols-2 lg:grid-cols-3">
+                <div
+                  className={
+                    few
+                      ? 'grid grid-cols-1 gap-grid lg:grid-cols-3'
+                      : 'grid grid-cols-1 gap-grid sm:grid-cols-2 lg:grid-cols-3'
+                  }
+                >
                   {people.map((person, personIndex) => {
                     const img =
                       person.image && typeof person.image === 'object'
@@ -630,11 +642,22 @@ export function WorkshopContentBlocks({
             typeof block.title === 'string' && block.title.trim()
               ? block.title
               : 'Co o workshopu říkají'
+          // 1–2: prose-width, left-align; cols stretch to fill. 3+: full multi-col grid.
+          const few = items.length <= 2
+          const gridClass = few
+            ? items.length === 1
+              ? 'grid min-w-0 grid-cols-1 gap-grid'
+              : 'grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2 lg:gap-10'
+            : 'grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2 lg:gap-10 xl:grid-cols-4'
           return (
             <div className="container max-lg:px-card" key={key}>
-              <section className="flex flex-col gap-grid" data-block="workshop-testimonials">
+              <section
+                className={`flex flex-col gap-grid${few ? ' w-full max-w-[874px]' : ''}`}
+                data-block="workshop-testimonials"
+                data-count={items.length}
+              >
                 <h2 className="text-section-title text-ground">{title}</h2>
-                <div className="grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2 lg:gap-10 xl:grid-cols-4">
+                <div className={gridClass}>
                   {items.map((item, itemIndex) => (
                     <blockquote
                       className="flex h-full flex-col gap-3 text-ground"
