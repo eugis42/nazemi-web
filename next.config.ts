@@ -10,6 +10,8 @@ const dirname = path.dirname(__filename)
 const lowmem = process.env.NEXT_BUILD_LOWMEM === '1'
 
 const nextConfig: NextConfig = {
+  // Portless: http://nazemi.localhost → app :4100
+  allowedDevOrigins: ['nazemi.localhost'],
   // Required by Dockerfile (Next standalone output).
   output: 'standalone',
   // Uploads live on disk / symlink (start-standalone.sh). Never ship media into standalone.
