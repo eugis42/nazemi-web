@@ -1,7 +1,11 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-import { PublicationBody, PublicationHeader } from '@/components/frontend/details'
+import {
+  DocLivePreviewProvider,
+  PublikaceBodyLivePreview,
+  PublikaceHeaderLivePreview,
+} from '@/components/frontend/LivePreviewDetailViews'
 import { SiteShell } from '@/components/frontend/SiteShell'
 import { menuParentForHref, withSiteQuery } from '@/lib/content'
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
@@ -103,14 +107,16 @@ export default async function PublikaceDetailPage({
       ]
 
   return (
-    <SiteShell
-      beforeMain={<PublicationHeader item={doc} siteSlug={site.slug} />}
-      breadcrumbs={breadcrumbs}
-      mainClassName="pt-content-top"
-      site={site}
-      stacked={false}
-    >
-      <PublicationBody item={doc} />
-    </SiteShell>
+    <DocLivePreviewProvider initialData={doc}>
+      <SiteShell
+        beforeMain={<PublikaceHeaderLivePreview siteSlug={site.slug} />}
+        breadcrumbs={breadcrumbs}
+        mainClassName="pt-content-top"
+        site={site}
+        stacked={false}
+      >
+        <PublikaceBodyLivePreview />
+      </SiteShell>
+    </DocLivePreviewProvider>
   )
 }

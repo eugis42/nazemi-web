@@ -1,8 +1,11 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-import { EventOverview } from '@/components/frontend/details'
-import { KalendarLivePreview } from '@/components/frontend/LivePreviewDetailViews'
+import {
+  DocLivePreviewProvider,
+  KalendarLivePreview,
+  KalendarOverviewLivePreview,
+} from '@/components/frontend/LivePreviewDetailViews'
 import { SiteShell } from '@/components/frontend/SiteShell'
 import { withSiteQuery } from '@/lib/content'
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
@@ -81,18 +84,20 @@ export default async function EventDetailPage({
   if (!doc) notFound()
 
   return (
-    <SiteShell
-      beforeMain={<EventOverview item={doc} siteSlug={site.slug} />}
-      breadcrumbs={[
-        { href: withSiteQuery('/', site.slug), label: 'Domů' },
-        { href: withSiteQuery('/kalendar', site.slug), label: 'Kalendář' },
-        { href: withSiteQuery(`/kalendar/${doc.slug}`, site.slug), label: doc.title },
-      ]}
-      mainClassName="pt-content-top"
-      site={site}
-      stacked={false}
-    >
-      <KalendarLivePreview currentSiteSlug={site.slug} initialData={doc} />
-    </SiteShell>
+    <DocLivePreviewProvider initialData={doc}>
+      <SiteShell
+        beforeMain={<KalendarOverviewLivePreview siteSlug={site.slug} />}
+        breadcrumbs={[
+          { href: withSiteQuery('/', site.slug), label: 'Domů' },
+          { href: withSiteQuery('/kalendar', site.slug), label: 'Kalendář' },
+          { href: withSiteQuery(`/kalendar/${doc.slug}`, site.slug), label: doc.title },
+        ]}
+        mainClassName="pt-content-top"
+        site={site}
+        stacked={false}
+      >
+        <KalendarLivePreview currentSiteSlug={site.slug} />
+      </SiteShell>
+    </DocLivePreviewProvider>
   )
 }

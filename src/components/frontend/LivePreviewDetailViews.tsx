@@ -1,69 +1,65 @@
 'use client'
 
-import { useLivePreview } from '@payloadcms/live-preview-react'
-
 import type { Aktuality, Kalendar, Projekty, Publikace, Stranky, Workshopy } from '@/payload-types'
 
 import { PageBlocks, WorkshopContentBlocks } from '@/components/frontend/BlockRenderers'
-import { PageIntro } from '@/components/frontend/cards'
-import { mediaFocalStyle, mediaSizeURL } from '@/lib/content'
+import { PageIntro, ProjectHeader } from '@/components/frontend/cards'
+import {
+  DocLivePreviewProvider,
+  useLivePreviewData,
+} from '@/components/frontend/LivePreviewProvider'
 import {
   EventBody,
+  EventOverview,
   NewsArticle,
+  NewsArticleHero,
   ProjectDetail,
-  PublicationDetail,
+  PublicationBody,
+  PublicationHeader,
+  WorkshopHeader,
 } from '@/components/frontend/details'
+import { mediaFocalStyle, mediaSizeURL } from '@/lib/content'
 
-function useDocLivePreview<T extends Record<string, any>>(initialData: T) {
-  return useLivePreview({
-    depth: 2,
-    initialData,
-    serverURL: typeof window !== 'undefined' ? window.location.origin : '',
-  })
-}
+export { DocLivePreviewProvider }
 
-export function StrankaLivePreview({
-  initialData,
-  siteSlug,
-}: {
-  initialData: Stranky
-  siteName: string
-  siteSlug: string
-}) {
-  const { data: page } = useDocLivePreview(initialData)
+export function StrankaIntroLivePreview() {
+  const page = useLivePreviewData<Stranky>()
   const cover = page.coverImage && typeof page.coverImage === 'object' ? page.coverImage : null
 
   return (
-    <article data-site={siteSlug}>
-      <PageIntro
-        color={page.headerColor}
-        coverAlt={cover?.alt || page.title}
-        coverStyle={mediaFocalStyle(cover)}
-        coverUrl={cover ? mediaSizeURL(cover, 'hero') : null}
-        description={page.excerpt}
-        title={page.title}
-      />
-      {page.isHomepage ? null : (
-        <div className="pt-content-top">
-          <PageBlocks blocks={page.content as never} siteSlug={siteSlug} skipPageIntro />
-        </div>
-      )}
-    </article>
+    <PageIntro
+      color={page.headerColor}
+      coverAlt={cover?.alt || page.title}
+      coverStyle={mediaFocalStyle(cover)}
+      coverUrl={cover ? mediaSizeURL(cover, 'hero') : null}
+      description={page.excerpt}
+      title={page.title}
+    />
   )
+}
+
+export function StrankaBlocksLivePreview({ siteSlug }: { siteSlug: string }) {
+  const page = useLivePreviewData<Stranky>()
+  if (page.isHomepage) return null
+
+  return <PageBlocks blocks={page.content as never} siteSlug={siteSlug} skipPageIntro />
+}
+
+export function AktualityHeroLivePreview() {
+  const item = useLivePreviewData<Aktuality>()
+  return <NewsArticleHero item={item} />
 }
 
 export function AktualityLivePreview({
   currentSiteSlug,
-  initialData,
   skipBigHero = false,
   skipTopPad = false,
 }: {
   currentSiteSlug: string
-  initialData: Aktuality
   skipBigHero?: boolean
   skipTopPad?: boolean
 }) {
-  const { data: item } = useDocLivePreview(initialData)
+  const item = useLivePreviewData<Aktuality>()
 
   return (
     <NewsArticle
@@ -75,53 +71,42 @@ export function AktualityLivePreview({
   )
 }
 
-export function KalendarLivePreview({
-  currentSiteSlug,
-  initialData,
-}: {
-  currentSiteSlug: string
-  initialData: Kalendar
-}) {
-  const { data: item } = useDocLivePreview(initialData)
+export function KalendarOverviewLivePreview({ siteSlug }: { siteSlug: string }) {
+  const item = useLivePreviewData<Kalendar>()
+  return <EventOverview item={item} siteSlug={siteSlug} />
+}
 
-  // Overview lives in SiteShell `beforeMain` on the public page.
+export function KalendarLivePreview({ currentSiteSlug }: { currentSiteSlug: string }) {
+  const item = useLivePreviewData<Kalendar>()
   return <EventBody item={item} siteSlug={currentSiteSlug} />
 }
 
-export function ProjektLivePreview({
-  initialData,
-  siteSlug,
-}: {
-  initialData: Projekty
-  siteSlug?: string
-}) {
-  const { data: item } = useDocLivePreview(initialData)
+export function ProjektHeaderLivePreview() {
+  const item = useLivePreviewData<Projekty>()
+  return <ProjectHeader item={item} />
+}
 
-  // Header lives in SiteShell `beforeMain` on the public page.
+export function ProjektLivePreview({ siteSlug }: { siteSlug?: string }) {
+  const item = useLivePreviewData<Projekty>()
   return <ProjectDetail item={item} siteSlug={siteSlug} />
 }
 
-export function WorkshopLivePreview({
-  currentSiteSlug,
-  initialData,
-}: {
-  currentSiteSlug: string
-  initialData: Workshopy
-}) {
-  const { data: item } = useDocLivePreview(initialData)
+export function WorkshopHeaderLivePreview({ siteSlug }: { siteSlug: string }) {
+  const item = useLivePreviewData<Workshopy>()
+  return <WorkshopHeader item={item} siteSlug={siteSlug} />
+}
 
-  // Header lives in SiteShell `beforeMain` on the public page.
+export function WorkshopLivePreview({ currentSiteSlug }: { currentSiteSlug: string }) {
+  const item = useLivePreviewData<Workshopy>()
   return <WorkshopContentBlocks blocks={item.blocks as never} siteSlug={currentSiteSlug} />
 }
 
-export function PublikaceLivePreview({
-  currentSiteSlug,
-  initialData,
-}: {
-  currentSiteSlug: string
-  initialData: Publikace
-}) {
-  const { data: item } = useDocLivePreview(initialData)
+export function PublikaceHeaderLivePreview({ siteSlug }: { siteSlug: string }) {
+  const item = useLivePreviewData<Publikace>()
+  return <PublicationHeader item={item} siteSlug={siteSlug} />
+}
 
-  return <PublicationDetail item={item} siteSlug={currentSiteSlug} />
+export function PublikaceBodyLivePreview() {
+  const item = useLivePreviewData<Publikace>()
+  return <PublicationBody item={item} />
 }

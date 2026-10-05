@@ -1,10 +1,13 @@
 import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
-import { PageBlocks } from '@/components/frontend/BlockRenderers'
-import { PageIntro } from '@/components/frontend/cards'
+import {
+  DocLivePreviewProvider,
+  StrankaBlocksLivePreview,
+  StrankaIntroLivePreview,
+} from '@/components/frontend/LivePreviewDetailViews'
 import { SiteShell } from '@/components/frontend/SiteShell'
-import { mediaFocalStyle, mediaSizeURL, menuParentForHref, withSiteQuery } from '@/lib/content'
+import { menuParentForHref, withSiteQuery } from '@/lib/content'
 import {
   draftFindOptions,
   getListingWhere,
@@ -119,7 +122,6 @@ export default async function SitePage({
     notFound()
   }
 
-  const cover = doc.coverImage && typeof doc.coverImage === 'object' ? doc.coverImage : null
   const pageHref = `/${doc.slug}`
   const menuMatch = menuParentForHref(site.mainMenu, pageHref)
 
@@ -145,23 +147,16 @@ export default async function SitePage({
       ]
 
   return (
-    <SiteShell
-      beforeMain={
-        <PageIntro
-          color={doc.headerColor}
-          coverAlt={cover?.alt || doc.title}
-          coverStyle={mediaFocalStyle(cover)}
-          coverUrl={cover ? mediaSizeURL(cover, 'hero') : null}
-          description={doc.excerpt}
-          title={doc.title}
-        />
-      }
-      breadcrumbs={breadcrumbs}
-      mainClassName="pt-content-top"
-      site={site}
-      stacked={false}
-    >
-      <PageBlocks blocks={doc.content as never} siteSlug={site.slug} skipPageIntro />
-    </SiteShell>
+    <DocLivePreviewProvider initialData={doc}>
+      <SiteShell
+        beforeMain={<StrankaIntroLivePreview />}
+        breadcrumbs={breadcrumbs}
+        mainClassName="pt-content-top"
+        site={site}
+        stacked={false}
+      >
+        <StrankaBlocksLivePreview siteSlug={site.slug} />
+      </SiteShell>
+    </DocLivePreviewProvider>
   )
 }

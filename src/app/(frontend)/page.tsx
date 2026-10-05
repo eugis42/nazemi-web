@@ -2,6 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 
 import { HomepageBlocks } from '@/components/frontend/HomepageBlocks'
+import { RefreshRouteOnSave } from '@/components/frontend/RefreshRouteOnSave'
 import { SiteShell } from '@/components/frontend/SiteShell'
 import {
   draftFindOptions,
@@ -84,6 +85,7 @@ export default async function HomePage({
 
   return (
     <SiteShell backdrop site={site} stacked={false}>
+      <RefreshRouteOnSave />
       {homepage ? (
         <HomepageBlocks blocks={homepage.homepageContent as never} site={site} />
       ) : (

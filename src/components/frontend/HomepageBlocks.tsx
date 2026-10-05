@@ -6,6 +6,8 @@ import {
   NewsGrid,
   ProjectsBlock,
   ColumnsBlock,
+  SpeakersBlockView,
+  TestimonialsBlockView,
   type ContentBlock,
 } from '@/components/frontend/BlockRenderers'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
@@ -91,6 +93,13 @@ export async function HomepageBlocks({
             title={block.title ? String(block.title) : null}
           />,
         )
+        break
+      case 'speakers':
+        // Homepage path = full width (no prose cap). Parent already provides `.container`.
+        rendered.push(<SpeakersBlockView bare block={block} fullWidth key={key} />)
+        break
+      case 'testimonials':
+        rendered.push(<TestimonialsBlockView bare block={block} fullWidth key={key} />)
         break
       default:
         break

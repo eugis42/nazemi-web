@@ -9,13 +9,12 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
-import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
-import { GalleryBlock, LogoStripBlock } from '@/blocks/pageBlocks'
 import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
 import {
   RICH_TEXT_RELATION_COLLECTIONS,
   type RichTextRelationCollection,
 } from '@/lib/lexical-collections'
+import { nazemiLexicalEmbedBlocks } from '@/lib/lexical-embed-blocks'
 import { textColorState } from '@/lib/lexical-text-color'
 
 export { RICH_TEXT_RELATION_COLLECTIONS, type RichTextRelationCollection }
@@ -69,7 +68,14 @@ const uploadWidthPercentField = {
  * - LinkFeature: internal docs limited to content collections
  * - FixedToolbarFeature: persistent top toolbar
  * - TextStateFeature: text colour tokens from document site palette
- * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec
+ * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec + Lidé + Sloupce
+ *
+ * Payload toolbar groups (see payloadcms.com/docs/rich-text/custom-features):
+ * - `add` (+): insertables only — upload / relationship / HR
+ * - `text` (Aa / “Normální text”): paragraph, headings, lists, quote
+ * - `blocks` (BlockIcon): Lexical embed blocks
+ * Slash / gutter + = union of slashMenu items (all of the above).
+ * Do not stuff headings/lists into `add` or embed blocks into `add`.
  */
 export const nazemiLexicalEditor = lexicalEditor({
   features: ({ defaultFeatures }) => [
@@ -111,7 +117,7 @@ export const nazemiLexicalEditor = lexicalEditor({
     SiteTextColorVarsFeature(),
     FixedToolbarFeature(),
     BlocksFeature({
-      blocks: [GalleryBlock, LogoStripBlock, ExpandingParagraphBlock],
+      blocks: nazemiLexicalEmbedBlocks,
     }),
   ],
 })

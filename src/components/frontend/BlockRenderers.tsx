@@ -6,6 +6,10 @@ import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { EmptyState } from '@/components/frontend/listing'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
+import {
+  SpeakersBlockView,
+  TestimonialsBlockView,
+} from '@/components/frontend/SpeakersTestimonialsBlocks'
 import { BlockHeader, Button } from '@/components/frontend/ui'
 import { resolveBlockActions } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
@@ -29,6 +33,8 @@ export function bgClass(token?: string | null, fallback = 'bg-violet') {
   if (!token) return fallback
   return BG[token] || fallback
 }
+
+export { SpeakersBlockView, TestimonialsBlockView } from '@/components/frontend/SpeakersTestimonialsBlocks'
 
 export type ContentBlock = {
   blockType: string
@@ -494,6 +500,14 @@ export function PageBlocks({
           )
         }
 
+        if (block.blockType === 'speakers') {
+          return <SpeakersBlockView block={block} key={key} />
+        }
+
+        if (block.blockType === 'testimonials') {
+          return <TestimonialsBlockView block={block} key={key} />
+        }
+
         if (block.blockType === 'gallery') {
           return (
             <div className="container max-lg:px-card" key={key}>
@@ -563,122 +577,11 @@ export function WorkshopContentBlocks({
         const key = block.id || `${block.blockType}-${index}`
 
         if (block.blockType === 'speakers') {
-          const people = (block.people as { name?: string; role?: string; image?: unknown }[]) || []
-          if (!people.length) return null
-          const title =
-            typeof block.title === 'string' && block.title.trim()
-              ? block.title
-              : 'Lektoři a facilitátoři'
-          // 1–2: prose-width, left-align; lg 3-col cells (no stretch). 3+: full grid.
-          const few = people.length <= 2
-          return (
-            <div className="container max-lg:px-card" key={key}>
-              <section
-                className={`flex flex-col gap-grid${few ? ' w-full max-w-[874px]' : ''}`}
-                data-block="workshop-speakers"
-                data-count={people.length}
-              >
-                <h2 className="text-section-title text-ground">{title}</h2>
-                <div
-                  className={
-                    few
-                      ? 'grid grid-cols-1 gap-grid lg:grid-cols-3'
-                      : 'grid grid-cols-1 gap-grid sm:grid-cols-2 lg:grid-cols-3'
-                  }
-                >
-                  {people.map((person, personIndex) => {
-                    const img =
-                      person.image && typeof person.image === 'object'
-                        ? (person.image as Media)
-                        : null
-                    const imgUrl = img ? mediaSizeURL(img, 'thumb') : null
-                    const initials = (person.name || '')
-                      .split(/\s+/)
-                      .map((part) => part[0])
-                      .join('')
-                      .slice(0, 2)
-                    return (
-                      <article
-                        className="flex gap-4"
-                        data-component="workshop-speaker"
-                        key={`${person.name}-${personIndex}`}
-                      >
-                        {imgUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            alt={mediaAlt(img, person.name || '')}
-                            className="size-20 shrink-0 rounded-full border-2 border-ground object-cover"
-                            loading="lazy"
-                            src={imgUrl}
-                            style={mediaFocalStyle(img)}
-                          />
-                        ) : (
-                          <div
-                            aria-hidden="true"
-                            className="flex size-20 shrink-0 items-center justify-center rounded-full border-2 border-ground bg-green font-saans text-xl leading-none text-ground"
-                          >
-                            {initials}
-                          </div>
-                        )}
-                        <div className="flex min-w-0 flex-col justify-center gap-1">
-                          <h3 className="text-card-title text-ground">{person.name}</h3>
-                          {person.role ? (
-                            <p className="text-body-inter text-ground">{person.role}</p>
-                          ) : null}
-                        </div>
-                      </article>
-                    )
-                  })}
-                </div>
-              </section>
-            </div>
-          )
+          return <SpeakersBlockView block={block} key={key} />
         }
 
         if (block.blockType === 'testimonials') {
-          const items = (block.items as { quote?: string; author?: string; role?: string }[]) || []
-          if (!items.length) return null
-          const title =
-            typeof block.title === 'string' && block.title.trim()
-              ? block.title
-              : 'Co o workshopu říkají'
-          // 1–2: prose-width, left-align; cols stretch to fill. 3+: full multi-col grid.
-          const few = items.length <= 2
-          const gridClass = few
-            ? items.length === 1
-              ? 'grid min-w-0 grid-cols-1 gap-grid'
-              : 'grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2 lg:gap-10'
-            : 'grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2 lg:gap-10 xl:grid-cols-4'
-          return (
-            <div className="container max-lg:px-card" key={key}>
-              <section
-                className={`flex flex-col gap-grid${few ? ' w-full max-w-[874px]' : ''}`}
-                data-block="workshop-testimonials"
-                data-count={items.length}
-              >
-                <h2 className="text-section-title text-ground">{title}</h2>
-                <div className={gridClass}>
-                  {items.map((item, itemIndex) => (
-                    <blockquote
-                      className="flex h-full flex-col gap-3 text-ground"
-                      data-component="workshop-testimonial"
-                      key={`${item.author}-${itemIndex}`}
-                    >
-                      <p className="font-serif text-xl font-normal leading-snug tracking-tight text-ground">
-                        „{item.quote}“
-                      </p>
-                      <footer className="font-saans mt-auto text-sm leading-snug text-ground/70">
-                        <cite className="not-italic">
-                          {item.author}
-                          {item.role ? ` · ${item.role}` : ''}
-                        </cite>
-                      </footer>
-                    </blockquote>
-                  ))}
-                </div>
-              </section>
-            </div>
-          )
+          return <TestimonialsBlockView block={block} key={key} />
         }
 
         if (block.blockType === 'gallery') {

@@ -1,8 +1,11 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-import { WorkshopHeader } from '@/components/frontend/details'
-import { WorkshopLivePreview } from '@/components/frontend/LivePreviewDetailViews'
+import {
+  DocLivePreviewProvider,
+  WorkshopHeaderLivePreview,
+  WorkshopLivePreview,
+} from '@/components/frontend/LivePreviewDetailViews'
 import { SiteShell } from '@/components/frontend/SiteShell'
 import { withSiteQuery } from '@/lib/content'
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
@@ -86,24 +89,26 @@ export default async function WorkshopDetailPage({
   if (!doc) notFound()
 
   return (
-    <SiteShell
-      beforeMain={<WorkshopHeader item={doc} siteSlug={site.slug} />}
-      breadcrumbs={[
-        { href: withSiteQuery('/', site.slug), label: 'Domů' },
-        { href: withSiteQuery('/workshopy', site.slug), label: 'Workshopy' },
-        {
-          href: withSiteQuery(`/workshopy/${doc.slug}`, site.slug),
-          label: doc.title,
-          siblings: siblings.docs.map((item) => ({
-            href: withSiteQuery(`/workshopy/${item.slug}`, site.slug),
-            label: item.title,
-          })),
-        },
-      ]}
-      site={site}
-      stacked={false}
-    >
-      <WorkshopLivePreview currentSiteSlug={site.slug} initialData={doc} />
-    </SiteShell>
+    <DocLivePreviewProvider initialData={doc}>
+      <SiteShell
+        beforeMain={<WorkshopHeaderLivePreview siteSlug={site.slug} />}
+        breadcrumbs={[
+          { href: withSiteQuery('/', site.slug), label: 'Domů' },
+          { href: withSiteQuery('/workshopy', site.slug), label: 'Workshopy' },
+          {
+            href: withSiteQuery(`/workshopy/${doc.slug}`, site.slug),
+            label: doc.title,
+            siblings: siblings.docs.map((item) => ({
+              href: withSiteQuery(`/workshopy/${item.slug}`, site.slug),
+              label: item.title,
+            })),
+          },
+        ]}
+        site={site}
+        stacked={false}
+      >
+        <WorkshopLivePreview currentSiteSlug={site.slug} />
+      </SiteShell>
+    </DocLivePreviewProvider>
   )
 }
