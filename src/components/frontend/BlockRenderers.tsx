@@ -106,7 +106,7 @@ export function HeroBlock({
               action.label ? (
                 <Button
                   backgroundColor={action.backgroundColor}
-                  className="px-6 py-1.5 ![font-size:var(--text-section-title)] leading-none"
+                  className="px-6 py-1.5 !text-[20px] leading-none"
                   external={action.external}
                   href={action.href || '#'}
                   key={`${action.label}-${index}`}
