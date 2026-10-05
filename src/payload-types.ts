@@ -745,10 +745,14 @@ export interface Stranky {
         | {
             title: string;
             /**
-             * Jména lektorů u workshopu (odděleně od kontaktu Lidé).
+             * Osoby v bloku (odděleně od kontaktu Lidé).
              */
             people?:
               | {
+                  /**
+                   * Volitelně — zobrazí se jako citát nad fotkou a jménem.
+                   */
+                  quote?: string | null;
                   name: string;
                   role?: string | null;
                   image?: (number | null) | Media;
@@ -1354,10 +1358,14 @@ export interface Stranky {
         | {
             title: string;
             /**
-             * Jména lektorů u workshopu (odděleně od kontaktu Lidé).
+             * Osoby v bloku (odděleně od kontaktu Lidé).
              */
             people?:
               | {
+                  /**
+                   * Volitelně — zobrazí se jako citát nad fotkou a jménem.
+                   */
+                  quote?: string | null;
                   name: string;
                   role?: string | null;
                   image?: (number | null) | Media;
@@ -2635,10 +2643,14 @@ export interface Workshopy {
         | {
             title: string;
             /**
-             * Jména lektorů u workshopu (odděleně od kontaktu Lidé).
+             * Osoby v bloku (odděleně od kontaktu Lidé).
              */
             people?:
               | {
+                  /**
+                   * Volitelně — zobrazí se jako citát nad fotkou a jménem.
+                   */
+                  quote?: string | null;
                   name: string;
                   role?: string | null;
                   image?: (number | null) | Media;
@@ -3441,10 +3453,14 @@ export interface Projekty {
     | {
         title: string;
         /**
-         * Jména lektorů u workshopu (odděleně od kontaktu Lidé).
+         * Osoby v bloku (odděleně od kontaktu Lidé).
          */
         people?:
           | {
+              /**
+               * Volitelně — zobrazí se jako citát nad fotkou a jménem.
+               */
+              quote?: string | null;
               name: string;
               role?: string | null;
               image?: (number | null) | Media;
@@ -3989,6 +4005,7 @@ export interface StrankySelect<T extends boolean = true> {
               people?:
                 | T
                 | {
+                    quote?: T;
                     name?: T;
                     role?: T;
                     image?: T;
@@ -4228,6 +4245,7 @@ export interface StrankySelect<T extends boolean = true> {
               people?:
                 | T
                 | {
+                    quote?: T;
                     name?: T;
                     role?: T;
                     image?: T;
@@ -4558,6 +4576,7 @@ export interface ProjektySelect<T extends boolean = true> {
               people?:
                 | T
                 | {
+                    quote?: T;
                     name?: T;
                     role?: T;
                     image?: T;
@@ -4837,6 +4856,7 @@ export interface WorkshopySelect<T extends boolean = true> {
               people?:
                 | T
                 | {
+                    quote?: T;
                     name?: T;
                     role?: T;
                     image?: T;

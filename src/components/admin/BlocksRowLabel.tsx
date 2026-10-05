@@ -14,8 +14,8 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   logoStrip: 'Pás log',
   pageIntro: 'Úvodní hlavička',
   pageHeader: 'Úvodní hlavička',
-  speakers: 'Lektoři',
-  lecturers: 'Lektoři',
+  speakers: 'Lidé',
+  lecturers: 'Lidé',
   testimonials: 'Reference',
   threeColumns: 'Sloupce',
 }

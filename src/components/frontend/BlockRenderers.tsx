@@ -457,11 +457,11 @@ export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug:
   )
 }
 
-type SpeakersPeople = { name?: string; role?: string; image?: unknown }[]
+type SpeakersPeople = { name?: string; role?: string; image?: unknown; quote?: string }[]
 type TestimonialItems = { quote?: string; author?: string; role?: string }[]
 
 /**
- * Lektoři / Reference layout:
+ * Lidé / Reference layout:
  * - Off homepage (`fullWidth` false): always prose column (`max-w-[874px]`), centered.
  * - Homepage (`fullWidth` true): no prose cap — same full width as other homepage blocks.
  * - `bare`: skip outer `.container` when parent already wraps (HomepageBlocks).
@@ -478,9 +478,7 @@ export function SpeakersBlockView({
   const people = (block.people as SpeakersPeople) || []
   if (!people.length) return null
   const title =
-    typeof block.title === 'string' && block.title.trim()
-      ? block.title
-      : 'Lektoři a facilitátoři'
+    typeof block.title === 'string' && block.title.trim() ? block.title : 'Lidé'
   // 1: lg 3-col track so single card doesn’t stretch. 2+: same sm:2 as 3+ so a pair
   // stays on one row whenever a 3-entry block still shows two across.
   const gridClass =
@@ -505,32 +503,41 @@ export function SpeakersBlockView({
             .map((part) => part[0])
             .join('')
             .slice(0, 2)
+          const quote =
+            typeof person.quote === 'string' && person.quote.trim() ? person.quote.trim() : null
           return (
             <article
-              className="flex gap-4"
+              className="flex flex-col gap-3"
               data-component="workshop-speaker"
               key={`${person.name}-${personIndex}`}
             >
-              {imgUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  alt={mediaAlt(img, person.name || '')}
-                  className="size-20 shrink-0 rounded-full border-2 border-ground object-cover"
-                  loading="lazy"
-                  src={imgUrl}
-                  style={mediaFocalStyle(img)}
-                />
-              ) : (
-                <div
-                  aria-hidden="true"
-                  className="flex size-20 shrink-0 items-center justify-center rounded-full border-2 border-ground bg-green font-saans text-xl leading-none text-ground"
-                >
-                  {initials}
+              {quote ? (
+                <p className="font-serif text-xl font-normal leading-snug tracking-tight text-ground">
+                  „{quote}“
+                </p>
+              ) : null}
+              <div className="flex gap-4">
+                {imgUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    alt={mediaAlt(img, person.name || '')}
+                    className="size-20 shrink-0 rounded-full border-2 border-ground object-cover"
+                    loading="lazy"
+                    src={imgUrl}
+                    style={mediaFocalStyle(img)}
+                  />
+                ) : (
+                  <div
+                    aria-hidden="true"
+                    className="flex size-20 shrink-0 items-center justify-center rounded-full border-2 border-ground bg-green font-saans text-xl leading-none text-ground"
+                  >
+                    {initials}
+                  </div>
+                )}
+                <div className="flex min-w-0 flex-col justify-center gap-1">
+                  <h3 className="text-card-title text-ground">{person.name}</h3>
+                  {person.role ? <p className="text-body-inter text-ground">{person.role}</p> : null}
                 </div>
-              )}
-              <div className="flex min-w-0 flex-col justify-center gap-1">
-                <h3 className="text-card-title text-ground">{person.name}</h3>
-                {person.role ? <p className="text-body-inter text-ground">{person.role}</p> : null}
               </div>
             </article>
           )

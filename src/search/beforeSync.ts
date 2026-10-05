@@ -99,7 +99,11 @@ function excerptForCollection(collectionSlug: string, doc: Record<string, unknow
             return b.people
               .map((person) =>
                 person && typeof person === 'object'
-                  ? [(person as { name?: string }).name, (person as { role?: string }).role]
+                  ? [
+                      (person as { quote?: string }).quote,
+                      (person as { name?: string }).name,
+                      (person as { role?: string }).role,
+                    ]
                       .filter(Boolean)
                       .join(' ')
                   : '',

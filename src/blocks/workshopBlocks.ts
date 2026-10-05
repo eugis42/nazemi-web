@@ -12,8 +12,8 @@ export { RichTextBlock }
 export const SpeakersBlock: Block = {
   slug: 'speakers',
   labels: {
-    plural: 'Lektoři',
-    singular: 'Lektoři',
+    plural: 'Lidé',
+    singular: 'Lidé',
   },
   admin: blockPickerAdmin({
     group: BLOCK_GROUP_WORKSHOP,
@@ -24,7 +24,7 @@ export const SpeakersBlock: Block = {
       name: 'title',
       type: 'text',
       label: 'Nadpis',
-      defaultValue: 'Lektoři a facilitátoři',
+      defaultValue: 'Lidé',
       required: true,
     },
     {
@@ -35,7 +35,7 @@ export const SpeakersBlock: Block = {
         components: {
           RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
         },
-        description: 'Jména lektorů u workshopu (odděleně od kontaktu Lidé).',
+        description: 'Osoby v bloku (odděleně od kontaktu Lidé).',
         initCollapsed: true,
       },
       labels: {
@@ -44,6 +44,14 @@ export const SpeakersBlock: Block = {
       },
       minRows: 1,
       fields: [
+        {
+          name: 'quote',
+          type: 'textarea',
+          label: 'Výrok',
+          admin: {
+            description: 'Volitelně — zobrazí se jako citát nad fotkou a jménem.',
+          },
+        },
         {
           type: 'row',
           fields: [
