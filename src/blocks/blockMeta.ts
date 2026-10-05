@@ -10,7 +10,6 @@ export type BlockThumbSlug =
   | 'news'
   | 'projects'
   | 'about'
-  | 'pageIntro'
   | 'richText'
   | 'gallery'
   | 'logoStrip'

@@ -1,7 +1,7 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
 import { contentCollectionAccess } from '@/access/roles'
-import { allBlocks } from '@/blocks/allBlocks'
+import { allBlocks, allBlocksFilterOptions } from '@/blocks/allBlocks'
 import { additionalColorField } from '@/fields/additionalColor'
 import {
   adminDocumentTitleClass,
@@ -153,6 +153,7 @@ export const Stranky = {
               name: 'content',
               type: 'blocks',
               blocks: allBlocks,
+              filterOptions: allBlocksFilterOptions,
               label: 'Obsah stránky',
               labels: {
                 plural: 'bloky',
@@ -178,6 +179,7 @@ export const Stranky = {
               name: 'homepageContent',
               type: 'blocks',
               blocks: allBlocks,
+              filterOptions: allBlocksFilterOptions,
               label: 'Obsah homepage',
               labels: {
                 plural: 'bloky',

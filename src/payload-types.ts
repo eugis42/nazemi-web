@@ -582,17 +582,6 @@ export interface Stranky {
             blockType: 'about';
           }
         | {
-            headerColor?: string | null;
-            /**
-             * Pokud je nastaven, překryje barevné pozadí.
-             */
-            coverImage?: (number | null) | Media;
-            lead?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'pageIntro';
-          }
-        | {
             content: {
               root: {
                 type: string;
@@ -772,6 +761,17 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'testimonials';
+          }
+        | {
+            headerColor?: string | null;
+            /**
+             * Pokud je nastaven, překryje barevné pozadí.
+             */
+            coverImage?: (number | null) | Media;
+            lead?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pageIntro';
           }
       )[]
     | null;
@@ -1191,17 +1191,6 @@ export interface Stranky {
             blockType: 'about';
           }
         | {
-            headerColor?: string | null;
-            /**
-             * Pokud je nastaven, překryje barevné pozadí.
-             */
-            coverImage?: (number | null) | Media;
-            lead?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'pageIntro';
-          }
-        | {
             content: {
               root: {
                 type: string;
@@ -1381,6 +1370,17 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'testimonials';
+          }
+        | {
+            headerColor?: string | null;
+            /**
+             * Pokud je nastaven, překryje barevné pozadí.
+             */
+            coverImage?: (number | null) | Media;
+            lead?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pageIntro';
           }
       )[]
     | null;
@@ -2472,17 +2472,6 @@ export interface Workshopy {
             blockType: 'about';
           }
         | {
-            headerColor?: string | null;
-            /**
-             * Pokud je nastaven, překryje barevné pozadí.
-             */
-            coverImage?: (number | null) | Media;
-            lead?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'pageIntro';
-          }
-        | {
             content: {
               root: {
                 type: string;
@@ -2662,6 +2651,17 @@ export interface Workshopy {
             id?: string | null;
             blockName?: string | null;
             blockType: 'testimonials';
+          }
+        | {
+            headerColor?: string | null;
+            /**
+             * Pokud je nastaven, překryje barevné pozadí.
+             */
+            coverImage?: (number | null) | Media;
+            lead?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pageIntro';
           }
       )[]
     | null;
@@ -3278,17 +3278,6 @@ export interface Projekty {
         blockType: 'about';
       }
     | {
-        headerColor?: string | null;
-        /**
-         * Pokud je nastaven, překryje barevné pozadí.
-         */
-        coverImage?: (number | null) | Media;
-        lead?: string | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'pageIntro';
-      }
-    | {
         content: {
           root: {
             type: string;
@@ -3468,6 +3457,17 @@ export interface Projekty {
         id?: string | null;
         blockName?: string | null;
         blockType: 'testimonials';
+      }
+    | {
+        headerColor?: string | null;
+        /**
+         * Pokud je nastaven, překryje barevné pozadí.
+         */
+        coverImage?: (number | null) | Media;
+        lead?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'pageIntro';
       }
   )[];
   /**
@@ -3917,15 +3917,6 @@ export interface StrankySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        pageIntro?:
-          | T
-          | {
-              headerColor?: T;
-              coverImage?: T;
-              lead?: T;
-              id?: T;
-              blockName?: T;
-            };
         richText?:
           | T
           | {
@@ -4009,6 +4000,15 @@ export interface StrankySelect<T extends boolean = true> {
                     role?: T;
                     id?: T;
                   };
+              id?: T;
+              blockName?: T;
+            };
+        pageIntro?:
+          | T
+          | {
+              headerColor?: T;
+              coverImage?: T;
+              lead?: T;
               id?: T;
               blockName?: T;
             };
@@ -4156,15 +4156,6 @@ export interface StrankySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        pageIntro?:
-          | T
-          | {
-              headerColor?: T;
-              coverImage?: T;
-              lead?: T;
-              id?: T;
-              blockName?: T;
-            };
         richText?:
           | T
           | {
@@ -4248,6 +4239,15 @@ export interface StrankySelect<T extends boolean = true> {
                     role?: T;
                     id?: T;
                   };
+              id?: T;
+              blockName?: T;
+            };
+        pageIntro?:
+          | T
+          | {
+              headerColor?: T;
+              coverImage?: T;
+              lead?: T;
               id?: T;
               blockName?: T;
             };
@@ -4486,15 +4486,6 @@ export interface ProjektySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        pageIntro?:
-          | T
-          | {
-              headerColor?: T;
-              coverImage?: T;
-              lead?: T;
-              id?: T;
-              blockName?: T;
-            };
         richText?:
           | T
           | {
@@ -4578,6 +4569,15 @@ export interface ProjektySelect<T extends boolean = true> {
                     role?: T;
                     id?: T;
                   };
+              id?: T;
+              blockName?: T;
+            };
+        pageIntro?:
+          | T
+          | {
+              headerColor?: T;
+              coverImage?: T;
+              lead?: T;
               id?: T;
               blockName?: T;
             };
@@ -4765,15 +4765,6 @@ export interface WorkshopySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        pageIntro?:
-          | T
-          | {
-              headerColor?: T;
-              coverImage?: T;
-              lead?: T;
-              id?: T;
-              blockName?: T;
-            };
         richText?:
           | T
           | {
@@ -4857,6 +4848,15 @@ export interface WorkshopySelect<T extends boolean = true> {
                     role?: T;
                     id?: T;
                   };
+              id?: T;
+              blockName?: T;
+            };
+        pageIntro?:
+          | T
+          | {
+              headerColor?: T;
+              coverImage?: T;
+              lead?: T;
               id?: T;
               blockName?: T;
             };

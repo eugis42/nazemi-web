@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { contentCollectionAccess } from '@/access/roles'
-import { allBlocks } from '@/blocks/allBlocks'
+import { allBlocks, allBlocksFilterOptions } from '@/blocks/allBlocks'
 import { additionalColorField } from '@/fields/additionalColor'
 import { adminDocumentTitleClass, ctaField, draftStatusListCellField, excerptField, imageUploadFilter, metaTabDescription, seoFields } from '@/fields/shared'
 import { lockProjectsToMainSite, makeSlugUniqueOnDuplicate, populateSlugAndDescription } from '@/hooks/content-hooks'
@@ -87,6 +87,7 @@ export const Projekty = {
               type: 'blocks',
               label: 'Obsah',
               blocks: allBlocks,
+              filterOptions: allBlocksFilterOptions,
               required: true,
               admin: {
                 components: {

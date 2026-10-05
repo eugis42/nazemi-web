@@ -148,17 +148,18 @@ export const LogoStripBlock: Block = {
   ],
 }
 
+/**
+ * Legacy — redundant with page headers. Kept registered so existing rows still
+ * load/edit/render; hidden from the block picker via `allBlocksFilterOptions`.
+ */
 export const PageIntroBlock: Block = {
   slug: 'pageIntro',
   labels: {
     plural: 'Úvodní hlavičky',
     singular: 'Úvodní hlavička',
   },
-  admin: blockPickerAdmin({
-    group: BLOCK_GROUP_PAGE,
-    thumb: 'pageIntro',
-  }),
   fields: [
+
     additionalColorField({
       allowNone: true,
       label: 'Barva pozadí',
@@ -256,8 +257,8 @@ export const ThreeColumnsBlock: Block = {
   ],
 }
 
+/** Pickable page blocks. `PageIntroBlock` stays exported for legacy docs — see `allBlocks`. */
 export const pageBlocks = [
-  PageIntroBlock,
   RichTextBlock,
   GalleryBlock,
   LogoStripBlock,
