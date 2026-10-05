@@ -19,8 +19,8 @@ function uniqueBlocks(blocks: Block[]): Block[] {
 /**
  * Universal block pool for homepage, pages, and workshops.
  * Always includes Textový blok (`richText`) plus homepage + page + workshop blocks.
- * `pageIntro` stays registered for existing docs but is not offered for new picks
- * (`allBlocksFilterOptions`).
+ * `pageIntro` stays registered for existing docs; picker hides it via
+ * `BlocksFieldHidePageIntro` (not `filterOptions` — that couples drawer + validation).
  */
 export const allBlocks = uniqueBlocks([
   ...homepageBlocks,
@@ -29,45 +29,6 @@ export const allBlocks = uniqueBlocks([
   PageIntroBlock,
 ])
 
-const HIDDEN_FROM_PICKER = new Set(['pageIntro'])
-
-export const pickableBlockSlugs = allBlocks
-  .map((block) => block.slug)
-  .filter((slug) => !HIDDEN_FROM_PICKER.has(slug))
-
-function siblingHasHiddenBlock(siblingData: unknown): boolean {
-  if (!siblingData || typeof siblingData !== 'object') return false
-  const data = siblingData as Record<string, unknown>
-  for (const key of ['content', 'homepageContent', 'blocks'] as const) {
-    const rows = data[key]
-    if (!Array.isArray(rows)) continue
-    if (
-      rows.some(
-        (row) =>
-          row &&
-          typeof row === 'object' &&
-          HIDDEN_FROM_PICKER.has((row as { blockType?: string }).blockType ?? ''),
-      )
-    ) {
-      return true
-    }
-  }
-  return false
-}
-
-/**
- * Hide legacy blocks from the picker. If a doc already has one, keep its slug
- * allowed so save validation does not reject the existing row.
- */
-export const allBlocksFilterOptions = ({
-  data,
-  siblingData,
-}: {
-  data?: unknown
-  siblingData?: unknown
-}): string[] => {
-  if (siblingHasHiddenBlock(siblingData) || siblingHasHiddenBlock(data)) {
-    return [...pickableBlockSlugs, ...HIDDEN_FROM_PICKER]
-  }
-  return pickableBlockSlugs
-}
+/** Top-level `config.blocks` entry so admin `blocksMap` can resolve legacy rows
+ * after the field Field component filters `pageIntro` out of the pick list. */
+export const legacyBlocks = [PageIntroBlock]

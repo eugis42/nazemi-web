@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { contentCollectionAccess } from '@/access/roles'
-import { allBlocks, allBlocksFilterOptions } from '@/blocks/allBlocks'
+import { allBlocks } from '@/blocks/allBlocks'
 import {
   adminDocumentTitleClass,
   authorField,
@@ -147,9 +147,9 @@ export const Workshopy = {
               type: 'blocks',
               label: 'Obsah',
               blocks: allBlocks,
-              filterOptions: allBlocksFilterOptions,
               admin: {
                 components: {
+                  Field: '/components/admin/BlocksFieldHidePageIntro#BlocksFieldHidePageIntro',
                   RowLabel: '/components/admin/BlocksRowLabel#BlocksRowLabel',
                 },
                 description: 'Univerzální bloky včetně Textového, lektorů a referencí.',

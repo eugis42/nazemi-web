@@ -1,7 +1,7 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
 import { contentCollectionAccess } from '@/access/roles'
-import { allBlocks, allBlocksFilterOptions } from '@/blocks/allBlocks'
+import { allBlocks } from '@/blocks/allBlocks'
 import { additionalColorField } from '@/fields/additionalColor'
 import {
   adminDocumentTitleClass,
@@ -153,7 +153,6 @@ export const Stranky = {
               name: 'content',
               type: 'blocks',
               blocks: allBlocks,
-              filterOptions: allBlocksFilterOptions,
               label: 'Obsah stránky',
               labels: {
                 plural: 'bloky',
@@ -164,6 +163,7 @@ export const Stranky = {
                 description: 'Univerzální bloky',
                 initCollapsed: true,
                 components: {
+                  Field: '/components/admin/BlocksFieldHidePageIntro#BlocksFieldHidePageIntro',
                   RowLabel: '/components/admin/BlocksRowLabel#BlocksRowLabel',
                 },
               },
@@ -179,7 +179,6 @@ export const Stranky = {
               name: 'homepageContent',
               type: 'blocks',
               blocks: allBlocks,
-              filterOptions: allBlocksFilterOptions,
               label: 'Obsah homepage',
               labels: {
                 plural: 'bloky',
@@ -190,6 +189,7 @@ export const Stranky = {
                 description: 'Univerzální bloky domovské stránky',
                 initCollapsed: true,
                 components: {
+                  Field: '/components/admin/BlocksFieldHidePageIntro#BlocksFieldHidePageIntro',
                   RowLabel: '/components/admin/BlocksRowLabel#BlocksRowLabel',
                 },
               },

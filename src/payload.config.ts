@@ -23,6 +23,7 @@ import {
   WorkshopAudiences,
 } from './collections/Tags'
 import { Workshopy } from './collections/Workshopy'
+import { legacyBlocks } from './blocks/allBlocks'
 import { searchBeforeSync } from './search/beforeSync'
 import { searchExtraFields } from './search/fields'
 import { searchDefaultPriorities } from './search/priorities'
@@ -39,6 +40,8 @@ const smtpHost = process.env.SMTP_HOST?.trim()
 const smtpPort = Number(process.env.SMTP_PORT || 587)
 
 export default buildConfig({
+  // Legacy blocks kept out of the Add Block drawer but still resolvable in admin.
+  blocks: legacyBlocks,
   // Public URL in production (cookies / absolute URLs). Local: leave unset.
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || undefined,
   email: smtpHost

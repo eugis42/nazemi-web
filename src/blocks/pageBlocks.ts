@@ -150,7 +150,7 @@ export const LogoStripBlock: Block = {
 
 /**
  * Legacy — redundant with page headers. Kept registered so existing rows still
- * load/edit/render; hidden from the block picker via `allBlocksFilterOptions`.
+ * load/edit/render; hidden from Add Block via `BlocksFieldHidePageIntro`.
  */
 export const PageIntroBlock: Block = {
   slug: 'pageIntro',
@@ -257,7 +257,7 @@ export const ThreeColumnsBlock: Block = {
   ],
 }
 
-/** Pickable page blocks. `PageIntroBlock` stays exported for legacy docs — see `allBlocks`. */
+/** Pickable page blocks. `PageIntroBlock` stays exported for legacy docs — see `allBlocks` / `legacyBlocks`. */
 export const pageBlocks = [
   RichTextBlock,
   GalleryBlock,
