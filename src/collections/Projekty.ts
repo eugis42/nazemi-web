@@ -90,6 +90,7 @@ export const Projekty = {
               required: true,
               admin: {
                 components: {
+                  Field: '/components/admin/BlocksFieldHidePageIntro#BlocksFieldHidePageIntro',
                   RowLabel: '/components/admin/BlocksRowLabel#BlocksRowLabel',
                 },
                 description: 'Univerzální bloky (včetně Textového a galerie).',

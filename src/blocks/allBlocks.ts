@@ -1,7 +1,7 @@
 import type { Block } from 'payload'
 
 import { homepageBlocks } from './homepageBlocks'
-import { pageBlocks } from './pageBlocks'
+import { PageIntroBlock, pageBlocks } from './pageBlocks'
 import { workshopOnlyBlocks } from './workshopBlocks'
 
 /** Deduplicate by slug — first definition wins. */
@@ -19,9 +19,16 @@ function uniqueBlocks(blocks: Block[]): Block[] {
 /**
  * Universal block pool for homepage, pages, and workshops.
  * Always includes Textový blok (`richText`) plus homepage + page + workshop blocks.
+ * `pageIntro` stays registered for existing docs; picker hides it via
+ * `BlocksFieldHidePageIntro` (not `filterOptions` — that couples drawer + validation).
  */
 export const allBlocks = uniqueBlocks([
   ...homepageBlocks,
   ...pageBlocks,
   ...workshopOnlyBlocks,
+  PageIntroBlock,
 ])
+
+/** Top-level `config.blocks` entry so admin `blocksMap` can resolve legacy rows
+ * after the field Field component filters `pageIntro` out of the pick list. */
+export const legacyBlocks = [PageIntroBlock]

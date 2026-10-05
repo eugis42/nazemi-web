@@ -18,7 +18,6 @@ const thumbs: { slug: string; icon: string }[] = [
   { slug: 'news', icon: 'news' },
   { slug: 'projects', icon: 'folder' },
   { slug: 'about', icon: 'users' },
-  { slug: 'pageIntro', icon: 'section' },
   { slug: 'richText', icon: 'file-text' },
   { slug: 'gallery', icon: 'photo' },
   { slug: 'logoStrip', icon: 'grip-horizontal' },

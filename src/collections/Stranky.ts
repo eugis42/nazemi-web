@@ -163,6 +163,7 @@ export const Stranky = {
                 description: 'Univerzální bloky',
                 initCollapsed: true,
                 components: {
+                  Field: '/components/admin/BlocksFieldHidePageIntro#BlocksFieldHidePageIntro',
                   RowLabel: '/components/admin/BlocksRowLabel#BlocksRowLabel',
                 },
               },
@@ -188,6 +189,7 @@ export const Stranky = {
                 description: 'Univerzální bloky domovské stránky',
                 initCollapsed: true,
                 components: {
+                  Field: '/components/admin/BlocksFieldHidePageIntro#BlocksFieldHidePageIntro',
                   RowLabel: '/components/admin/BlocksRowLabel#BlocksRowLabel',
                 },
               },
