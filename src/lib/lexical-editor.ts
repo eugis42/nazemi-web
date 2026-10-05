@@ -9,17 +9,14 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
-import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
-import { GalleryBlock, LogoStripBlock, ThreeColumnsBlock } from '@/blocks/pageBlocks'
-import { SpeakersBlock } from '@/blocks/workshopBlocks'
+import { BlocksInToolbarAddFeature } from '@/features/BlocksInToolbarAddFeature'
 import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
 import {
   RICH_TEXT_RELATION_COLLECTIONS,
   type RichTextRelationCollection,
 } from '@/lib/lexical-collections'
-import { nazemiNestedLexicalEditor } from '@/lib/lexical-nested-editor'
+import { nazemiLexicalEmbedBlocks } from '@/lib/lexical-embed-blocks'
 import { textColorState } from '@/lib/lexical-text-color'
-import type { Block, Field } from 'payload'
 
 export { RICH_TEXT_RELATION_COLLECTIONS, type RichTextRelationCollection }
 
@@ -67,43 +64,13 @@ const uploadWidthPercentField = {
 }
 
 /**
- * Lexical BlocksFeature copy of Sloupce — column `body` uses nested editor (no BlocksFeature).
- * Reusing page `ThreeColumnsBlock` as-is recurses generateSchemaMap forever
- * (richText → BlocksFeature → threeColumns → richText → …).
- */
-function threeColumnsForLexical(block: Block): Block {
-  return {
-    ...block,
-    fields: block.fields.map((field: Field) => {
-      if (field.type !== 'array' || field.name !== 'columns') return field
-      return {
-        ...field,
-        fields: field.fields.map((inner: Field) => {
-          if (inner.type !== 'richText' || inner.name !== 'body') return inner
-          return {
-            ...inner,
-            editor: nazemiNestedLexicalEditor,
-            admin: {
-              ...('admin' in inner ? inner.admin : undefined),
-              description:
-                'Text sloupce. V rich textu bez vnořených bloků (galerie / Lidé / Sloupce).',
-            },
-          }
-        }),
-      }
-    }),
-  }
-}
-
-const ThreeColumnsLexicalBlock = threeColumnsForLexical(ThreeColumnsBlock)
-
-/**
  * Shared Lexical editor (site-wide root + field editors that inherit it).
  * - h1 disabled (page headers own H1)
  * - LinkFeature: internal docs limited to content collections
  * - FixedToolbarFeature: persistent top toolbar
  * - TextStateFeature: text colour tokens from document site palette
  * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec + Lidé + Sloupce
+ * - BlocksInToolbarAddFeature: same blocks in fixed-toolbar "+" (`add` group)
  */
 export const nazemiLexicalEditor = lexicalEditor({
   features: ({ defaultFeatures }) => [
@@ -145,13 +112,8 @@ export const nazemiLexicalEditor = lexicalEditor({
     SiteTextColorVarsFeature(),
     FixedToolbarFeature(),
     BlocksFeature({
-      blocks: [
-        GalleryBlock,
-        LogoStripBlock,
-        ExpandingParagraphBlock,
-        SpeakersBlock,
-        ThreeColumnsLexicalBlock,
-      ],
+      blocks: nazemiLexicalEmbedBlocks,
     }),
+    BlocksInToolbarAddFeature(),
   ],
 })
