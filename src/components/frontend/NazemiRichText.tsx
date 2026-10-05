@@ -12,18 +12,24 @@ import type { ComponentProps, CSSProperties, ReactNode } from 'react'
 
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
-import {
-  ColumnsBlock,
-  SpeakersBlockView,
-  type ContentBlock,
-} from '@/components/frontend/BlockRenderers'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
+import { SpeakersBlockView } from '@/components/frontend/SpeakersTestimonialsBlocks'
 import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
 import { textColorCss } from '@/lib/lexical-text-color'
 import { isExternalHref } from '@/lib/links'
 import type { Media } from '@/payload-types'
+import dynamic from 'next/dynamic'
+
+/** Lazy — avoids NazemiRichText ↔ BlockRenderers circular import (stack overflow). */
+const ColumnsBlock = dynamic(
+  () =>
+    import('@/components/frontend/BlockRenderers').then((m) => ({
+      default: m.ColumnsBlock,
+    })),
+  { ssr: true },
+)
 
 /** Lexical serializes TextStateFeature attrs under `"$"`. */
 const NODE_STATE_KEY = '$' as const
@@ -276,17 +282,13 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
           },
           speakers: ({ node }: { node: SerializedBlockNode<SpeakersFields> }) => (
             <div className="not-prose my-10 w-full" data-rt-block="speakers">
-              <SpeakersBlockView
-                bare
-                block={node.fields as ContentBlock}
-                fullWidth
-              />
+              <SpeakersBlockView bare block={node.fields} fullWidth />
             </div>
           ),
           threeColumns: ({ node }: { node: SerializedBlockNode<ThreeColumnsFields> }) => (
             <div className="not-prose my-10 w-full" data-rt-block="threeColumns">
               <ColumnsBlock
-                block={{ ...node.fields, blockType: 'threeColumns' } as ContentBlock}
+                block={{ ...node.fields, blockType: 'threeColumns' }}
                 siteSlug={siteSlug}
               />
             </div>
