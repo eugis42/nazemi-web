@@ -745,17 +745,21 @@ export interface Stranky {
         | {
             title: string;
             /**
-             * Osoby v bloku (odděleně od kontaktu Lidé).
+             * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
              */
             people?:
               | {
                   /**
-                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
+                   * Volitelně — vyplní fotku, jméno a roli. Pole zůstanou editovatelná; Výrok se nemění.
                    */
-                  quote?: string | null;
+                  fromPerson?: (number | null) | Lide;
                   name: string;
                   role?: string | null;
                   image?: (number | null) | Media;
+                  /**
+                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
+                   */
+                  quote?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -1358,17 +1362,21 @@ export interface Stranky {
         | {
             title: string;
             /**
-             * Osoby v bloku (odděleně od kontaktu Lidé).
+             * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
              */
             people?:
               | {
                   /**
-                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
+                   * Volitelně — vyplní fotku, jméno a roli. Pole zůstanou editovatelná; Výrok se nemění.
                    */
-                  quote?: string | null;
+                  fromPerson?: (number | null) | Lide;
                   name: string;
                   role?: string | null;
                   image?: (number | null) | Media;
+                  /**
+                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
+                   */
+                  quote?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -2643,17 +2651,21 @@ export interface Workshopy {
         | {
             title: string;
             /**
-             * Osoby v bloku (odděleně od kontaktu Lidé).
+             * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
              */
             people?:
               | {
                   /**
-                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
+                   * Volitelně — vyplní fotku, jméno a roli. Pole zůstanou editovatelná; Výrok se nemění.
                    */
-                  quote?: string | null;
+                  fromPerson?: (number | null) | Lide;
                   name: string;
                   role?: string | null;
                   image?: (number | null) | Media;
+                  /**
+                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
+                   */
+                  quote?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -3453,17 +3465,21 @@ export interface Projekty {
     | {
         title: string;
         /**
-         * Osoby v bloku (odděleně od kontaktu Lidé).
+         * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
          */
         people?:
           | {
               /**
-               * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
+               * Volitelně — vyplní fotku, jméno a roli. Pole zůstanou editovatelná; Výrok se nemění.
                */
-              quote?: string | null;
+              fromPerson?: (number | null) | Lide;
               name: string;
               role?: string | null;
               image?: (number | null) | Media;
+              /**
+               * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
+               */
+              quote?: string | null;
               id?: string | null;
             }[]
           | null;
@@ -4005,10 +4021,11 @@ export interface StrankySelect<T extends boolean = true> {
               people?:
                 | T
                 | {
-                    quote?: T;
+                    fromPerson?: T;
                     name?: T;
                     role?: T;
                     image?: T;
+                    quote?: T;
                     id?: T;
                   };
               id?: T;
@@ -4245,10 +4262,11 @@ export interface StrankySelect<T extends boolean = true> {
               people?:
                 | T
                 | {
-                    quote?: T;
+                    fromPerson?: T;
                     name?: T;
                     role?: T;
                     image?: T;
+                    quote?: T;
                     id?: T;
                   };
               id?: T;
@@ -4576,10 +4594,11 @@ export interface ProjektySelect<T extends boolean = true> {
               people?:
                 | T
                 | {
-                    quote?: T;
+                    fromPerson?: T;
                     name?: T;
                     role?: T;
                     image?: T;
+                    quote?: T;
                     id?: T;
                   };
               id?: T;
@@ -4856,10 +4875,11 @@ export interface WorkshopySelect<T extends boolean = true> {
               people?:
                 | T
                 | {
-                    quote?: T;
+                    fromPerson?: T;
                     name?: T;
                     role?: T;
                     image?: T;
+                    quote?: T;
                     id?: T;
                   };
               id?: T;

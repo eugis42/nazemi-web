@@ -35,7 +35,7 @@ export const SpeakersBlock: Block = {
         components: {
           RowLabel: '/components/admin/ArrayFieldRowLabel#ArrayFieldRowLabel',
         },
-        description: 'Osoby v bloku (odděleně od kontaktu Lidé).',
+        description: 'Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.',
         initCollapsed: true,
       },
       labels: {
@@ -45,11 +45,27 @@ export const SpeakersBlock: Block = {
       minRows: 1,
       fields: [
         {
-          name: 'quote',
-          type: 'textarea',
-          label: 'Výrok',
+          name: 'fromPerson',
+          type: 'relationship',
+          label: 'Vybrat z Lidé',
+          relationTo: 'lide',
+          filterOptions: ({ data }) => {
+            const site = (data as { site?: unknown } | null | undefined)?.site
+            const siteId =
+              site != null && typeof site === 'object' && 'id' in site
+                ? (site as { id: number | string }).id
+                : typeof site === 'number' || typeof site === 'string'
+                  ? site
+                  : null
+            if (siteId == null) return false
+            return { site: { equals: siteId } }
+          },
           admin: {
-            description: 'Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.',
+            components: {
+              Field: '/components/admin/SpeakersFromPersonField#SpeakersFromPersonField',
+            },
+            description:
+              'Volitelně — vyplní fotku, jméno a roli. Pole zůstanou editovatelná; Výrok se nemění.',
           },
         },
         {
@@ -76,6 +92,14 @@ export const SpeakersBlock: Block = {
           label: 'Fotografie',
           relationTo: 'media',
           filterOptions: imageUploadFilter,
+        },
+        {
+          name: 'quote',
+          type: 'textarea',
+          label: 'Výrok',
+          admin: {
+            description: 'Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.',
+          },
         },
       ],
     },
