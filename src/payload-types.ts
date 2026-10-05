@@ -750,7 +750,7 @@ export interface Stranky {
             people?:
               | {
                   /**
-                   * Volitelně — zobrazí se jako citát nad fotkou a jménem.
+                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
                    */
                   quote?: string | null;
                   name: string;
@@ -1363,7 +1363,7 @@ export interface Stranky {
             people?:
               | {
                   /**
-                   * Volitelně — zobrazí se jako citát nad fotkou a jménem.
+                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
                    */
                   quote?: string | null;
                   name: string;
@@ -2648,7 +2648,7 @@ export interface Workshopy {
             people?:
               | {
                   /**
-                   * Volitelně — zobrazí se jako citát nad fotkou a jménem.
+                   * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
                    */
                   quote?: string | null;
                   name: string;
@@ -3458,7 +3458,7 @@ export interface Projekty {
         people?:
           | {
               /**
-               * Volitelně — zobrazí se jako citát nad fotkou a jménem.
+               * Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.
                */
               quote?: string | null;
               name: string;

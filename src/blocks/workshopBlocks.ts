@@ -49,7 +49,7 @@ export const SpeakersBlock: Block = {
           type: 'textarea',
           label: 'Výrok',
           admin: {
-            description: 'Volitelně — zobrazí se jako citát nad fotkou a jménem.',
+            description: 'Volitelně — zobrazí se pod fotkou a jménem jako běžný odstavec.',
           },
         },
         {

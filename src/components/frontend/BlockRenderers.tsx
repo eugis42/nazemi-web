@@ -511,11 +511,6 @@ export function SpeakersBlockView({
               data-component="workshop-speaker"
               key={`${person.name}-${personIndex}`}
             >
-              {quote ? (
-                <p className="font-serif text-xl font-normal leading-snug tracking-tight text-ground">
-                  „{quote}“
-                </p>
-              ) : null}
               <div className="flex gap-4">
                 {imgUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -539,6 +534,7 @@ export function SpeakersBlockView({
                   {person.role ? <p className="text-body-inter text-ground">{person.role}</p> : null}
                 </div>
               </div>
+              {quote ? <p className="text-body-inter text-ground">{quote}</p> : null}
             </article>
           )
         })}
