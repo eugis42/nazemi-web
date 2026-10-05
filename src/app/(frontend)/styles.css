@@ -1119,6 +1119,12 @@
       margin-top: 40px;
     }
 
+    /* p↔p only: typography default; leave other sibling gaps at 40px. */
+    :where(p + p),
+    :where(.payload-richtext p + p) {
+      margin-top: 1.25em;
+    }
+
     :where([data-component='richtext-relation']) {
       @apply no-underline;
     }
