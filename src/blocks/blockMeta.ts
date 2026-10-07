@@ -11,6 +11,7 @@ export type BlockThumbSlug =
   | 'projects'
   | 'about'
   | 'richText'
+  | 'expandingParagraph'
   | 'gallery'
   | 'logoStrip'
   | 'speakers'

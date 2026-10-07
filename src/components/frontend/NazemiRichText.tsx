@@ -290,6 +290,8 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
               <ColumnsBlock
                 block={{ ...node.fields, blockType: 'threeColumns' }}
                 siteSlug={siteSlug}
+                titleSize="h2"
+                width="lg"
               />
             </div>
           ),

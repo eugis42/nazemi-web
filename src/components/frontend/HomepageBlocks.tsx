@@ -10,6 +10,7 @@ import {
   TestimonialsBlockView,
   type ContentBlock,
 } from '@/components/frontend/BlockRenderers'
+import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
@@ -71,6 +72,18 @@ export async function HomepageBlocks({
           rendered.push(
             <div className="prose-nazemi mx-auto w-full max-w-[874px]" key={key}>
               <NazemiRichText data={block.content as never} siteSlug={site.slug} />
+            </div>,
+          )
+        }
+        break
+      case 'expandingParagraph':
+        if (block.body && block.summary) {
+          rendered.push(
+            <div className="mx-auto w-full max-w-[874px]" key={key}>
+              <ExpandingParagraph
+                body={<NazemiRichText data={block.body as never} siteSlug={site.slug} />}
+                summary={String(block.summary)}
+              />
             </div>,
           )
         }

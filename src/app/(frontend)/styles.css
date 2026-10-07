@@ -1208,6 +1208,15 @@
       @apply font-inter text-ground;
     }
 
+    /*
+     * TextStateFeature colour wraps format tags (strong/em/code/…).
+     * Those tags set text-ground above → kill inherited colour.
+     * Descendants of .rt-text-color must inherit the span’s inline colour.
+     */
+    .rt-text-color :where(strong, b, em, i, code, a, sub, sup) {
+      color: inherit;
+    }
+
     :where(blockquote):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
       @apply flex items-center gap-card border-0 border-none py-0 pl-0 font-serif text-[24px] font-normal leading-normal not-italic text-ground;
 
@@ -1333,9 +1342,13 @@
   }
 }
 
-/* Bordered Sloupce cards: prose already has p-card — zero first heading mt. */
+/* Sloupce: first-heading mt. Bordered has p-card → 0. Clean: half of prose h2 1em. */
 [data-component='column-card'] .prose-nazemi .payload-richtext > :is(h1, h2, h3, h4, h5, h6):first-child {
   margin-top: 0;
+}
+
+[data-component='column'] .prose-nazemi .payload-richtext > :is(h1, h2, h3, h4, h5, h6):first-child {
+  margin-top: 0.5em;
 }
 
 @variant max-lg {
@@ -1347,7 +1360,7 @@
   }
 }
 
-/* Lexical expanding paragraph — soft surface like relation embeds */
+/* Expanding paragraph (page block + Lexical) — soft surface like relation embeds */
 .rt-expand {
   @apply bg-ground/5 p-[15px];
   /* Enable animating to/from `auto` height where supported */

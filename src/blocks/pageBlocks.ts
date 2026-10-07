@@ -4,6 +4,7 @@ import {
   BLOCK_GROUP_PAGE,
   blockPickerAdmin,
 } from '@/blocks/blockMeta'
+import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
 import { additionalColorField } from '@/fields/additionalColor'
 import { columnCallToActionField } from '@/fields/cta'
 import { imageUploadFilter } from '@/fields/shared'
@@ -11,6 +12,8 @@ import {
   hrefFieldDescription,
   validateOptionalHref,
 } from '@/fields/validateHref'
+
+export { ExpandingParagraphBlock }
 
 export const RichTextBlock: Block = {
   slug: 'richText',
@@ -260,6 +263,7 @@ export const ThreeColumnsBlock: Block = {
 /** Pickable page blocks. `PageIntroBlock` stays exported for legacy docs — see `allBlocks` / `legacyBlocks`. */
 export const pageBlocks = [
   RichTextBlock,
+  ExpandingParagraphBlock,
   GalleryBlock,
   LogoStripBlock,
   ThreeColumnsBlock,

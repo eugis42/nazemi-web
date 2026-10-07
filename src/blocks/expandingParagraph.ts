@@ -1,10 +1,11 @@
 import type { Block } from 'payload'
 
+import { BLOCK_GROUP_PAGE, blockPickerAdmin } from '@/blocks/blockMeta'
 import { nazemiNestedLexicalEditor } from '@/lib/lexical-nested-editor'
 
 /**
- * Lexical BlocksFeature only — expanding disclosure with summary label + body.
- * Easier than a custom Lexical node: same Payload fields + FE `<details>`.
+ * Expanding disclosure — page/workshop blocks field + Lexical BlocksFeature.
+ * Nested body editor (no BlocksFeature) avoids expand-in-expand.
  */
 export const ExpandingParagraphBlock: Block = {
   slug: 'expandingParagraph',
@@ -12,6 +13,11 @@ export const ExpandingParagraphBlock: Block = {
     plural: 'Rozbalovací odstavce',
     singular: 'Rozbalovací odstavec',
   },
+  admin: blockPickerAdmin({
+    group: BLOCK_GROUP_PAGE,
+    thumb: 'expandingParagraph',
+    alt: 'Rozbalovací odstavec',
+  }),
   fields: [
     {
       name: 'summary',

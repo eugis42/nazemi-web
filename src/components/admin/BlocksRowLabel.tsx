@@ -10,6 +10,7 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   projects: 'Projekty',
   about: 'O nás',
   richText: 'Textový blok',
+  expandingParagraph: 'Rozbalovací odstavec',
   gallery: 'Galerie',
   logoStrip: 'Pás log',
   pageIntro: 'Úvodní hlavička',
@@ -24,6 +25,7 @@ type BlockRowData = {
   blockType?: string | null
   title?: string | null
   caption?: string | null
+  summary?: string | null
   segments?: { text?: string | null }[] | null
 }
 
@@ -41,6 +43,7 @@ export function BlocksRowLabel() {
   const title =
     (typeof data?.title === 'string' && data.title.trim()) ||
     fromSegments ||
+    (typeof data?.summary === 'string' && data.summary.trim()) ||
     (typeof data?.caption === 'string' && data.caption.trim()) ||
     ''
   const n = String(rowNumber ?? 0).padStart(2, '0')

@@ -7,15 +7,19 @@ type ExpandingParagraphProps = {
 
 /**
  * Accessible expand/collapse — native `<details>` (no JS).
- * Used by Lexical `expandingParagraph` block converter.
+ * Page blocks + Lexical `expandingParagraph` converter.
+ *
+ * Do not put `not-prose` on `<details>` — Tailwind typography excludes all
+ * descendants of `not-prose`, so nested `.prose-nazemi` loses list markers,
+ * headings, quotes, etc. `not-prose` only on `<summary>`.
  */
 export function ExpandingParagraph({ body, summary }: ExpandingParagraphProps) {
   const label = summary.trim()
   if (!label) return null
 
   return (
-    <details className="rt-expand not-prose my-6 w-full" data-rt-block="expandingParagraph">
-      <summary className="rt-expand__summary">
+    <details className="rt-expand my-6 w-full" data-rt-block="expandingParagraph">
+      <summary className="rt-expand__summary not-prose">
         <span className="rt-expand__label">{label}</span>
         <span aria-hidden="true" className="rt-expand__arrow">
           <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">

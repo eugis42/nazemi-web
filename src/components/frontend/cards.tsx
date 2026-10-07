@@ -694,7 +694,11 @@ function PageIntroContent({
   return (
     <div className="mx-auto flex w-full max-w-[874px] flex-col gap-2.5">
       {title ? <h1 className={`text-display ${textClass}`}>{title}</h1> : null}
-      {description ? <p className={`text-body-inter ${textClass}`}>{description}</p> : null}
+      {description ? (
+        <p className={`text-section-title font-medium leading-[28px] ${textClass}`}>
+          {description}
+        </p>
+      ) : null}
     </div>
   )
 }

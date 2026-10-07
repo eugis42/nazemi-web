@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 
 import type { Aktuality, Kalendar, Media, Projekty } from '@/payload-types'
 import { EventCard, NewsCard, PageIntro, ProjectRow } from '@/components/frontend/cards'
+import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { EmptyState } from '@/components/frontend/listing'
@@ -314,9 +315,15 @@ function resolveColumnsStyle(block: ContentBlock): ColumnsStyle {
 export function ColumnsBlock({
   block,
   siteSlug,
+  titleSize = 'section',
+  width = 'full',
 }: {
   block: ContentBlock
   siteSlug: string
+  /** Homepage keeps section title; pages/workshops use prose h2. */
+  titleSize?: 'section' | 'h2'
+  /** `lg` = cap at container-lg width (pages); `full` = grow with container (homepage). */
+  width?: 'full' | 'lg'
 }) {
   const style = resolveColumnsStyle(block)
   const columns = (block.columns as ColumnRow[]) || []
@@ -357,8 +364,9 @@ export function ColumnsBlock({
       )
     }
 
+    // Clean: small flex gap; first-heading mt zeroed in styles.css for [data-component=column]
     return (
-      <div className={`${COLUMNS_CELL} gap-card`} data-component="column" key={`col-${index}`}>
+      <div className={`${COLUMNS_CELL} gap-2`} data-component="column" key={`col-${index}`}>
         <ColumnImage image={column.image} />
         {body}
         <ColumnCta column={column} siteSlug={siteSlug} />
@@ -369,40 +377,51 @@ export function ColumnsBlock({
   const rowClass = isTable
     ? 'flex flex-col gap-[2px] bg-ground lg:flex-row lg:items-stretch'
     : COLUMNS_ROW
+  const title = (block.title as string) || undefined
+  const columnsBody = isTable ? (
+    <div
+      className="flex flex-col gap-[2px] overflow-hidden border-2 border-ground bg-ground"
+      data-component="columns-table"
+    >
+      {rows.map((row, rowIndex) => (
+        <div className={rowClass} data-row={rowIndex} key={`row-${rowIndex}`}>
+          {row.map((column, colIndex) =>
+            renderColumn(column, rowIndex * perRow + colIndex),
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="flex flex-col gap-grid">
+      {rows.map((row, rowIndex) => (
+        <div className={rowClass} data-row={rowIndex} key={`row-${rowIndex}`}>
+          {row.map((column, colIndex) =>
+            renderColumn(column, rowIndex * perRow + colIndex),
+          )}
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <section
-      className="flex flex-col gap-grid"
+      className={
+        width === 'lg'
+          ? 'mx-auto flex w-full max-w-[var(--breakpoint-lg)] flex-col'
+          : 'flex flex-col'
+      }
       data-block="threeColumns"
       data-cols={columns.length}
       data-style={style}
     >
+      {/* Title→columns: 16px (gap-4). Same on homepage + pages. */}
       <BlockHeader
         className={titleAlign}
-        title={(block.title as string) || undefined}
+        compact
+        title={title}
+        titleSize={titleSize}
       />
-      {isTable ? (
-        <div
-          className="flex flex-col gap-[2px] overflow-hidden border-2 border-ground bg-ground"
-          data-component="columns-table"
-        >
-          {rows.map((row, rowIndex) => (
-            <div className={rowClass} data-row={rowIndex} key={`row-${rowIndex}`}>
-              {row.map((column, colIndex) =>
-                renderColumn(column, rowIndex * perRow + colIndex),
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        rows.map((row, rowIndex) => (
-          <div className={rowClass} data-row={rowIndex} key={`row-${rowIndex}`}>
-            {row.map((column, colIndex) =>
-              renderColumn(column, rowIndex * perRow + colIndex),
-            )}
-          </div>
-        ))
-      )}
+      <div className={title ? 'mt-4' : undefined}>{columnsBody}</div>
     </section>
   )
 }
@@ -541,10 +560,23 @@ export function PageBlocks({
           )
         }
 
+        if (block.blockType === 'expandingParagraph' && block.body && block.summary) {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <ExpandingParagraph
+                  body={<NazemiRichText data={block.body as never} siteSlug={siteSlug} />}
+                  summary={String(block.summary)}
+                />
+              </div>
+            </div>
+          )
+        }
+
         if (block.blockType === 'threeColumns') {
           return (
             <div className="container max-lg:px-card" key={key}>
-              <ColumnsBlock block={block} siteSlug={siteSlug} />
+              <ColumnsBlock block={block} siteSlug={siteSlug} titleSize="h2" width="lg" />
             </div>
           )
         }
@@ -617,10 +649,23 @@ export function WorkshopContentBlocks({
           )
         }
 
+        if (block.blockType === 'expandingParagraph' && block.body && block.summary) {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <ExpandingParagraph
+                  body={<NazemiRichText data={block.body as never} siteSlug={siteSlug} />}
+                  summary={String(block.summary)}
+                />
+              </div>
+            </div>
+          )
+        }
+
         if (block.blockType === 'threeColumns') {
           return (
             <div className="container max-lg:px-card" key={key}>
-              <ColumnsBlock block={block} siteSlug={siteSlug} />
+              <ColumnsBlock block={block} siteSlug={siteSlug} titleSize="h2" width="lg" />
             </div>
           )
         }

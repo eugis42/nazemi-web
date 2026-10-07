@@ -705,6 +705,33 @@ export interface Stranky {
           }
         | {
             /**
+             * Viditelný text vedle šipky (kliknutím se obsah rozbalí).
+             */
+            summary: string;
+            /**
+             * Text uvnitř rozbalení (bez vnořených galerií / rozbalení).
+             */
+            body: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'expandingParagraph';
+          }
+        | {
+            /**
              * Pouze obrázky — video patří do samostatného bloku.
              */
             images: (number | Media)[];
@@ -1319,6 +1346,33 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'richText';
+          }
+        | {
+            /**
+             * Viditelný text vedle šipky (kliknutím se obsah rozbalí).
+             */
+            summary: string;
+            /**
+             * Text uvnitř rozbalení (bez vnořených galerií / rozbalení).
+             */
+            body: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'expandingParagraph';
           }
         | {
             /**
@@ -2526,6 +2580,33 @@ export interface Workshopy {
           }
         | {
             /**
+             * Viditelný text vedle šipky (kliknutím se obsah rozbalí).
+             */
+            summary: string;
+            /**
+             * Text uvnitř rozbalení (bez vnořených galerií / rozbalení).
+             */
+            body: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'expandingParagraph';
+          }
+        | {
+            /**
              * Pouze obrázky — video patří do samostatného bloku.
              */
             images: (number | Media)[];
@@ -3340,6 +3421,33 @@ export interface Projekty {
       }
     | {
         /**
+         * Viditelný text vedle šipky (kliknutím se obsah rozbalí).
+         */
+        summary: string;
+        /**
+         * Text uvnitř rozbalení (bez vnořených galerií / rozbalení).
+         */
+        body: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'expandingParagraph';
+      }
+    | {
+        /**
          * Pouze obrázky — video patří do samostatného bloku.
          */
         images: (number | Media)[];
@@ -3973,6 +4081,14 @@ export interface StrankySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        expandingParagraph?:
+          | T
+          | {
+              summary?: T;
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
         gallery?:
           | T
           | {
@@ -4211,6 +4327,14 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        expandingParagraph?:
+          | T
+          | {
+              summary?: T;
+              body?: T;
               id?: T;
               blockName?: T;
             };
@@ -4546,6 +4670,14 @@ export interface ProjektySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        expandingParagraph?:
+          | T
+          | {
+              summary?: T;
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
         gallery?:
           | T
           | {
@@ -4824,6 +4956,14 @@ export interface WorkshopySelect<T extends boolean = true> {
           | T
           | {
               content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        expandingParagraph?:
+          | T
+          | {
+              summary?: T;
+              body?: T;
               id?: T;
               blockName?: T;
             };
