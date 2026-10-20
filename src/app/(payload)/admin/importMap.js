@@ -37,6 +37,10 @@ import { StatusCell as StatusCell_4da1f90de99340c8531cff72a46c36b2 } from '../..
 import { TagsListCell as TagsListCell_5e5b7a5167e2f886afb9fc368ad1f9d4 } from '../../../components/admin/TagsListCell'
 import { ShowOnMainSiteField as ShowOnMainSiteField_d07fa496e44502b22ce68006b8169c4f } from '../../../components/admin/ShowOnMainSiteField'
 import { UploadPreviewCell as UploadPreviewCell_010a4787e181865d3ff8fbabde563dcf } from '../../../components/admin/UploadPreviewCell'
+import { FormOptionRowLabel as FormOptionRowLabel_4993e17d755fd08c40d3a19ac64dc646 } from '../../../components/admin/FormOptionRowLabel'
+import { FormFieldRowLabel as FormFieldRowLabel_f65af8b1c35733cd85b1b312866e3d18 } from '../../../components/admin/FormFieldRowLabel'
+import { SubmissionSummaryField as SubmissionSummaryField_20fc4e4c46361a17b32e32b48a344e6a } from '../../../components/admin/SubmissionSummaryField'
+import { SubmissionDataRowLabel as SubmissionDataRowLabel_f506364515974a65d2ba0b9728beec08 } from '../../../components/admin/SubmissionDataRowLabel'
 import { RedirectToSiteSettings_navigace as RedirectToSiteSettings_navigace_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
 import { RedirectToSiteSettings_kontakt as RedirectToSiteSettings_kontakt_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
 import { RedirectToSiteSettings_paticka as RedirectToSiteSettings_paticka_36effb95c4f0c3009c59ec855b0d94d5 } from '../../../components/admin/RedirectToSiteSettings'
@@ -89,6 +93,10 @@ export const importMap = {
   "/components/admin/TagsListCell#TagsListCell": TagsListCell_5e5b7a5167e2f886afb9fc368ad1f9d4,
   "/components/admin/ShowOnMainSiteField#ShowOnMainSiteField": ShowOnMainSiteField_d07fa496e44502b22ce68006b8169c4f,
   "/components/admin/UploadPreviewCell#UploadPreviewCell": UploadPreviewCell_010a4787e181865d3ff8fbabde563dcf,
+  "/components/admin/FormOptionRowLabel#FormOptionRowLabel": FormOptionRowLabel_4993e17d755fd08c40d3a19ac64dc646,
+  "/components/admin/FormFieldRowLabel#FormFieldRowLabel": FormFieldRowLabel_f65af8b1c35733cd85b1b312866e3d18,
+  "/components/admin/SubmissionSummaryField#SubmissionSummaryField": SubmissionSummaryField_20fc4e4c46361a17b32e32b48a344e6a,
+  "/components/admin/SubmissionDataRowLabel#SubmissionDataRowLabel": SubmissionDataRowLabel_f506364515974a65d2ba0b9728beec08,
   "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_navigace": RedirectToSiteSettings_navigace_36effb95c4f0c3009c59ec855b0d94d5,
   "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_kontakt": RedirectToSiteSettings_kontakt_36effb95c4f0c3009c59ec855b0d94d5,
   "/components/admin/RedirectToSiteSettings#RedirectToSiteSettings_paticka": RedirectToSiteSettings_paticka_36effb95c4f0c3009c59ec855b0d94d5,

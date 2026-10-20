@@ -4,7 +4,9 @@ import {
   BLOCK_GROUP_PAGE,
   blockPickerAdmin,
 } from '@/blocks/blockMeta'
+import { CallToActionBlock } from '@/blocks/callToAction'
 import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
+import { FormEmbedBlock } from '@/blocks/formEmbed'
 import { additionalColorField } from '@/fields/additionalColor'
 import { columnCallToActionField } from '@/fields/cta'
 import { imageUploadFilter } from '@/fields/shared'
@@ -267,4 +269,6 @@ export const pageBlocks = [
   GalleryBlock,
   LogoStripBlock,
   ThreeColumnsBlock,
+  CallToActionBlock,
+  FormEmbedBlock,
 ]

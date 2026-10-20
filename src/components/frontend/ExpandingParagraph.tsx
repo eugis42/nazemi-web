@@ -18,7 +18,7 @@ export function ExpandingParagraph({ body, summary }: ExpandingParagraphProps) {
   if (!label) return null
 
   return (
-    <details className="rt-expand my-6 w-full" data-rt-block="expandingParagraph">
+    <details className="rt-expand w-full" data-rt-block="expandingParagraph">
       <summary className="rt-expand__summary not-prose">
         <span className="rt-expand__label">{label}</span>
         <span aria-hidden="true" className="rt-expand__arrow">

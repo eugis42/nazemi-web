@@ -10,7 +10,9 @@ import {
   TestimonialsBlockView,
   type ContentBlock,
 } from '@/components/frontend/BlockRenderers'
+import { CallToActionBlockView } from '@/components/frontend/CallToActionBlock'
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
+import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
@@ -113,6 +115,16 @@ export async function HomepageBlocks({
         break
       case 'testimonials':
         rendered.push(<TestimonialsBlockView bare block={block} fullWidth key={key} />)
+        break
+      case 'callToAction':
+        rendered.push(
+          <CallToActionBlockView block={block} key={key} siteSlug={site.slug} />,
+        )
+        break
+      case 'formEmbed':
+        rendered.push(
+          <FormEmbedBlockView block={block} key={key} siteSlug={site.slug} />,
+        )
         break
       default:
         break

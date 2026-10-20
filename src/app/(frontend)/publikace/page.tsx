@@ -163,7 +163,7 @@ export default async function PublikacePage({
   ]
 
   return (
-    <SiteShell breadcrumbs={breadcrumbs} mainClassName="pt-12 lg:pt-20" site={site} stacked={false}>
+    <SiteShell breadcrumbs={breadcrumbs} mainClassName="pt-content-top" site={site} stacked={false}>
       <div className="container section-stack">
         <section className="flex flex-col gap-grid" data-block="publications">
           <h1 className="text-display text-ground">{heading}</h1>

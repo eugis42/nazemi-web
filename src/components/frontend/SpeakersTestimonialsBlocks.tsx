@@ -38,12 +38,15 @@ export function SpeakersBlockView({
   if (!people.length) return null
   const title =
     typeof block.title === 'string' && block.title.trim() ? block.title : 'Lidé'
-  // 1: lg 3-col track so single card doesn’t stretch. 2+: same sm:2 as 3+ so a pair
-  // stays on one row whenever a 3-entry block still shows two across.
+  // Stretch to fill row (same idea as Reference): 1 = full, 2 = half/half from sm,
+  // 3+ = up to 3 cols. Old lg:grid-cols-3 left 1–2 cards stuck at ⅓ width.
+  const n = people.length
   const gridClass =
-    people.length === 1
-      ? 'grid grid-cols-1 gap-grid lg:grid-cols-3'
-      : 'grid grid-cols-1 gap-grid sm:grid-cols-2 lg:grid-cols-3'
+    n === 1
+      ? 'grid min-w-0 grid-cols-1 gap-grid'
+      : n === 2
+        ? 'grid min-w-0 grid-cols-1 gap-grid sm:grid-cols-2'
+        : 'grid min-w-0 grid-cols-1 gap-grid sm:grid-cols-2 lg:grid-cols-3'
   const section = (
     <section
       className={`flex flex-col gap-grid${fullWidth ? '' : ' mx-auto w-full max-w-[874px]'}`}
@@ -140,14 +143,14 @@ export function TestimonialsBlockView({
       <div className={gridClass}>
         {items.map((item, itemIndex) => (
           <blockquote
-            className="flex h-full flex-col gap-3 text-ground"
+            className="flex flex-col gap-3 text-ground"
             data-component="workshop-testimonial"
             key={`${item.author}-${itemIndex}`}
           >
             <p className="font-serif text-xl font-normal leading-snug tracking-tight text-ground">
               „{item.quote}“
             </p>
-            <footer className="font-saans mt-auto text-sm leading-snug text-ground/70">
+            <footer className="font-saans text-sm leading-snug text-ground/70">
               <cite className="not-italic">
                 {item.author}
                 {item.role ? ` · ${item.role}` : ''}

@@ -19,6 +19,8 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   lecturers: 'Lidé',
   testimonials: 'Reference',
   threeColumns: 'Sloupce',
+  callToAction: 'Call to Action',
+  formEmbed: 'Formulář',
 }
 
 type BlockRowData = {

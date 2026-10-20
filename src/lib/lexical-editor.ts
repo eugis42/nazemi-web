@@ -68,7 +68,7 @@ const uploadWidthPercentField = {
  * - LinkFeature: internal docs limited to content collections
  * - FixedToolbarFeature: persistent top toolbar
  * - TextStateFeature: text colour tokens from document site palette
- * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec + Lidé + Sloupce
+ * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec + Lidé + Reference + Sloupce
  *
  * Payload toolbar groups (see payloadcms.com/docs/rich-text/custom-features):
  * - `add` (+): insertables only — upload / relationship / HR

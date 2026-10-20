@@ -1,9 +1,8 @@
 'use client'
 
 import { SelectInput } from '@payloadcms/ui'
-import { useRouter } from 'next/navigation'
 import type { OptionObject } from 'payload'
-import { useMemo, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 
 type SiteOption = {
   id: number | string
@@ -11,6 +10,11 @@ type SiteOption = {
   slug: string
 }
 
+/**
+ * Site cookie switcher in `beforeNav`.
+ * Hard reload after cookie set — `router.refresh()` + `useTransition` can leave
+ * SelectInput stuck on Payload’s pre-mount shimmer when RSC hangs.
+ */
 export function SiteContextSelector({
   activeSiteSlug,
   sites,
@@ -18,8 +22,7 @@ export function SiteContextSelector({
   activeSiteSlug: string
   sites: SiteOption[]
 }) {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+  const [busy, setBusy] = useState(false)
 
   const options: OptionObject[] = useMemo(
     () => sites.map((site) => ({ label: site.name, value: site.slug })),
@@ -27,17 +30,19 @@ export function SiteContextSelector({
   )
 
   const handleChange = async (nextSiteSlug: string) => {
-    await fetch('/api/admin-site', {
-      body: JSON.stringify({ siteSlug: nextSiteSlug }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    })
-
-    startTransition(() => {
-      router.refresh()
-    })
+    setBusy(true)
+    try {
+      await fetch('/api/admin-site', {
+        body: JSON.stringify({ siteSlug: nextSiteSlug }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      })
+      window.location.reload()
+    } catch {
+      setBusy(false)
+    }
   }
 
   return (
@@ -56,7 +61,7 @@ export function SiteContextSelector({
       }}
       options={options}
       path="nazemiAdminSite"
-      readOnly={isPending}
+      readOnly={busy}
       value={activeSiteSlug}
     />
   )

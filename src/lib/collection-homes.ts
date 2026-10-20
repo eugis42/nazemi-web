@@ -93,7 +93,7 @@ type MenuFilterReq = {
 
 const PUBLISHED_SITE_IDS_CTX = 'menuPublishedSiteIds'
 
-function relationId(value: unknown): number | string | null {
+export function relationId(value: unknown): number | string | null {
   if (value == null || value === '') return null
   if (typeof value === 'number' || typeof value === 'string') return value
   if (typeof value === 'object' && value !== null && 'id' in value) {

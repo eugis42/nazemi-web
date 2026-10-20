@@ -72,6 +72,25 @@ export function SearchIcon() {
   )
 }
 
+/** Tabler outline `check` — https://tabler.io/icons/icon/check */
+export function CheckIcon({ className = 'size-4' }: { className?: string } = {}) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2.5"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M5 12l5 5l10 -10" />
+    </svg>
+  )
+}
+
 export function CaretDownIcon() {
   return (
     <svg

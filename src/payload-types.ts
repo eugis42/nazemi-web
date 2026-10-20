@@ -77,6 +77,8 @@ export interface Config {
     publikace: Publikace;
     lide: Lide;
     prehledy: Prehledy;
+    forms: Form;
+    'form-submissions': FormSubmission;
     'site-navigace': SiteNavigace;
     'site-kontakt': SiteKontakt;
     'site-paticka': SitePaticka;
@@ -106,6 +108,8 @@ export interface Config {
     publikace: PublikaceSelect<false> | PublikaceSelect<true>;
     lide: LideSelect<false> | LideSelect<true>;
     prehledy: PrehledySelect<false> | PrehledySelect<true>;
+    forms: FormsSelect<false> | FormsSelect<true>;
+    'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'site-navigace': SiteNavigaceSelect<false> | SiteNavigaceSelect<true>;
     'site-kontakt': SiteKontaktSelect<false> | SiteKontaktSelect<true>;
     'site-paticka': SitePatickaSelect<false> | SitePatickaSelect<true>;
@@ -861,6 +865,82 @@ export interface Stranky {
             blockType: 'threeColumns';
           }
         | {
+            /**
+             * Volitelné — bez nadpisu se zobrazí jen tlačítka.
+             */
+            title?: string | null;
+            /**
+             * Jedno nebo více tlačítek.
+             */
+            actions: {
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            /**
+             * Formuláře z aktuálního webu.
+             */
+            form: number | Form;
+            title: string;
+            buttonLabel: string;
+            /**
+             * Volitelný krátký text pod nadpisem.
+             */
+            description?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formEmbed';
+          }
+        | {
             title: string;
             /**
              * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
@@ -1503,6 +1583,82 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'threeColumns';
+          }
+        | {
+            /**
+             * Volitelné — bez nadpisu se zobrazí jen tlačítka.
+             */
+            title?: string | null;
+            /**
+             * Jedno nebo více tlačítek.
+             */
+            actions: {
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            /**
+             * Formuláře z aktuálního webu.
+             */
+            form: number | Form;
+            title: string;
+            buttonLabel: string;
+            /**
+             * Volitelný krátký text pod nadpisem.
+             */
+            description?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formEmbed';
           }
         | {
             title: string;
@@ -2736,6 +2892,82 @@ export interface Workshopy {
             blockType: 'threeColumns';
           }
         | {
+            /**
+             * Volitelné — bez nadpisu se zobrazí jen tlačítka.
+             */
+            title?: string | null;
+            /**
+             * Jedno nebo více tlačítek.
+             */
+            actions: {
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
+              label?: string | null;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null);
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
+              href?: string | null;
+              variant?: ('filled' | 'outline' | 'colored') | null;
+              /**
+               * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+               */
+              backgroundColor?: string | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            /**
+             * Formuláře z aktuálního webu.
+             */
+            form: number | Form;
+            title: string;
+            buttonLabel: string;
+            /**
+             * Volitelný krátký text pod nadpisem.
+             */
+            description?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formEmbed';
+          }
+        | {
             title: string;
             /**
              * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
@@ -3577,6 +3809,82 @@ export interface Projekty {
         blockType: 'threeColumns';
       }
     | {
+        /**
+         * Volitelné — bez nadpisu se zobrazí jen tlačítka.
+         */
+        title?: string | null;
+        /**
+         * Jedno nebo více tlačítek.
+         */
+        actions: {
+          /**
+           * Volitelné u interního odkazu — prázdné → název vybrané položky.
+           */
+          label?: string | null;
+          linkType: 'internal' | 'external';
+          /**
+           * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+           */
+          reference?:
+            | ({
+                relationTo: 'prehledy';
+                value: number | Prehledy;
+              } | null)
+            | ({
+                relationTo: 'stranky';
+                value: number | Stranky;
+              } | null)
+            | ({
+                relationTo: 'aktuality';
+                value: number | Aktuality;
+              } | null)
+            | ({
+                relationTo: 'kalendar';
+                value: number | Kalendar;
+              } | null)
+            | ({
+                relationTo: 'workshopy';
+                value: number | Workshopy;
+              } | null)
+            | ({
+                relationTo: 'publikace';
+                value: number | Publikace;
+              } | null)
+            | ({
+                relationTo: 'projekty';
+                value: number | Projekty;
+              } | null);
+          /**
+           * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+           */
+          href?: string | null;
+          variant?: ('filled' | 'outline' | 'colored') | null;
+          /**
+           * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
+           */
+          backgroundColor?: string | null;
+          id?: string | null;
+        }[];
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'callToAction';
+      }
+    | {
+        /**
+         * Formuláře z aktuálního webu.
+         */
+        form: number | Form;
+        title: string;
+        buttonLabel: string;
+        /**
+         * Volitelný krátký text pod nadpisem.
+         */
+        description?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'formEmbed';
+      }
+    | {
         title: string;
         /**
          * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
@@ -3680,6 +3988,227 @@ export interface Projekty {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms".
+ */
+export interface Form {
+  id: number;
+  site: number | Site;
+  title: string;
+  fields?:
+    | (
+        | {
+            name?: string | null;
+            label?: string | null;
+            /**
+             * Zobrazí se pod štítkem na webu.
+             */
+            description?: string | null;
+            required?: boolean | null;
+            defaultValue?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'checkbox';
+          }
+        | {
+            name?: string | null;
+            label?: string | null;
+            /**
+             * Zobrazí se pod štítkem na webu.
+             */
+            description?: string | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'email';
+          }
+        | {
+            message?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'message';
+          }
+        | {
+            name?: string | null;
+            label?: string | null;
+            /**
+             * Zobrazí se pod štítkem na webu.
+             */
+            description?: string | null;
+            defaultValue?: number | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'number';
+          }
+        | {
+            name?: string | null;
+            label?: string | null;
+            /**
+             * Zobrazí se pod štítkem na webu.
+             */
+            description?: string | null;
+            defaultValue?: string | null;
+            placeholder?: string | null;
+            options?:
+              | {
+                  label: string;
+                  value?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'select';
+          }
+        | {
+            name?: string | null;
+            label?: string | null;
+            /**
+             * Zobrazí se pod štítkem na webu.
+             */
+            description?: string | null;
+            defaultValue?: string | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'text';
+          }
+        | {
+            name?: string | null;
+            label?: string | null;
+            /**
+             * Zobrazí se pod štítkem na webu.
+             */
+            description?: string | null;
+            defaultValue?: string | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textarea';
+          }
+        | FormBlockWorkshops
+        | {
+            name?: string | null;
+            label?: string | null;
+            /**
+             * Zobrazí se pod štítkem na webu.
+             */
+            description?: string | null;
+            defaultValue?: string | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'date';
+          }
+        | {
+            name?: string | null;
+            label?: string | null;
+            /**
+             * Zobrazí se pod štítkem na webu.
+             */
+            description?: string | null;
+            defaultValue?: string | null;
+            options?:
+              | {
+                  label: string;
+                  value?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'radio';
+          }
+      )[]
+    | null;
+  submitButtonLabel?: string | null;
+  confirmationType?: ('message' | 'redirect') | null;
+  confirmationMessage?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  redirect?: {
+    type?: ('reference' | 'custom') | null;
+    reference?: {
+      relationTo: 'stranky';
+      value: number | Stranky;
+    } | null;
+    url?: string | null;
+  };
+  emails?:
+    | {
+        emailTo?: string | null;
+        cc?: string | null;
+        bcc?: string | null;
+        replyTo?: string | null;
+        emailFrom?: string | null;
+        subject: string;
+        message?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlockWorkshops".
+ */
+export interface FormBlockWorkshops {
+  name?: string | null;
+  label?: string | null;
+  /**
+   * Zobrazí se pod štítkem na webu.
+   */
+  description?: string | null;
+  required?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'workshops';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "lide".
  */
 export interface Lide {
@@ -3702,6 +4231,23 @@ export interface Lide {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions".
+ */
+export interface FormSubmission {
+  id: number;
+  form: number | Form;
+  submissionData?:
+    | {
+        field: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3839,6 +4385,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'prehledy';
         value: number | Prehledy;
+      } | null)
+    | ({
+        relationTo: 'forms';
+        value: number | Form;
+      } | null)
+    | ({
+        relationTo: 'form-submissions';
+        value: number | FormSubmission;
       } | null)
     | ({
         relationTo: 'site-navigace';
@@ -4138,6 +4692,34 @@ export interface StrankySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        callToAction?:
+          | T
+          | {
+              title?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    reference?: T;
+                    href?: T;
+                    variant?: T;
+                    backgroundColor?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        formEmbed?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              buttonLabel?: T;
+              description?: T;
+              id?: T;
+              blockName?: T;
+            };
         speakers?:
           | T
           | {
@@ -4384,6 +4966,34 @@ export interface StrankySelect<T extends boolean = true> {
                         };
                     id?: T;
                   };
+              id?: T;
+              blockName?: T;
+            };
+        callToAction?:
+          | T
+          | {
+              title?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    reference?: T;
+                    href?: T;
+                    variant?: T;
+                    backgroundColor?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        formEmbed?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              buttonLabel?: T;
+              description?: T;
               id?: T;
               blockName?: T;
             };
@@ -4727,6 +5337,34 @@ export interface ProjektySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        callToAction?:
+          | T
+          | {
+              title?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    reference?: T;
+                    href?: T;
+                    variant?: T;
+                    backgroundColor?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        formEmbed?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              buttonLabel?: T;
+              description?: T;
+              id?: T;
+              blockName?: T;
+            };
         speakers?:
           | T
           | {
@@ -5016,6 +5654,34 @@ export interface WorkshopySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        callToAction?:
+          | T
+          | {
+              title?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    reference?: T;
+                    href?: T;
+                    variant?: T;
+                    backgroundColor?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        formEmbed?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              buttonLabel?: T;
+              description?: T;
+              id?: T;
+              blockName?: T;
+            };
         speakers?:
           | T
           | {
@@ -5139,6 +5805,180 @@ export interface PrehledySelect<T extends boolean = true> {
   collectionKey?: T;
   site?: T;
   searchFold?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms_select".
+ */
+export interface FormsSelect<T extends boolean = true> {
+  site?: T;
+  title?: T;
+  fields?:
+    | T
+    | {
+        checkbox?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              description?: T;
+              required?: T;
+              defaultValue?: T;
+              id?: T;
+              blockName?: T;
+            };
+        email?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              description?: T;
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        message?:
+          | T
+          | {
+              message?: T;
+              id?: T;
+              blockName?: T;
+            };
+        number?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              description?: T;
+              defaultValue?: T;
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        select?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              description?: T;
+              defaultValue?: T;
+              placeholder?: T;
+              options?:
+                | T
+                | {
+                    label?: T;
+                    value?: T;
+                    id?: T;
+                  };
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        text?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              description?: T;
+              defaultValue?: T;
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        textarea?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              description?: T;
+              defaultValue?: T;
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        workshops?: T | FormBlockWorkshopsSelect<T>;
+        date?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              description?: T;
+              defaultValue?: T;
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        radio?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              description?: T;
+              defaultValue?: T;
+              options?:
+                | T
+                | {
+                    label?: T;
+                    value?: T;
+                    id?: T;
+                  };
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  submitButtonLabel?: T;
+  confirmationType?: T;
+  confirmationMessage?: T;
+  redirect?:
+    | T
+    | {
+        type?: T;
+        reference?: T;
+        url?: T;
+      };
+  emails?:
+    | T
+    | {
+        emailTo?: T;
+        cc?: T;
+        bcc?: T;
+        replyTo?: T;
+        emailFrom?: T;
+        subject?: T;
+        message?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlockWorkshops_select".
+ */
+export interface FormBlockWorkshopsSelect<T extends boolean = true> {
+  name?: T;
+  label?: T;
+  description?: T;
+  required?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions_select".
+ */
+export interface FormSubmissionsSelect<T extends boolean = true> {
+  form?: T;
+  submissionData?:
+    | T
+    | {
+        field?: T;
+        value?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

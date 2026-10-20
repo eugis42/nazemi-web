@@ -10,6 +10,7 @@ import {
   mediaAlt,
   mediaFocalStyle,
   mediaSizeURL,
+  mediaURL,
   siteBrandStyle,
   withSiteQuery,
 } from '@/lib/content'
@@ -351,6 +352,7 @@ export function ProjectRow({ item, siteSlug }: { item: Projekty; siteSlug: strin
   const isDark = color === 'nerust' || color === 'ground'
   const textColor = isDark ? 'text-sky' : 'text-ground'
   const surface = projectSurface(color)
+  const logoSrc = mediaURL(logo)
 
   return (
     <article
@@ -360,13 +362,13 @@ export function ProjectRow({ item, siteSlug }: { item: Projekty; siteSlug: strin
       style={surface.style}
     >
       <div className={`relative shrink-0 ${projectLogoClass(item)}`}>
-        {logo?.url ? (
+        {logoSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={mediaAlt(logo, item.title)}
             className="size-full object-contain object-left"
             loading="lazy"
-            src={logo.url}
+            src={logoSrc}
           />
         ) : null}
       </div>
@@ -400,6 +402,7 @@ export function ProjectHeader({
   spacing?: 'detail' | 'stacked' | 'stacked-first'
 }) {
   const logo = item.logo && typeof item.logo === 'object' ? item.logo : null
+  const logoSrc = mediaURL(logo)
   const color = item.projectColor || 'green'
   const isDark = color === 'nerust' || color === 'ground'
   const textColor = isDark ? 'text-sky' : 'text-ground'
@@ -429,12 +432,12 @@ export function ProjectHeader({
           className={`flex min-h-[157px] min-w-0 flex-col items-start gap-8 lg:flex-row lg:items-center lg:gap-content ${PROJECT_ROW_CLASS[item.slug || ''] || ''}`}
         >
           <div className={`relative shrink-0 ${projectLogoClass(item)}`}>
-            {logo?.url ? (
+            {logoSrc ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 alt={mediaAlt(logo, item.title)}
                 className="size-full object-contain object-left"
-                src={logo.url}
+                src={logoSrc}
               />
             ) : null}
           </div>

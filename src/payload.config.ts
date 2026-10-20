@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { cs } from '@payloadcms/translations/languages/cs'
 import path from 'path'
@@ -28,10 +29,25 @@ import { searchBeforeSync } from './search/beforeSync'
 import { searchExtraFields } from './search/fields'
 import { searchDefaultPriorities } from './search/priorities'
 import { SiteKontakt, SiteNavigace, SitePaticka } from './collections/SiteSettingsNav'
-import { searchIndexAccess } from './access/roles'
-import { ADMIN_NAV_ADMINISTRATION } from './lib/admin-nav-groups'
+import {
+  authenticated,
+  editorOrAdmin,
+  searchIndexAccess,
+} from './access/roles'
+import { siteField } from './fields/shared'
+import {
+  ADMIN_NAV_ADMINISTRATION,
+  ADMIN_NAV_FORMS,
+} from './lib/admin-nav-groups'
 import { diacriticAdminSearchPlugin } from './lib/diacritic-admin-search'
+import { assignFormFieldKeysBeforeChange } from './hooks/form-field-keys'
+import { nazemiFormBuilderFields } from './lib/form-builder-field-blocks'
+import { nazemiFormBeforeEmail } from './lib/form-email-defaults'
+import { withFormSubmissionFields } from './lib/form-submission-fields'
+import { withNestedLexicalEditor } from './lib/form-builder-fields'
 import { nazemiLexicalEditor } from './lib/lexical-editor'
+import { reorderFormsNavPlugin } from './lib/reorder-forms-nav'
+import { getScopedBaseFilter } from './lib/site-context'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -117,6 +133,54 @@ export default buildConfig({
   sharp,
   plugins: [
     diacriticAdminSearchPlugin(),
+    formBuilderPlugin({
+      beforeEmail: nazemiFormBeforeEmail,
+      fields: nazemiFormBuilderFields(),
+      formOverrides: {
+        access: {
+          create: editorOrAdmin,
+          delete: editorOrAdmin,
+          read: () => true,
+          update: editorOrAdmin,
+        },
+        admin: {
+          baseFilter: getScopedBaseFilter(),
+          group: ADMIN_NAV_FORMS,
+        },
+        fields: ({ defaultFields }) => [
+          siteField,
+          // Nested editor — root Lexical has formEmbed → would recurse forever.
+          ...defaultFields.map(withNestedLexicalEditor),
+        ],
+        hooks: {
+          beforeChange: [assignFormFieldKeysBeforeChange],
+        },
+        labels: {
+          plural: 'Formuláře',
+          singular: 'Formulář',
+        },
+      },
+      formSubmissionOverrides: {
+        // Public create only via gated `/api/form-submit` (Local API + overrideAccess).
+        access: {
+          create: () => false,
+          delete: editorOrAdmin,
+          read: authenticated,
+          update: () => false,
+        },
+        admin: {
+          group: ADMIN_NAV_FORMS,
+        },
+        fields: ({ defaultFields }) => withFormSubmissionFields(defaultFields),
+        labels: {
+          plural: 'Odpovědi a poptávky',
+          singular: 'Odpověď / poptávka',
+        },
+      },
+      redirectRelationships: ['stranky'],
+    }),
+    // After formBuilder — place Formuláře group under Obsah webu in the sidebar.
+    reorderFormsNavPlugin,
     searchPlugin({
       beforeSync: searchBeforeSync,
       collections: ['stranky', 'aktuality', 'kalendar', 'projekty', 'workshopy', 'publikace'],

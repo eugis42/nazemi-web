@@ -123,7 +123,7 @@ export default async function NotFound() {
         { href: withSiteQuery('/', site.slug), label: 'Domů' },
         { href: '#', label: '404' },
       ]}
-      mainClassName="pt-12 lg:pt-20"
+      mainClassName="pt-content-top"
       site={site}
       stacked={false}
     >

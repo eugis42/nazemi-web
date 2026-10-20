@@ -5,6 +5,7 @@ import { callToActionField } from '@/fields/cta'
 import { imageUploadFilter } from '@/fields/shared'
 import {
   BLOCK_GROUP_HOME,
+  BLOCK_GROUP_PAGE,
   blockPickerAdmin,
 } from '@/blocks/blockMeta'
 
@@ -15,7 +16,8 @@ export const HomepageHeroBlock: Block = {
     singular: 'Hero',
   },
   admin: blockPickerAdmin({
-    group: BLOCK_GROUP_HOME,
+    // Shared across homepage + pages + workshops (allBlocks pool).
+    group: BLOCK_GROUP_PAGE,
     thumb: 'hero',
   }),
   fields: [

@@ -18,21 +18,36 @@ export type MediaSizeName =
   | 'hero'
   | 'large'
 
+/**
+ * Payload often stores absolute URLs from `serverURL`. Strip origin so a
+ * mismatched host/port cannot break imgs — same-origin path always wins.
+ */
+export function mediaPath(url: string | null | undefined): string | null {
+  if (!url) return null
+  if (url.startsWith('/')) return url
+  try {
+    const parsed = new URL(url)
+    return `${parsed.pathname}${parsed.search}`
+  } catch {
+    return url
+  }
+}
+
 export function mediaURL(media: MediaLike): string | null {
   if (!media || typeof media === 'number') return null
-  return media.url || null
+  return mediaPath(media.url)
 }
 
 /** Prefer named size; fall back to `large`, then original. */
 export function mediaSizeURL(media: MediaLike, size: MediaSizeName): string | null {
   if (!media || typeof media === 'number') return null
   const sized = media.sizes?.[size]?.url
-  if (typeof sized === 'string' && sized) return sized
+  if (typeof sized === 'string' && sized) return mediaPath(sized)
   if (size !== 'large') {
     const large = media.sizes?.large?.url
-    if (typeof large === 'string' && large) return large
+    if (typeof large === 'string' && large) return mediaPath(large)
   }
-  return media.url || null
+  return mediaPath(media.url)
 }
 
 /** Prefer upload `card` size for listing thumbs when available. */

@@ -133,7 +133,7 @@ export default async function WorkshopsPage({
         { href: withSiteQuery('/', site.slug), label: 'Domů' },
         { href: withSiteQuery('/workshopy', site.slug), label: 'Workshopy' },
       ]}
-      mainClassName="pt-12 lg:pt-20"
+      mainClassName="pt-content-top"
       site={site}
       stacked={false}
     >

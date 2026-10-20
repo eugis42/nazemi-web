@@ -3,11 +3,16 @@
 import { useEffect } from 'react'
 
 import {
+  ADMIN_NAV_FORMS,
   ADMIN_NAV_SITE_CONTENT,
   ADMIN_NAV_SITE_SETTINGS,
 } from '@/lib/admin-nav-groups'
 
-const SITE_GROUP_BASES = [ADMIN_NAV_SITE_CONTENT, ADMIN_NAV_SITE_SETTINGS] as const
+const SITE_GROUP_BASES = [
+  ADMIN_NAV_SITE_CONTENT,
+  ADMIN_NAV_SITE_SETTINGS,
+  ADMIN_NAV_FORMS,
+] as const
 
 function labelForBase(base: string, siteName: string): string {
   const name = siteName.trim()

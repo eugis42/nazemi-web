@@ -128,7 +128,7 @@ export default async function NewsListingPage({
         { href: withSiteQuery('/', site.slug), label: 'Domů' },
         { href: withSiteQuery('/aktuality', site.slug), label: 'Aktuality' },
       ]}
-      mainClassName="pt-12 lg:pt-20"
+      mainClassName="pt-content-top"
       site={site}
       stacked={false}
     >

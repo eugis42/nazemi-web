@@ -2,7 +2,9 @@ import { Fragment } from 'react'
 
 import type { Aktuality, Kalendar, Media, Projekty } from '@/payload-types'
 import { EventCard, NewsCard, PageIntro, ProjectRow } from '@/components/frontend/cards'
+import { CallToActionBlockView } from '@/components/frontend/CallToActionBlock'
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
+import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { EmptyState } from '@/components/frontend/listing'
@@ -16,6 +18,7 @@ import { resolveBlockActions } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
 import { mediaAlt, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
+import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
 export const BG: Record<string, string> = {
   sky: 'bg-sky',
@@ -63,11 +66,7 @@ export function HeroBlock({
   })
 
   return (
-    <section
-      className="relative py-12 sm:py-16 md:py-20 lg:py-24 xl:py-[100px] 2xl:py-[117px]"
-      data-block="hero"
-      data-component="hero"
-    >
+    <section className="hero-block relative" data-block="hero" data-component="hero">
       <div
         className={`flex flex-col items-center gap-8 text-center lg:gap-content${
           narrow ? ' mx-auto w-full max-w-[874px]' : ''
@@ -334,7 +333,10 @@ export function ColumnsBlock({
   const rows = chunkColumns(columns, perRow)
   const isTable = style === 'table'
   const isFramed = style === 'bordered' || isTable
-  const titleAlign = isTable ? '' : columnsTitleAlignClass(rows[0]?.length || 0)
+  // Bordered + <3 cols: stretch like table (fixed ⅓ cells look awkwardly narrow).
+  const borderedStretch = style === 'bordered' && columns.length < COLUMNS_PER_ROW
+  const titleAlign =
+    isTable || borderedStretch ? '' : columnsTitleAlignClass(rows[0]?.length || 0)
 
   const renderColumn = (column: ColumnRow, index: number) => {
     const body = column.body ? (
@@ -344,10 +346,11 @@ export function ColumnsBlock({
     ) : null
 
     if (isFramed) {
-      // Table: no per-cell border — shared 2px dividers via gap+[bg-ground] parent.
-      const cellClass = isTable
-        ? 'flex min-w-0 flex-1 flex-col overflow-hidden bg-sky'
-        : `${COLUMNS_CELL} overflow-hidden border-2 border-ground bg-sky`
+      // Table / short bordered: flex-1 fill. Bordered 3+: fixed third-width cells.
+      const cellClass =
+        isTable || borderedStretch
+          ? `flex min-w-0 flex-1 flex-col overflow-hidden bg-sky${isTable ? '' : ' border-2 border-ground'}`
+          : `${COLUMNS_CELL} overflow-hidden border-2 border-ground bg-sky`
       return (
         <article
           className={cellClass}
@@ -376,7 +379,9 @@ export function ColumnsBlock({
 
   const rowClass = isTable
     ? 'flex flex-col gap-[2px] bg-ground lg:flex-row lg:items-stretch'
-    : COLUMNS_ROW
+    : borderedStretch
+      ? 'flex flex-col gap-grid lg:flex-row lg:items-stretch'
+      : COLUMNS_ROW
   const title = (block.title as string) || undefined
   const columnsBody = isTable ? (
     <div
@@ -519,6 +524,18 @@ export function PageBlocks({
           )
         }
 
+        if (block.blockType === 'hero') {
+          return (
+            <div className="container" key={key}>
+              <HeroBlock
+                block={block}
+                narrow={Boolean(siteSlug && siteSlug !== MAIN_SITE_SLUG)}
+                siteSlug={siteSlug}
+              />
+            </div>
+          )
+        }
+
         if (block.blockType === 'speakers') {
           return <SpeakersBlockView block={block} key={key} />
         }
@@ -577,6 +594,26 @@ export function PageBlocks({
           return (
             <div className="container max-lg:px-card" key={key}>
               <ColumnsBlock block={block} siteSlug={siteSlug} titleSize="h2" width="lg" />
+            </div>
+          )
+        }
+
+        if (block.blockType === 'callToAction') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <CallToActionBlockView block={block} siteSlug={siteSlug} />
+              </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'formEmbed') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <FormEmbedBlockView block={block} siteSlug={siteSlug} />
+              </div>
             </div>
           )
         }
@@ -594,19 +631,25 @@ export function WorkshopContentBlocks({
   blocks?: ContentBlock[] | null
   siteSlug?: string
 }) {
-  // Design always emits workshop-body with pt-content-top (even when empty).
-  const ordered = blocks?.length
-    ? [...blocks].sort((a, b) => {
-        const rank = (type: string) =>
-          type === 'speakers' ? 0 : type === 'testimonials' ? 1 : type === 'richText' ? 2 : 3
-        return rank(a.blockType) - rank(b.blockType)
-      })
-    : []
+  // Keep CMS block order (no forced speakers/testimonials-first sort).
+  const ordered = blocks?.length ? blocks : []
 
   return (
-    <div className="flex flex-col gap-section pt-section" data-component="workshop-body">
+    <div className="flex flex-col gap-content pt-content-top" data-component="workshop-body">
       {ordered.map((block, index) => {
         const key = block.id || `${block.blockType}-${index}`
+
+        if (block.blockType === 'hero') {
+          return (
+            <div className="container" key={key}>
+              <HeroBlock
+                block={block}
+                narrow={Boolean(siteSlug && siteSlug !== MAIN_SITE_SLUG)}
+                siteSlug={siteSlug}
+              />
+            </div>
+          )
+        }
 
         if (block.blockType === 'speakers') {
           return <SpeakersBlockView block={block} key={key} />
@@ -666,6 +709,26 @@ export function WorkshopContentBlocks({
           return (
             <div className="container max-lg:px-card" key={key}>
               <ColumnsBlock block={block} siteSlug={siteSlug} titleSize="h2" width="lg" />
+            </div>
+          )
+        }
+
+        if (block.blockType === 'callToAction') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <CallToActionBlockView block={block} siteSlug={siteSlug} />
+              </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'formEmbed') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <FormEmbedBlockView block={block} siteSlug={siteSlug} />
+              </div>
             </div>
           )
         }

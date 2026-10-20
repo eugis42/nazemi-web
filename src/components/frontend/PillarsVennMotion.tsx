@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
 
 const SPIN_DURATION_S: Record<string, number> = {
   violet: 150,
@@ -109,13 +109,12 @@ function measureOrbitBounds(motion: CircleMotion[], hub: Hub, logo: SVGGraphicsE
 
 function applyOverflowGutter(
   root: HTMLElement,
+  stage: Element,
   motion: CircleMotion[],
   hub: Hub,
   logo: SVGGraphicsElement,
 ) {
   const { gutterX, gutterY } = measureOrbitBounds(motion, hub, logo)
-  const stage = root.querySelector('.pillars-venn-stage')
-  if (!stage) return undefined
 
   const setGutter = () => {
     const isCompact = window.matchMedia('(max-width: 1023px)').matches
@@ -146,14 +145,23 @@ function applyOverflowGutter(
   return observer
 }
 
-export function PillarsVennMotion({ children }: { children: ReactNode }) {
+/**
+ * Imperative SVG host — do NOT use React dangerouslySetInnerHTML here.
+ * React 19 re-applies a fresh `{ __html }` object on parent re-renders and
+ * wipes the carrier/rotator groups this motion loop mutates → animation dies.
+ */
+export function PillarsVennMotion({ svg }: { svg: string }) {
   const rootRef = useRef<HTMLDivElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const root = rootRef.current
-    if (!root) return
+    const stage = stageRef.current
+    if (!root || !stage || !svg) return
 
-    const logo = root.querySelector<SVGGraphicsElement>('[data-component="pillars-venn-logo"]')
+    stage.innerHTML = svg
+
+    const logo = stage.querySelector<SVGGraphicsElement>('[data-component="pillars-venn-logo"]')
     if (!logo) return
 
     const logoBox = logo.getBBox()
@@ -162,14 +170,14 @@ export function PillarsVennMotion({ children }: { children: ReactNode }) {
       ly: logoBox.y + logoBox.height / 2,
     }
 
-    const circles = root.querySelectorAll<SVGGElement>('[data-component="pillars-venn-circle"]')
+    const circles = stage.querySelectorAll<SVGGElement>('[data-component="pillars-venn-circle"]')
     const motion = [...circles]
       .map((group) => mountCircleMotion(group, hub))
       .filter((circle): circle is CircleMotion => circle !== null)
 
     if (!motion.length) return
 
-    const observer = applyOverflowGutter(root, motion, hub, logo)
+    const observer = applyOverflowGutter(root, stage, motion, hub, logo)
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       motion.forEach((circle) => {
@@ -181,6 +189,7 @@ export function PillarsVennMotion({ children }: { children: ReactNode }) {
       return () => {
         observer?.disconnect()
         circles.forEach(unmountCircleMotion)
+        stage.innerHTML = ''
       }
     }
 
@@ -188,9 +197,11 @@ export function PillarsVennMotion({ children }: { children: ReactNode }) {
     let orbitAngle = 0
     let last = performance.now()
     let raf = 0
+    let alive = true
 
     const tick = (now: number) => {
-      const dt = (now - last) / 1000
+      if (!alive) return
+      const dt = Math.min((now - last) / 1000, 0.05)
       last = now
       orbitAngle = (orbitAngle + orbitSpeed * dt) % (Math.PI * 2)
 
@@ -210,15 +221,17 @@ export function PillarsVennMotion({ children }: { children: ReactNode }) {
     raf = requestAnimationFrame(tick)
 
     return () => {
+      alive = false
       cancelAnimationFrame(raf)
       observer?.disconnect()
       circles.forEach(unmountCircleMotion)
+      stage.innerHTML = ''
     }
-  }, [])
+  }, [svg])
 
   return (
     <div aria-hidden="true" className="pillars-venn-wrap" data-component="pillars-venn" ref={rootRef}>
-      {children}
+      <div className="pillars-venn-stage" ref={stageRef} />
     </div>
   )
 }

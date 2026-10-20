@@ -357,7 +357,7 @@ export function NewsArticle({
         </div>
       ) : null}
 
-      <div className={`flex flex-col gap-content${skipTopPad ? '' : ' pt-16 lg:pt-24'}`}>
+      <div className={`flex flex-col gap-content${skipTopPad ? '' : ' pt-content-top'}`}>
         <ContentColumn>
           <header className="flex w-full flex-col gap-grid" data-component="news-article-header">
             <h1 className="text-display text-balance text-ground">{item.title}</h1>

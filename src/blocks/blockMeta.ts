@@ -17,6 +17,8 @@ export type BlockThumbSlug =
   | 'speakers'
   | 'testimonials'
   | 'threeColumns'
+  | 'callToAction'
+  | 'formEmbed'
 
 const THUMB_BASE = '/block-thumbs'
 

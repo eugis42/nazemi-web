@@ -158,7 +158,7 @@ export default async function SearchPage({
         { href: withSiteQuery('/', site.slug), label: 'Domů' },
         { href: withSiteQuery('/hledat', site.slug), label: 'Vyhledávání' },
       ]}
-      mainClassName="pt-12 lg:pt-20"
+      mainClassName="pt-content-top"
       site={site}
       stacked={false}
     >

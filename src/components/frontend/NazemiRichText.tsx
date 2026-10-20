@@ -10,11 +10,16 @@ import type {
 } from '@payloadcms/richtext-lexical'
 import type { ComponentProps, CSSProperties, ReactNode } from 'react'
 
+import { CallToActionBlockView } from '@/components/frontend/CallToActionBlock'
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
+import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
-import { SpeakersBlockView } from '@/components/frontend/SpeakersTestimonialsBlocks'
+import {
+  SpeakersBlockView,
+  TestimonialsBlockView,
+} from '@/components/frontend/SpeakersTestimonialsBlocks'
 import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
 import { textColorCss } from '@/lib/lexical-text-color'
@@ -83,11 +88,31 @@ type SpeakersFields = {
   title?: string | null
 }
 
+type TestimonialsFields = {
+  blockType: 'testimonials'
+  items?: unknown
+  title?: string | null
+}
+
 type ThreeColumnsFields = {
   blockType: 'threeColumns'
   borders?: boolean | null
   columns?: unknown
   style?: string | null
+  title?: string | null
+}
+
+type CallToActionFields = {
+  actions?: unknown
+  blockType: 'callToAction'
+  title?: string | null
+}
+
+type FormEmbedRtFields = {
+  blockType: 'formEmbed'
+  buttonLabel?: string | null
+  description?: string | null
+  form?: unknown
   title?: string | null
 }
 
@@ -249,7 +274,7 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
         upload: ({ node }: { node: SerializedUploadNode }) => <UploadImage node={node} />,
         blocks: {
           gallery: ({ node }: { node: SerializedBlockNode<GalleryFields> }) => (
-            <div className="not-prose my-10 w-full" data-rt-block="gallery">
+            <div className="not-prose w-full" data-rt-block="gallery">
               <GalleryBlock
                 caption={node.fields.caption}
                 columns={node.fields.columns}
@@ -261,7 +286,7 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
             const logos = resolveLogoStripItems(node.fields)
             if (!logos.length) return null
             return (
-              <div className="not-prose my-10 w-full" data-rt-block="logoStrip">
+              <div className="not-prose w-full" data-rt-block="logoStrip">
                 <LogoStrip logos={logos} title={node.fields.title} />
               </div>
             )
@@ -281,17 +306,40 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
             )
           },
           speakers: ({ node }: { node: SerializedBlockNode<SpeakersFields> }) => (
-            <div className="not-prose my-10 w-full" data-rt-block="speakers">
+            <div className="not-prose w-full" data-rt-block="speakers">
               <SpeakersBlockView bare block={node.fields} fullWidth />
             </div>
           ),
+          testimonials: ({ node }: { node: SerializedBlockNode<TestimonialsFields> }) => (
+            <div className="not-prose w-full" data-rt-block="testimonials">
+              <TestimonialsBlockView bare block={node.fields} fullWidth />
+            </div>
+          ),
           threeColumns: ({ node }: { node: SerializedBlockNode<ThreeColumnsFields> }) => (
-            <div className="not-prose my-10 w-full" data-rt-block="threeColumns">
+            <div className="not-prose w-full" data-rt-block="threeColumns">
               <ColumnsBlock
                 block={{ ...node.fields, blockType: 'threeColumns' }}
                 siteSlug={siteSlug}
                 titleSize="h2"
                 width="lg"
+              />
+            </div>
+          ),
+          callToAction: ({ node }: { node: SerializedBlockNode<CallToActionFields> }) => (
+            <div className="not-prose w-full" data-rt-block="callToAction">
+              <CallToActionBlockView block={node.fields} siteSlug={siteSlug} />
+            </div>
+          ),
+          formEmbed: ({ node }: { node: SerializedBlockNode<FormEmbedRtFields> }) => (
+            <div className="not-prose w-full" data-rt-block="formEmbed">
+              <FormEmbedBlockView
+                block={{
+                  buttonLabel: node.fields.buttonLabel,
+                  description: node.fields.description,
+                  form: node.fields.form,
+                  title: node.fields.title,
+                }}
+                siteSlug={siteSlug}
               />
             </div>
           ),

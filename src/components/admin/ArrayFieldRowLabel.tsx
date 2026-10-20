@@ -2,6 +2,8 @@
 
 import { useRowLabel } from '@payloadcms/ui'
 
+import { lexicalPlainText } from '@/lib/block-auto-label'
+
 /** Prefer first non-empty string among common array-row title fields. */
 const CANDIDATES = [
   'title',
@@ -36,9 +38,9 @@ export function ArrayFieldRowLabel() {
   return <span>{text || `Položka ${String(rowNumber ?? 0).padStart(2, '0')}`}</span>
 }
 
-/** Sloupce columns array — fallback „Sloupec 01“ (no title field on rows). */
+/** Sloupce columns array — H2 from body, else „Sloupec 01“. */
 export function SloupecRowLabel() {
   const { data, rowNumber } = useRowLabel<Record<string, unknown>>()
-  const text = pickLabel(data)
+  const text = pickLabel(data) || lexicalPlainText(data?.body)
   return <span>{text || `Sloupec ${String(rowNumber ?? 0).padStart(2, '0')}`}</span>
 }

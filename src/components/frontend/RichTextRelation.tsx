@@ -344,6 +344,7 @@ function projectSurface(color?: string | null) {
 
 function ProjectEmbed({ doc, siteSlug }: { doc: Projekty; siteSlug: string }) {
   const logo = doc.logo && typeof doc.logo === 'object' ? doc.logo : null
+  const logoSrc = mediaURL(logo)
   const title = docTitle(doc)
   const color = doc.projectColor || 'green'
   const isDark = color === 'nerust' || color === 'ground'
@@ -358,14 +359,14 @@ function ProjectEmbed({ doc, siteSlug }: { doc: Projekty; siteSlug: string }) {
       label={title}
       style={surface.style}
     >
-      {logo?.url ? (
+      {logoSrc ? (
         <div className="pointer-events-none relative z-[1] flex h-14 w-28 shrink-0 items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt={mediaAlt(logo, title)}
             className="max-h-full max-w-full object-contain object-left"
             loading="lazy"
-            src={logo.url}
+            src={logoSrc}
           />
         </div>
       ) : null}

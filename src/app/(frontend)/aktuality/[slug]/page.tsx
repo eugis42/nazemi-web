@@ -91,7 +91,7 @@ export default async function NewsDetailPage({
           { href: withSiteQuery('/aktuality', site.slug), label: 'Aktuality' },
           { href: withSiteQuery(`/aktuality/${doc.slug}`, site.slug), label: doc.title },
         ]}
-        mainClassName="pt-16 lg:pt-24"
+        mainClassName="pt-content-top"
         site={site}
         stacked={false}
       >

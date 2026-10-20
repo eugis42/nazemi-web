@@ -1,8 +1,10 @@
 import type { Block, Field } from 'payload'
 
+import { CallToActionBlock } from '@/blocks/callToAction'
 import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
+import { FormEmbedBlock } from '@/blocks/formEmbed'
 import { GalleryBlock, LogoStripBlock, ThreeColumnsBlock } from '@/blocks/pageBlocks'
-import { SpeakersBlock } from '@/blocks/workshopBlocks'
+import { SpeakersBlock, TestimonialsBlock } from '@/blocks/workshopBlocks'
 import { nazemiNestedLexicalEditor } from '@/lib/lexical-nested-editor'
 
 /**
@@ -25,7 +27,7 @@ function threeColumnsForLexical(block: Block): Block {
             admin: {
               ...('admin' in inner ? inner.admin : undefined),
               description:
-                'Text sloupce. V rich textu bez vnořených bloků (galerie / Lidé / Sloupce).',
+                'Text sloupce. V rich textu bez vnořených bloků (galerie / Lidé / Reference / Sloupce).',
             },
           }
         }),
@@ -39,7 +41,10 @@ export const nazemiLexicalEmbedBlocks: Block[] = [
   GalleryBlock,
   LogoStripBlock,
   ExpandingParagraphBlock,
+  CallToActionBlock,
+  FormEmbedBlock,
   SpeakersBlock,
+  TestimonialsBlock,
   threeColumnsForLexical(ThreeColumnsBlock),
 ]
 

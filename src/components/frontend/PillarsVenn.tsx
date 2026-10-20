@@ -19,9 +19,5 @@ export async function PillarsVenn() {
   const svg = await readVennSvg()
   if (!svg) return null
 
-  return (
-    <PillarsVennMotion>
-      <div className="pillars-venn-stage" dangerouslySetInnerHTML={{ __html: svg }} />
-    </PillarsVennMotion>
-  )
+  return <PillarsVennMotion svg={svg} />
 }

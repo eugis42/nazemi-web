@@ -16,13 +16,8 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     '*': ['./media/**/*'],
   },
-  // Portless serves http://nazemi.localhost → :4100. Allow Server Actions / HMR.
-  allowedDevOrigins: ['nazemi.localhost'],
   experimental: {
     ...(lowmem ? { cpus: 1 } : {}),
-    serverActions: {
-      allowedOrigins: ['nazemi.localhost', 'localhost:4100'],
-    },
   },
   images: {
     localPatterns: [

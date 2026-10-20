@@ -51,7 +51,7 @@ export default async function KontaktPage({
         { href: withSiteQuery('/', site.slug), label: 'Domů' },
         { href: withSiteQuery('/kontakt', site.slug), label: 'Kontakty' },
       ]}
-      mainClassName="pt-12 lg:pt-20"
+      mainClassName="pt-content-top"
       site={site}
       stacked={false}
     >
