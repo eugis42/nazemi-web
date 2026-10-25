@@ -138,7 +138,6 @@ type FilterLinkFields = {
 }
 
 type IframeEmbedFields = {
-  aspect?: string | null
   blockType: 'iframeEmbed'
   source?: string | null
   title?: string | null
@@ -402,9 +401,9 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
             </div>
           ),
           iframeEmbed: ({ node }: { node: SerializedBlockNode<IframeEmbedFields> }) => (
-            <div className="not-prose w-full" data-rt-block="iframeEmbed">
+            <span className="not-prose" data-rt-block="iframeEmbed">
               <IframeEmbedBlockView block={node.fields} />
-            </div>
+            </span>
           ),
         },
         link: ({ node, nodesToJSX }) => {

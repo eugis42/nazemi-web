@@ -1,18 +1,26 @@
 import { describe, expect, it } from 'vitest'
 
-import { resolveSafeIframeSrc, validateIframeEmbedSource } from '@/lib/iframe-embed'
+import {
+  resolveSafeIframeEmbed,
+  resolveSafeIframeSrc,
+  validateIframeEmbedSource,
+} from '@/lib/iframe-embed'
 
-describe('resolveSafeIframeSrc', () => {
+describe('resolveSafeIframeEmbed', () => {
   it('accepts https URL', () => {
-    expect(resolveSafeIframeSrc('https://www.youtube.com/embed/abc')).toBe(
-      'https://www.youtube.com/embed/abc',
-    )
+    expect(resolveSafeIframeEmbed('https://www.youtube.com/embed/abc')).toEqual({
+      src: 'https://www.youtube.com/embed/abc',
+    })
   })
 
-  it('extracts src from iframe paste', () => {
+  it('extracts src + size from iframe paste', () => {
     const paste =
       '<iframe width="560" height="315" src="https://www.youtube.com/embed/xyz" title="t"></iframe>'
-    expect(resolveSafeIframeSrc(paste)).toBe('https://www.youtube.com/embed/xyz')
+    expect(resolveSafeIframeEmbed(paste)).toEqual({
+      src: 'https://www.youtube.com/embed/xyz',
+      width: '560',
+      height: '315',
+    })
   })
 
   it('rejects http, javascript, scripts', () => {

@@ -27,7 +27,7 @@ export const IframeEmbedBlock: Block = {
       validate: validateIframeEmbedSource,
       admin: {
         description:
-          'Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.',
+          'Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.',
         rows: 4,
       },
     },
@@ -38,21 +38,6 @@ export const IframeEmbedBlock: Block = {
       defaultValue: 'Vložený obsah',
       admin: {
         description: 'Popis obsahu pro čtečky obrazovky (atribut title u iframe).',
-      },
-    },
-    {
-      name: 'aspect',
-      type: 'select',
-      label: 'Poměr stran',
-      defaultValue: '16/9',
-      options: [
-        { label: '16∶9 (video)', value: '16/9' },
-        { label: '4∶3', value: '4/3' },
-        { label: '1∶1', value: '1/1' },
-        { label: '21∶9', value: '21/9' },
-      ],
-      admin: {
-        description: 'Výška se počítá z šířky obsahu.',
       },
     },
   ],

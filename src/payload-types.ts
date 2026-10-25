@@ -1069,17 +1069,13 @@ export interface Stranky {
           }
         | {
             /**
-             * Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.
+             * Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.
              */
             source: string;
             /**
              * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
              */
             title?: string | null;
-            /**
-             * Výška se počítá z šířky obsahu.
-             */
-            aspect?: ('16/9' | '4/3' | '1/1' | '21/9') | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'iframeEmbed';
@@ -1933,17 +1929,13 @@ export interface Stranky {
           }
         | {
             /**
-             * Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.
+             * Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.
              */
             source: string;
             /**
              * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
              */
             title?: string | null;
-            /**
-             * Výška se počítá z šířky obsahu.
-             */
-            aspect?: ('16/9' | '4/3' | '1/1' | '21/9') | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'iframeEmbed';
@@ -3607,17 +3599,13 @@ export interface Workshopy {
           }
         | {
             /**
-             * Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.
+             * Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.
              */
             source: string;
             /**
              * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
              */
             title?: string | null;
-            /**
-             * Výška se počítá z šířky obsahu.
-             */
-            aspect?: ('16/9' | '4/3' | '1/1' | '21/9') | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'iframeEmbed';
@@ -4745,17 +4733,13 @@ export interface Projekty {
       }
     | {
         /**
-         * Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.
+         * Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.
          */
         source: string;
         /**
          * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
          */
         title?: string | null;
-        /**
-         * Výška se počítá z šířky obsahu.
-         */
-        aspect?: ('16/9' | '4/3' | '1/1' | '21/9') | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'iframeEmbed';
@@ -5665,7 +5649,6 @@ export interface StrankySelect<T extends boolean = true> {
           | {
               source?: T;
               title?: T;
-              aspect?: T;
               id?: T;
               blockName?: T;
             };
@@ -5974,7 +5957,6 @@ export interface StrankySelect<T extends boolean = true> {
           | {
               source?: T;
               title?: T;
-              aspect?: T;
               id?: T;
               blockName?: T;
             };
@@ -6377,7 +6359,6 @@ export interface ProjektySelect<T extends boolean = true> {
           | {
               source?: T;
               title?: T;
-              aspect?: T;
               id?: T;
               blockName?: T;
             };
@@ -6729,7 +6710,6 @@ export interface WorkshopySelect<T extends boolean = true> {
           | {
               source?: T;
               title?: T;
-              aspect?: T;
               id?: T;
               blockName?: T;
             };
