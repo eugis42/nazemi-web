@@ -13,6 +13,7 @@ import { draftFindOptions,
   getListingWhere,
   getPayloadClient,
   resolveSiteFromCurrentRequest } from '@/lib/frontend'
+import { resolveAdminEditHref } from '@/lib/frontend-edit'
 import { upcomingScheduledWorkshopsJoin } from '@/lib/menu-relation-picker'
 import { buildPageMetadata } from '@/lib/metadata'
 
@@ -87,6 +88,7 @@ export default async function WorkshopDetailPage({
 
   const doc = result.docs[0]
   if (!doc) notFound()
+  const editHref = await resolveAdminEditHref('workshopy', doc.id)
 
   return (
     <DocLivePreviewProvider initialData={doc}>
@@ -104,6 +106,7 @@ export default async function WorkshopDetailPage({
             })),
           },
         ]}
+        editHref={editHref}
         site={site}
         stacked={false}
       >

@@ -11,6 +11,7 @@ import {
   getPayloadClient,
   resolveSiteFromCurrentRequest,
 } from '@/lib/frontend'
+import { resolveAdminEditHref } from '@/lib/frontend-edit'
 import { buildPageMetadata } from '@/lib/metadata'
 
 export async function generateMetadata({
@@ -81,6 +82,7 @@ export default async function NewsDetailPage({
 
   const doc = result.docs[0]
   if (!doc) notFound()
+  const editHref = await resolveAdminEditHref('aktuality', doc.id)
 
   return (
     <DocLivePreviewProvider initialData={doc}>
@@ -91,6 +93,7 @@ export default async function NewsDetailPage({
           { href: withSiteQuery('/aktuality', site.slug), label: 'Aktuality' },
           { href: withSiteQuery(`/aktuality/${doc.slug}`, site.slug), label: doc.title },
         ]}
+        editHref={editHref}
         mainClassName="pt-content-top"
         site={site}
         stacked={false}

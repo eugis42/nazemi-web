@@ -10,6 +10,7 @@ import {
   getPayloadClient,
   resolveSiteFromCurrentRequest,
 } from '@/lib/frontend'
+import { resolveAdminEditHref } from '@/lib/frontend-edit'
 import { buildPageMetadata } from '@/lib/metadata'
 
 export async function generateMetadata({
@@ -82,9 +83,10 @@ export default async function HomePage({
   })
 
   const homepage = pages.docs[0]
+  const editHref = homepage ? await resolveAdminEditHref('stranky', homepage.id) : null
 
   return (
-    <SiteShell backdrop site={site} stacked={false}>
+    <SiteShell backdrop editHref={editHref} site={site} stacked={false}>
       <RefreshRouteOnSave />
       {homepage ? (
         <HomepageBlocks blocks={homepage.homepageContent as never} site={site} />

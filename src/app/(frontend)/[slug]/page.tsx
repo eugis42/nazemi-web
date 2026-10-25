@@ -14,6 +14,7 @@ import {
   getPayloadClient,
   resolveSiteFromCurrentRequest,
 } from '@/lib/frontend'
+import { resolveAdminEditHref } from '@/lib/frontend-edit'
 import { buildPageMetadata } from '@/lib/metadata'
 
 export async function generateMetadata({
@@ -146,11 +147,14 @@ export default async function SitePage({
         { href: withSiteQuery(pageHref, site.slug), label: doc.title },
       ]
 
+  const editHref = await resolveAdminEditHref('stranky', doc.id)
+
   return (
     <DocLivePreviewProvider initialData={doc}>
       <SiteShell
         beforeMain={<StrankaIntroLivePreview />}
         breadcrumbs={breadcrumbs}
+        editHref={editHref}
         mainClassName="pt-content-top"
         site={site}
         stacked={false}

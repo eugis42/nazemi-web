@@ -13,6 +13,7 @@ import { draftFindOptions,
   getListingWhere,
   getPayloadClient,
   resolveSiteFromCurrentRequest } from '@/lib/frontend'
+import { resolveAdminEditHref } from '@/lib/frontend-edit'
 import { buildPageMetadata } from '@/lib/metadata'
 
 export async function generateMetadata({
@@ -85,6 +86,7 @@ export default async function ProjectDetailPage({
 
   const doc = result.docs[0]
   if (!doc) notFound()
+  const editHref = await resolveAdminEditHref('projekty', doc.id)
 
   return (
     <DocLivePreviewProvider initialData={doc}>
@@ -102,6 +104,7 @@ export default async function ProjectDetailPage({
             })),
           },
         ]}
+        editHref={editHref}
         mainClassName="pt-content-top"
         site={site}
         stacked={false}

@@ -13,6 +13,7 @@ import { draftFindOptions,
   getListingWhere,
   getPayloadClient,
   resolveSiteFromCurrentRequest } from '@/lib/frontend'
+import { resolveAdminEditHref } from '@/lib/frontend-edit'
 import { buildPageMetadata } from '@/lib/metadata'
 
 export async function generateMetadata({
@@ -82,6 +83,7 @@ export default async function EventDetailPage({
 
   const doc = result.docs[0]
   if (!doc) notFound()
+  const editHref = await resolveAdminEditHref('kalendar', doc.id)
 
   return (
     <DocLivePreviewProvider initialData={doc}>
@@ -92,6 +94,7 @@ export default async function EventDetailPage({
           { href: withSiteQuery('/kalendar', site.slug), label: 'Kalendář' },
           { href: withSiteQuery(`/kalendar/${doc.slug}`, site.slug), label: doc.title },
         ]}
+        editHref={editHref}
         mainClassName="pt-content-top"
         site={site}
         stacked={false}

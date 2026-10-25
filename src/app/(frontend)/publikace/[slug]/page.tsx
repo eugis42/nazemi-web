@@ -13,6 +13,7 @@ import { draftFindOptions,
   getListingWhere,
   getPayloadClient,
   resolveSiteFromCurrentRequest } from '@/lib/frontend'
+import { resolveAdminEditHref } from '@/lib/frontend-edit'
 import { buildPageMetadata } from '@/lib/metadata'
 
 export async function generateMetadata({
@@ -106,11 +107,14 @@ export default async function PublikaceDetailPage({
         },
       ]
 
+  const editHref = await resolveAdminEditHref('publikace', doc.id)
+
   return (
     <DocLivePreviewProvider initialData={doc}>
       <SiteShell
         beforeMain={<PublikaceHeaderLivePreview siteSlug={site.slug} />}
         breadcrumbs={breadcrumbs}
+        editHref={editHref}
         mainClassName="pt-content-top"
         site={site}
         stacked={false}

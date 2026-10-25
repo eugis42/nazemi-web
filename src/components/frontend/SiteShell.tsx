@@ -1,5 +1,6 @@
 import type { Site } from '@/payload-types'
 
+import { EditDocFab } from '@/components/frontend/EditDocFab'
 import { FormModalProvider } from '@/components/frontend/FormModalProvider'
 import { HeroBackdrop } from '@/components/frontend/HeroBackdrop'
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/frontend/listing'
@@ -14,6 +15,7 @@ export function SiteShell({
   beforeMain,
   breadcrumbs,
   children,
+  editHref = null,
   mainClassName = '',
   site,
   stacked = true,
@@ -23,6 +25,8 @@ export function SiteShell({
   beforeMain?: React.ReactNode
   breadcrumbs?: BreadcrumbItem[]
   children: React.ReactNode
+  /** Admin edit URL when logged-in editor can update this doc. */
+  editHref?: string | null
   mainClassName?: string
   site: Site
   /** Off when the page already renders its own `section-stack` container. */
@@ -74,6 +78,7 @@ export function SiteShell({
             <SiteFooter site={site} />
           </div>
         </main>
+        {editHref ? <EditDocFab href={editHref} /> : null}
       </div>
     </FormModalProvider>
   )
