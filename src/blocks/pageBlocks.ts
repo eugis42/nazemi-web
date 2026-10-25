@@ -6,6 +6,8 @@ import {
 } from '@/blocks/blockMeta'
 import { CallToActionBlock } from '@/blocks/callToAction'
 import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
+import { ExternalLinkCardBlock } from '@/blocks/externalLinkCard'
+import { FilterLinkBlock } from '@/blocks/filterLink'
 import { FormEmbedBlock } from '@/blocks/formEmbed'
 import { additionalColorField } from '@/fields/additionalColor'
 import { columnCallToActionField } from '@/fields/cta'
@@ -271,4 +273,6 @@ export const pageBlocks = [
   ThreeColumnsBlock,
   CallToActionBlock,
   FormEmbedBlock,
+  ExternalLinkCardBlock,
+  FilterLinkBlock,
 ]

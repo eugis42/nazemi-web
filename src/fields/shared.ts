@@ -1,6 +1,7 @@
 import type { Field, TextareaField, TextField, Validate } from 'payload'
 
 import { ctaVariantFields } from '@/fields/cta'
+import { navLinkTargetFields } from '@/fields/menu'
 import {
   hrefFieldDescription,
   validateOptionalHref,
@@ -253,7 +254,10 @@ export const socialLinkField: Field = {
 /**
  * Doc-level “Call to Action” array (`ctas`).
  * Placement: own tab **Call to Action** (Workshopy, Kalendar, Projekty, Publikace).
+ * Same Interní / Zadat URL UI as Navigace (+ forms → modal).
  * Block-level CTAs use `callToActionField` (`actions`) instead.
+ *
+ * Legacy rows used `url`; FE still reads `href || url`.
  */
 export const ctaField = (
   description?: string,
@@ -281,21 +285,32 @@ export const ctaField = (
           name: 'title',
           type: 'text',
           label: 'Text tlačítka',
-          required: true,
-          admin: { width: '40%' },
-        },
-        {
-          name: 'url',
-          type: 'text',
-          label: 'URL',
-          required: true,
           admin: {
-            description: hrefFieldDescription,
+            description: 'Volitelné u interního odkazu — prázdné → název vybrané položky.',
             width: '60%',
           },
-          validate: validateRequiredHref,
+        },
+        {
+          name: 'linkType',
+          type: 'select',
+          label: 'Typ odkazu',
+          defaultValue: 'external',
+          required: true,
+          dbName: ({ tableName }: { tableName?: string }) => `${tableName || 'cta'}_lt`,
+          options: [
+            { label: 'Interní', value: 'internal' },
+            { label: 'Zadat URL', value: 'external' },
+          ],
+          admin: { width: '40%' },
         },
       ],
+    },
+    ...navLinkTargetFields({ compactDbNames: true, skipLinkType: true }),
+    // Legacy column — keep so old rows survive until re-saved; hidden in admin.
+    {
+      name: 'url',
+      type: 'text',
+      admin: { hidden: true },
     },
     ...(options?.withVariant ? ctaVariantFields() : []),
   ],

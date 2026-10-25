@@ -2,6 +2,8 @@ import type { Block, Field } from 'payload'
 
 import { CallToActionBlock } from '@/blocks/callToAction'
 import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
+import { ExternalLinkCardBlock } from '@/blocks/externalLinkCard'
+import { FilterLinkBlock } from '@/blocks/filterLink'
 import { FormEmbedBlock } from '@/blocks/formEmbed'
 import { GalleryBlock, LogoStripBlock, ThreeColumnsBlock } from '@/blocks/pageBlocks'
 import { SpeakersBlock, TestimonialsBlock } from '@/blocks/workshopBlocks'
@@ -43,6 +45,8 @@ export const nazemiLexicalEmbedBlocks: Block[] = [
   ExpandingParagraphBlock,
   CallToActionBlock,
   FormEmbedBlock,
+  ExternalLinkCardBlock,
+  FilterLinkBlock,
   SpeakersBlock,
   TestimonialsBlock,
   threeColumnsForLexical(ThreeColumnsBlock),

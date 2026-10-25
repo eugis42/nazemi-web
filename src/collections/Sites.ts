@@ -2,7 +2,12 @@ import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
 import { sitesAccess } from '@/access/roles'
 import { additionalColorField } from '@/fields/additionalColor'
-import { mainMenuArrayAdmin, menuArrayAdmin, menuItemFields } from '@/fields/menu'
+import {
+  mainMenuArrayAdmin,
+  menuArrayAdmin,
+  menuItemFields,
+  navLinkTargetFields,
+} from '@/fields/menu'
 import { draftStatusListCellField, imageUploadFilter, socialLinkField } from '@/fields/shared'
 import {
   hrefFieldDescription,
@@ -310,6 +315,21 @@ export const Sites: CollectionConfig = {
               },
               fields: menuItemFields(),
             },
+            {
+              name: 'footerMenu',
+              type: 'array',
+              admin: {
+                description:
+                  'Odkazy v dolní liště patičky (např. právní stránky). Jedna úroveň, bez podpoložek.',
+                ...menuArrayAdmin,
+              },
+              label: 'Menu v patičce',
+              labels: {
+                plural: 'Položky',
+                singular: 'položku',
+              },
+              fields: menuItemFields(),
+            },
           ],
         },
         {
@@ -402,21 +422,27 @@ export const Sites: CollectionConfig = {
                           type: 'text',
                           label: 'Text',
                           required: true,
-                          admin: { width: '40%' },
-                        },
-                        {
-                          name: 'href',
-                          type: 'text',
-                          label: 'URL',
-                          required: true,
                           admin: {
-                            description: hrefFieldDescription,
+                            description:
+                              'Volitelné u interního odkazu — prázdné → název vybrané položky.',
                             width: '60%',
                           },
-                          validate: validateRequiredHref,
+                        },
+                        {
+                          name: 'linkType',
+                          type: 'select',
+                          label: 'Typ odkazu',
+                          defaultValue: 'external',
+                          required: true,
+                          options: [
+                            { label: 'Interní', value: 'internal' },
+                            { label: 'Zadat URL', value: 'external' },
+                          ],
+                          admin: { width: '40%' },
                         },
                       ],
                     },
+                    ...navLinkTargetFields({ skipLinkType: true }),
                   ],
                 },
                 {
@@ -501,20 +527,26 @@ export const Sites: CollectionConfig = {
                       name: 'buttonLabel',
                       type: 'text',
                       label: 'Text tlačítka',
-                      admin: { width: '40%' },
-                    },
-                    {
-                      name: 'href',
-                      type: 'text',
-                      label: 'URL tlačítka',
                       admin: {
-                        description: hrefFieldDescription,
+                        description:
+                          'Volitelné u interního odkazu — prázdné → název vybrané položky.',
                         width: '60%',
                       },
-                      validate: validateOptionalHref,
+                    },
+                    {
+                      name: 'linkType',
+                      type: 'select',
+                      label: 'Typ odkazu',
+                      defaultValue: 'external',
+                      options: [
+                        { label: 'Interní', value: 'internal' },
+                        { label: 'Zadat URL', value: 'external' },
+                      ],
+                      admin: { width: '40%' },
                     },
                   ],
                 },
+                ...navLinkTargetFields({ skipLinkType: true }),
               ],
             },
             {
@@ -551,20 +583,32 @@ export const Sites: CollectionConfig = {
                       type: 'text',
                       label: 'Text tlačítka',
                       defaultValue: 'Přihlásit se',
-                      admin: { width: '40%' },
-                    },
-                    {
-                      name: 'subscribeUrl',
-                      type: 'text',
-                      label: 'URL přihlášení',
-                      required: true,
                       admin: {
-                        description: hrefFieldDescription,
+                        description:
+                          'Volitelné u interního odkazu — prázdné → název vybrané položky.',
                         width: '60%',
                       },
-                      validate: validateRequiredHref,
+                    },
+                    {
+                      name: 'linkType',
+                      type: 'select',
+                      label: 'Typ odkazu',
+                      defaultValue: 'external',
+                      required: true,
+                      options: [
+                        { label: 'Interní', value: 'internal' },
+                        { label: 'Zadat URL', value: 'external' },
+                      ],
+                      admin: { width: '40%' },
                     },
                   ],
+                },
+                ...navLinkTargetFields({ skipLinkType: true }),
+                // Legacy — FE reads href || subscribeUrl until re-saved.
+                {
+                  name: 'subscribeUrl',
+                  type: 'text',
+                  admin: { hidden: true },
                 },
               ],
             },

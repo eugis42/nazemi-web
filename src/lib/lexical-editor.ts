@@ -10,6 +10,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
+import { StripEmptyLexicalNodesFeature } from '@/features/StripEmptyLexicalNodesFeature'
 import {
   RICH_TEXT_RELATION_COLLECTIONS,
   type RichTextRelationCollection,
@@ -68,7 +69,10 @@ const uploadWidthPercentField = {
  * - LinkFeature: internal docs limited to content collections
  * - FixedToolbarFeature: persistent top toolbar
  * - TextStateFeature: text colour tokens from document site palette
- * - BlocksFeature: Galerie + Pás log + Rozbalovací odstavec + Lidé + Reference + Sloupce
+ * - BlocksFeature: Galerie + Pás log + Rozbalovací + Lidé + Reference + Sloupce + …
+ * - BlockquoteFeature: kept via defaultFeatures (Quote in Aa / slash) — FE styles in
+ *   `.prose-nazemi .payload-richtext blockquote` (not Reference testimonial quotes)
+ * - StripEmptyLexicalNodesFeature: beforeChange strips empty paragraphs / nulls empty docs
  *
  * Payload toolbar groups (see payloadcms.com/docs/rich-text/custom-features):
  * - `add` (+): insertables only — upload / relationship / HR
@@ -115,6 +119,7 @@ export const nazemiLexicalEditor = lexicalEditor({
       },
     }),
     SiteTextColorVarsFeature(),
+    StripEmptyLexicalNodesFeature(),
     FixedToolbarFeature(),
     BlocksFeature({
       blocks: nazemiLexicalEmbedBlocks,

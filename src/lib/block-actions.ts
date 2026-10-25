@@ -1,7 +1,7 @@
-import type { BlockHeaderAction } from '@/components/frontend/ui'
+import type { BlockHeaderAction } from '@/components/frontend/BlockHeader'
 import { isDocumentHref, isExternalHref } from '@/lib/links'
 import { withSiteQuery } from '@/lib/content'
-import { resolveNavReferenceHref } from '@/lib/menu'
+import { resolveNavTarget } from '@/lib/nav-target'
 
 export type BlockActionInput = {
   backgroundColor?: string | null
@@ -10,25 +10,9 @@ export type BlockActionInput = {
   label?: string | null
   linkType?: 'internal' | 'external' | null
   reference?: unknown
+  title?: string | null
+  url?: string | null
   variant?: string | null
-}
-
-function resolvedActionTarget(action: BlockActionInput): {
-  href: string
-  label: string | null
-} | null {
-  if (action.linkType === 'internal') {
-    const resolved = resolveNavReferenceHref(action.reference)
-    if (!resolved?.href) return null
-    const label =
-      (typeof action.label === 'string' && action.label.trim()) || resolved.title || resolved.href
-    return { href: resolved.href, label }
-  }
-
-  const href = typeof action.href === 'string' ? action.href.trim() : ''
-  if (!href) return null
-  const label = (typeof action.label === 'string' && action.label.trim()) || href
-  return { href, label }
 }
 
 /** Map CMS CTA rows (+ legacy single actionLabel/Href) → BlockHeader actions. */
@@ -51,13 +35,32 @@ export function resolveBlockActions({
 }): BlockHeaderAction[] {
   const fromCms = (actions || [])
     .map((action) => {
-      const target = resolvedActionTarget(action)
+      const target = resolveNavTarget({
+        href: action.href,
+        label: action.label,
+        linkType: action.linkType,
+        reference: action.reference,
+        title: action.title,
+        url: action.url,
+      })
       if (!target) return null
-      return { ...action, href: target.href, label: target.label }
+      if (target.kind === 'form') {
+        return {
+          backgroundColor: action.backgroundColor || null,
+          formId: target.formId,
+          formTitle: target.formTitle,
+          label: target.label,
+          variant: mapCtaVariant(action.variant) || defaultVariant,
+        } satisfies BlockHeaderAction
+      }
+      return {
+        ...action,
+        href: target.href,
+        label: target.label,
+        external: target.external,
+      }
     })
-    .filter((action): action is BlockActionInput & { href: string; label: string } =>
-      Boolean(action?.href && action?.label),
-    )
+    .filter((action): action is NonNullable<typeof action> => Boolean(action))
 
   const rows = fromCms.length
     ? fromCms
@@ -68,11 +71,27 @@ export function resolveBlockActions({
         : []
 
   return rows.map((action) => {
-    const href = action.href || '#'
+    const backgroundColor =
+      'backgroundColor' in action ? action.backgroundColor || null : null
+    if ('formId' in action && action.formId != null) {
+      return {
+        backgroundColor,
+        formId: action.formId,
+        formTitle:
+          ('formTitle' in action && action.formTitle) || action.label || null,
+        label: action.label,
+        variant: mapCtaVariant(action.variant) || defaultVariant,
+      }
+    }
+
+    const href = ('href' in action && action.href) || '#'
     const doc = isDocumentHref(href)
-    const external = !doc && isExternalHref(href)
+    const external =
+      'external' in action && action.external != null
+        ? Boolean(action.external)
+        : !doc && isExternalHref(href)
     return {
-      backgroundColor: action.backgroundColor || null,
+      backgroundColor,
       external,
       href: external || doc ? href : withSiteQuery(href, siteSlug),
       label: action.label,

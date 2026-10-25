@@ -188,8 +188,8 @@ export async function menuReferenceFilterOptions({
     }
   }
 
-  // Stránky: only this web (no cross-post field).
-  if (relationTo === 'stranky') {
+  // Stránky / forms: only this web (no cross-post).
+  if (relationTo === 'stranky' || relationTo === 'forms') {
     return {
       and: [{ site: { equals: editingSiteId } }, { site: { in: validSiteIds } }],
     }

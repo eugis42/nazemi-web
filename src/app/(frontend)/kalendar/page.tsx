@@ -8,12 +8,14 @@ import { hrefWith, queryList, toggleQueryValue, withSiteQuery } from '@/lib/cont
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
 import {
   findTaxonomyBySlugs,
+  findUsedRelationIds,
   findUsedTaxonomy,
   getListingWhere,
   getPayloadClient,
   getSourceSites,
   mergeActiveTaxonomy,
   resolveSiteFromCurrentRequest,
+  whereAnd,
 } from '@/lib/frontend'
 import { buildPageMetadata } from '@/lib/metadata'
 
@@ -81,37 +83,51 @@ export default async function EventsPage({
 
   const listingWhere: Where = { and: filters }
 
-  const [usedTags, sourceSites] = await Promise.all([
+  const activeTagSlugs = queryList(query.tag)
+  const activeSourceSlugs = queryList(query.source)
+  const [activeTags, sourceSites] = await Promise.all([
+    findTaxonomyBySlugs({ collection: 'tags', slugs: activeTagSlugs }),
+    getSourceSites(site.slug),
+  ])
+  const activeSources = sourceSites.filter((source) => activeSourceSlugs.includes(source.slug))
+
+  const tagFilter: Where | null = activeTags.length
+    ? { tags: { in: activeTags.map((tag) => tag.id) } }
+    : null
+  const sourceFilter: Where | null = activeSources.length
+    ? { site: { in: activeSources.map((source) => source.id) } }
+    : null
+
+  const [usedTags, availableTags, availableSourceIds, events] = await Promise.all([
     findUsedTaxonomy({
       contentCollection: 'kalendar',
       relationCollection: 'tags',
       relationField: 'tags',
       where: listingWhere,
     }),
-    getSourceSites(site.slug),
+    findUsedTaxonomy({
+      contentCollection: 'kalendar',
+      relationCollection: 'tags',
+      relationField: 'tags',
+      where: whereAnd([listingWhere, sourceFilter]),
+    }),
+    findUsedRelationIds({
+      contentCollection: 'kalendar',
+      relationField: 'site',
+      where: whereAnd([listingWhere, tagFilter]),
+    }),
+    payload.find({
+      collection: 'kalendar',
+      depth: 2,
+      limit: PAGE_SIZE,
+      page,
+      sort: past ? '-startDate' : 'startDate',
+      where: whereAnd([listingWhere, tagFilter, sourceFilter]),
+    }),
   ])
 
-  const activeTagSlugs = queryList(query.tag)
-  const activeTags = await findTaxonomyBySlugs({ collection: 'tags', slugs: activeTagSlugs })
-  if (activeTags.length) {
-    filters.push({ tags: { in: activeTags.map((tag) => tag.id) } })
-  }
   const tags = mergeActiveTaxonomy(usedTags, activeTags)
-
-  const activeSourceSlugs = queryList(query.source)
-  const activeSources = sourceSites.filter((source) => activeSourceSlugs.includes(source.slug))
-  if (activeSources.length) {
-    filters.push({ site: { in: activeSources.map((source) => source.id) } })
-  }
-
-  const events = await payload.find({
-    collection: 'kalendar',
-    depth: 2,
-    limit: PAGE_SIZE,
-    page,
-    sort: past ? '-startDate' : 'startDate',
-    where: { and: filters },
-  })
+  const availableTagSlugs = new Set(availableTags.map((tag) => tag.slug))
 
   const current = {
     page: query.page,
@@ -134,29 +150,37 @@ export default async function EventsPage({
       solid: true,
     },
   ]
-  const tagChips: FilterChip[] = tags.map((tag) => ({
-    active: activeTagSlugs.includes(tag.slug),
-    clearable: true,
-    href: hrefWith(
-      '/kalendar',
-      current,
-      { page: undefined, tag: toggleQueryValue(activeTagSlugs, tag.slug) },
-      site.slug,
-    ),
-    label: tag.title,
-  }))
-  const sourceChips: FilterChip[] = sourceSites.map((source) => ({
-    active: activeSourceSlugs.includes(source.slug),
-    clearable: true,
-    href: hrefWith(
-      '/kalendar',
-      current,
-      { page: undefined, source: toggleQueryValue(activeSourceSlugs, source.slug) },
-      site.slug,
-    ),
-    label: `Události ${source.name}`,
-    source: true,
-  }))
+  const tagChips: FilterChip[] = tags.map((tag) => {
+    const active = activeTagSlugs.includes(tag.slug)
+    return {
+      active,
+      clearable: true,
+      disabled: !active && !availableTagSlugs.has(tag.slug),
+      href: hrefWith(
+        '/kalendar',
+        current,
+        { page: undefined, tag: toggleQueryValue(activeTagSlugs, tag.slug) },
+        site.slug,
+      ),
+      label: tag.title,
+    }
+  })
+  const sourceChips: FilterChip[] = sourceSites.map((source) => {
+    const active = activeSourceSlugs.includes(source.slug)
+    return {
+      active,
+      clearable: true,
+      disabled: !active && !availableSourceIds.has(String(source.id)),
+      href: hrefWith(
+        '/kalendar',
+        current,
+        { page: undefined, source: toggleQueryValue(activeSourceSlugs, source.slug) },
+        site.slug,
+      ),
+      label: `Události ${source.name}`,
+      source: true,
+    }
+  })
 
   return (
     <SiteShell

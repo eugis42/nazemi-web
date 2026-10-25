@@ -4,6 +4,7 @@ import type { Aktuality, Kalendar, Projekty, Publikace, Workshopy } from '@/payl
 
 import { EventOverviewMotion } from '@/components/frontend/EventOverviewMotion'
 import { PageBlocks } from '@/components/frontend/BlockRenderers'
+import { DocCtaButton, firstDocCta } from '@/components/frontend/DocCtaButton'
 import { CalendarIcon, ClockIcon, PinIcon } from '@/components/frontend/icons'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { Button, TagGroup, type TagItem } from '@/components/frontend/ui'
@@ -65,7 +66,7 @@ export function Prose({ data, siteSlug = '' }: { data?: unknown; siteSlug?: stri
   return (
     <div className={CONTENT_WRAPPER_CLASS}>
       <div
-        className={`prose-nazemi ${CONTENT_INNER_CLASS} font-inter`}
+        className={`prose-nazemi ${CONTENT_INNER_CLASS}`}
         data-block="event-content"
         data-component="event-prose"
       >
@@ -133,7 +134,7 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
   })
   const placeText = formatEventPlace(item.location) || null
   const stickyPlace = item.location?.name || null
-  const primaryCta = item.ctas?.find((cta) => cta.url && cta.title)
+  const primaryCta = firstDocCta(item.ctas)
 
   const dateMeta = (
     <EventMeta icon={<CalendarIcon />} text={formatDateRange(item.startDate, item.endDate)} />
@@ -147,24 +148,16 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
   ) : null
   const workshop = item.workshop && typeof item.workshop === 'object' ? item.workshop : null
   const signup = primaryCta ? (
-    <Button
-      className="shrink-0"
-      external
-      href={primaryCta.url!}
-      variant="filled-green"
-    >
-      {primaryCta.title}
-    </Button>
+    <DocCtaButton className="shrink-0" cta={primaryCta} external siteSlug={siteSlug} variant="filled-green" />
   ) : null
   const stickySignup = primaryCta ? (
-    <Button
+    <DocCtaButton
       className="shrink-0 self-start lg:self-center"
+      cta={primaryCta}
       external
-      href={primaryCta.url!}
+      siteSlug={siteSlug}
       variant="filled-green"
-    >
-      {primaryCta.title}
-    </Button>
+    />
   ) : null
 
   return (
@@ -418,7 +411,7 @@ export function WorkshopHeader({
   const cover = item.coverImage && typeof item.coverImage === 'object' ? item.coverImage : null
   const duration = typeof item.duration === 'string' && item.duration.trim() ? item.duration : null
   const price = typeof item.price === 'string' && item.price.trim() ? item.price : null
-  const orderCta = item.ctas?.find((cta) => cta.url && cta.title)
+  const orderCta = firstDocCta(item.ctas)
   const audienceTags = taxonomyFilterTags(item.audiences, '/workshopy', 'audience', siteSlug)
   const topicTags = taxonomyFilterTags(item.topics, '/workshopy', 'topic', siteSlug)
   const hasTags = audienceTags.length > 0 || topicTags.length > 0
@@ -429,9 +422,7 @@ export function WorkshopHeader({
     </Button>
   ) : null
   const orderButton = orderCta ? (
-    <Button external href={orderCta.url} variant="filled-green">
-      {orderCta.title}
-    </Button>
+    <DocCtaButton cta={orderCta} external siteSlug={siteSlug} variant="filled-green" />
   ) : null
   const hasCtas = Boolean(datesButton || orderButton)
 
@@ -541,7 +532,7 @@ export function PublicationHeader({
   const typeTags = taxonomyFilterTags(item.types, '/publikace', 'filter', siteSlug)
   const topicTags = taxonomyFilterTags(item.topics, '/publikace', 'topic', siteSlug)
   const hasTags = typeTags.length > 0 || topicTags.length > 0
-  const primaryCta = (item.ctas || []).find((c) => c.url && c.title)
+  const primaryCta = firstDocCta(item.ctas)
 
   return (
     <header className="w-full pt-content-top" data-block="publication-header" data-component="publication-header">
@@ -577,9 +568,7 @@ export function PublicationHeader({
             </section>
             {primaryCta ? (
               <section>
-                <Button external={Boolean(primaryCta.url)} href={primaryCta.url || '#'} variant="filled-green">
-                  {primaryCta.title}
-                </Button>
+                <DocCtaButton cta={primaryCta} external siteSlug={siteSlug} variant="filled-green" />
               </section>
             ) : null}
           </div>

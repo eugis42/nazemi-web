@@ -48,14 +48,18 @@ export function filterMenuByEnabledCollections(
   return items
     .map((item) => {
       const resolved = resolveMenuItem(item)
-      const key = collectionKeyForHref(resolved?.href)
-      if (key && !isCollectionEnabled(site, key)) return null
+      if (resolved?.kind === 'link') {
+        const key = collectionKeyForHref(resolved.href)
+        if (key && !isCollectionEnabled(site, key)) return null
+      }
 
       const children = (item.children || [])
         .map((child) => {
           const childResolved = resolveMenuItem(child)
-          const childKey = collectionKeyForHref(childResolved?.href)
-          if (childKey && !isCollectionEnabled(site, childKey)) return null
+          if (childResolved?.kind === 'link') {
+            const childKey = collectionKeyForHref(childResolved.href)
+            if (childKey && !isCollectionEnabled(site, childKey)) return null
+          }
           return child
         })
         .filter(Boolean) as NonNullable<MenuItem['children']>

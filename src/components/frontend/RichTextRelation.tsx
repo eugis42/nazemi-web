@@ -11,9 +11,9 @@ import type {
   Stranky,
   Workshopy,
 } from '@/payload-types'
+import { DocCtaButton, firstDocCta } from '@/components/frontend/DocCtaButton'
 import { StretchAspectThumb } from '@/components/frontend/StretchAspectThumb'
 import { Button, TagGroup } from '@/components/frontend/ui'
-import { mapCtaVariant } from '@/lib/block-actions'
 import {
   crossPostOriginSite,
   mediaAlt,
@@ -77,15 +77,20 @@ function tagTitles(items?: (number | { title?: string | null })[] | null) {
  * Pass width classes; child = absolute inset-0 + object-cover|contain.
  */
 function MediaRail({
+  aspect = 'landscape',
   children,
   className = 'w-[7.5rem] sm:w-36',
 }: {
+  /** Used when stacked inside Sloupce (column CSS). */
+  aspect?: 'landscape' | 'square' | 'portrait'
   children: ReactNode
   className?: string
 }) {
   return (
     <div
       className={`pointer-events-none relative z-[1] shrink-0 self-stretch overflow-hidden ${className}`}
+      data-embed-aspect={aspect}
+      data-embed-media
     >
       {children}
     </div>
@@ -138,7 +143,7 @@ function Frame({
 }) {
   return (
     <article
-      className={`not-prose relative flex gap-4 ${className}`}
+      className={`not-prose relative flex w-full min-w-0 max-w-full gap-4 ${className}`}
       data-component="richtext-relation"
       style={style}
     >
@@ -169,7 +174,7 @@ function Eyebrow({
 }) {
   const color = tone === 'sky' ? 'text-sky/70' : 'text-ground/60'
   return (
-    <span className={`pointer-events-none font-saans text-tag tracking-wide ${color}`}>
+    <span className={`pointer-events-none font-saans text-tag leading-tight tracking-wide ${color}`}>
       {children}
     </span>
   )
@@ -184,7 +189,7 @@ function Body({
 }) {
   return (
     <div
-      className={`pointer-events-none relative z-[1] flex min-w-0 flex-1 flex-col items-start gap-2.5 ${className}`}
+      className={`pointer-events-none relative z-[1] flex min-w-0 flex-1 flex-col items-start gap-3 ${className}`}
     >
       {children}
     </div>
@@ -199,7 +204,7 @@ function Title({
   className?: string
 }) {
   return (
-    <span className={`pointer-events-none font-saans text-card-title leading-snug ${className}`}>
+    <span className={`pointer-events-none font-saans text-card-title leading-none ${className}`}>
       {children}
     </span>
   )
@@ -214,11 +219,30 @@ function Actions({ children }: { children: ReactNode }) {
 }
 
 function PageEmbed({ doc, siteSlug }: { doc: Stranky; siteSlug: string }) {
+  const cover = doc.coverImage && typeof doc.coverImage === 'object' ? doc.coverImage : null
   const title = docTitle(doc)
   const href = withSiteQuery(doc.slug === 'home' || doc.isHomepage ? '/' : `/${doc.slug}`, siteSlug)
   return (
-    <Frame className={`items-start ${FREE_SURFACE}`} href={href} label={title}>
-      <Body>
+    <Frame
+      className={
+        cover
+          ? `items-stretch gap-0 overflow-hidden ${FREE_SURFACE_FLUSH}`
+          : `items-start ${FREE_SURFACE}`
+      }
+      href={href}
+      label={title}
+    >
+      {cover ? (
+        <MediaRail aspect="square" className="w-[7.5rem] sm:w-36">
+          <Cover
+            alt={mediaAlt(cover, title)}
+            className="absolute inset-0 size-full"
+            media={cover}
+            size="square"
+          />
+        </MediaRail>
+      ) : null}
+      <Body className={cover ? HALF_PAD : undefined}>
         <Title>{title}</Title>
         {doc.excerpt ? <p className="text-body-inter text-ground/80">{doc.excerpt}</p> : null}
         <Actions>
@@ -259,6 +283,7 @@ function EventEmbed({ doc, siteSlug }: { doc: Kalendar; siteSlug: string }) {
       {cover && (mediaSizeURL(cover, 'square') || mediaURL(cover)) ? (
         <StretchAspectThumb
           alt=""
+          aspect="square"
           aspectRatio={1}
           objectFit="cover"
           src={mediaSizeURL(cover, 'square') || mediaURL(cover) || ''}
@@ -312,7 +337,7 @@ function NewsEmbed({ doc, siteSlug }: { doc: Aktuality; siteSlug: string }) {
       label={title}
     >
       {cover ? (
-        <MediaRail className="w-40 sm:w-48">
+        <MediaRail aspect="landscape" className="w-40 sm:w-48">
           <Cover alt="" className="absolute inset-0 size-full" media={cover} size="landscape" />
         </MediaRail>
       ) : null}
@@ -377,18 +402,14 @@ function ProjectEmbed({ doc, siteSlug }: { doc: Projekty; siteSlug: string }) {
           <Button href={detailHref} variant={isDark ? 'outline-sky' : 'outline-ground'}>
             {`Více o ${title}`}
           </Button>
-          {(doc.ctas || []).map((link, index) =>
-            link.url && link.title ? (
-              <Button
-                backgroundColor={link.backgroundColor}
-                href={link.url}
-                key={`${link.title}-${index}`}
-                variant={mapCtaVariant(link.variant) || (isDark ? 'outline-sky' : 'outline')}
-              >
-                {link.title}
-              </Button>
-            ) : null,
-          )}
+          {(doc.ctas || []).map((link, index) => (
+            <DocCtaButton
+              cta={link}
+              key={`${link.title || index}-${index}`}
+              siteSlug={siteSlug}
+              variant={link.variant || (isDark ? 'outline-sky' : 'outline')}
+            />
+          ))}
         </Actions>
       </Body>
     </Frame>
@@ -399,7 +420,7 @@ function PublicationEmbed({ doc, siteSlug }: { doc: Publikace; siteSlug: string 
   const cover = doc.coverImage && typeof doc.coverImage === 'object' ? doc.coverImage : null
   const title = docTitle(doc)
   const detailHref = withSiteQuery(`/publikace/${doc.slug}`, siteSlug)
-  const primaryCta = (doc.ctas || []).find((c) => c.url && c.title)
+  const primaryCta = firstDocCta(doc.ctas)
   const coverSrc = cover
     ? mediaSizeURL(cover, 'portrait') || mediaSizeURL(cover, 'large') || mediaURL(cover)
     : null
@@ -409,6 +430,7 @@ function PublicationEmbed({ doc, siteSlug }: { doc: Publikace; siteSlug: string 
       {coverSrc ? (
         <StretchAspectThumb
           alt={mediaAlt(cover, title)}
+          aspect="portrait"
           objectFit="contain"
           src={coverSrc}
         />
@@ -425,9 +447,7 @@ function PublicationEmbed({ doc, siteSlug }: { doc: Publikace; siteSlug: string 
             Více o publikaci
           </Button>
           {primaryCta ? (
-            <Button external href={primaryCta.url} variant="filled-green">
-              {primaryCta.title}
-            </Button>
+            <DocCtaButton cta={primaryCta} external siteSlug={siteSlug} variant="filled-green" />
           ) : null}
         </Actions>
       </Body>
@@ -498,7 +518,7 @@ function WorkshopEmbed({ doc, siteSlug }: { doc: Workshopy; siteSlug: string }) 
   return (
     <Frame className={`items-stretch gap-0 overflow-hidden ${FREE_SURFACE_FLUSH}`} href={href} label={title}>
       {cover ? (
-        <MediaRail>
+        <MediaRail aspect="square" className="w-[7.5rem] sm:w-36">
           <Cover
             alt={mediaAlt(cover, title)}
             className="absolute inset-0 size-full"

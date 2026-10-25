@@ -11,21 +11,46 @@ export const NAV_LINK_COLLECTIONS = [
   'workshopy',
   'publikace',
   'projekty',
+  'forms',
 ] as const
+
+function siblingCtaLabel(siblingData: Record<string, unknown> | undefined): string {
+  for (const key of ['label', 'buttonLabel', 'title', 'subscribeLabel'] as const) {
+    const v = siblingData?.[key]
+    if (typeof v === 'string' && v.trim()) return v.trim()
+  }
+  return ''
+}
 
 const validateInternalReference: Validate = (value, { siblingData }) => {
   if (siblingData?.linkType !== 'internal') return true
-  if (value == null || value === '') return 'Vyberte položku pro interní odkaz.'
-  if (typeof value === 'object' && 'value' in value && (value as { value?: unknown }).value == null) {
-    return 'Vyberte položku pro interní odkaz.'
-  }
+  const emptyRef =
+    value == null ||
+    value === '' ||
+    (typeof value === 'object' &&
+      value !== null &&
+      'value' in value &&
+      (value as { value?: unknown }).value == null)
+  // Optional CTAs (pilíře, donate) — no label + no ref = unused row.
+  if (emptyRef && !siblingCtaLabel(siblingData as Record<string, unknown>)) return true
+  if (emptyRef) return 'Vyberte položku pro interní odkaz.'
   return true
 }
 
 const validateExternalHref: Validate = (value, { siblingData }) => {
   if (siblingData?.linkType === 'internal') return true
-  if (typeof value !== 'string' || !value.trim()) return 'Zadejte URL pro externí odkaz.'
-  return hrefFormatError(value) || true
+  // Legacy: doc CTAs used `url`; newsletters used `subscribeUrl`.
+  const data = siblingData as Record<string, unknown> | undefined
+  const legacy =
+    (typeof data?.url === 'string' && data.url.trim()) ||
+    (typeof data?.subscribeUrl === 'string' && data.subscribeUrl.trim()) ||
+    ''
+  const href = typeof value === 'string' && value.trim() ? value.trim() : legacy
+  if (!href) {
+    if (!siblingCtaLabel(data)) return true
+    return 'Zadejte URL pro externí odkaz.'
+  }
+  return hrefFormatError(href) || true
 }
 
 type NavLinkOptions = {
@@ -78,7 +103,8 @@ export function navLinkTargetFields(options?: NavLinkOptions): Field[] {
         }),
       admin: {
         condition: (_, siblingData) => siblingData?.linkType === 'internal',
-        description: 'Přehled kolekce (domovská), stránka nebo záznam obsahu.',
+        description:
+          'Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).',
         sortOptions: {
           aktuality: '-publishedAt',
           kalendar: 'startDate',

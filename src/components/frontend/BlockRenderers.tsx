@@ -4,6 +4,8 @@ import type { Aktuality, Kalendar, Media, Projekty } from '@/payload-types'
 import { EventCard, NewsCard, PageIntro, ProjectRow } from '@/components/frontend/cards'
 import { CallToActionBlockView } from '@/components/frontend/CallToActionBlock'
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
+import { ExternalLinkCardView } from '@/components/frontend/ExternalLinkCard'
+import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
@@ -13,7 +15,8 @@ import {
   SpeakersBlockView,
   TestimonialsBlockView,
 } from '@/components/frontend/SpeakersTestimonialsBlocks'
-import { BlockHeader, Button } from '@/components/frontend/ui'
+import { FormOrLinkButton } from '@/components/frontend/FormOrLinkButton'
+import { BlockHeader } from '@/components/frontend/ui'
 import { resolveBlockActions } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
 import { mediaAlt, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
@@ -110,17 +113,19 @@ export function HeroBlock({
           <div className="flex flex-wrap items-center justify-center gap-3">
             {actions.map((action, index) =>
               action.label ? (
-                <Button
+                <FormOrLinkButton
                   backgroundColor={action.backgroundColor}
                   className="px-6 py-1.5 ![font-size:var(--text-section-title)] leading-none"
                   external={action.external}
+                  formId={action.formId}
+                  formTitle={action.formTitle}
                   href={action.href || '#'}
                   key={`${action.label}-${index}`}
                   newTab={action.newTab}
                   variant={action.variant || 'outline'}
                 >
                   {action.label}
-                </Button>
+                </FormOrLinkButton>
               ) : null,
             )}
           </div>
@@ -168,7 +173,7 @@ export function NewsGrid({
   return (
     <section className="flex flex-col" data-block="news">
       <BlockHeader actions={actions} title={title} />
-      <div className="grid min-w-0 grid-cols-1 items-stretch gap-grid lg:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-1 items-stretch gap-grid lg:grid-cols-3">
         {items.map((item) => (
           <NewsCard item={item} key={item.id} siteSlug={siteSlug} />
         ))}
@@ -223,16 +228,18 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
   })[0]
   if (!action?.label) return null
   return (
-    <Button
+    <FormOrLinkButton
       backgroundColor={action.backgroundColor}
       className="mt-auto self-start"
       external={action.external}
+      formId={action.formId}
+      formTitle={action.formTitle}
       href={action.href || '#'}
       newTab={action.newTab}
       variant={action.variant || 'outline'}
     >
       {action.label}
-    </Button>
+    </FormOrLinkButton>
   )
 }
 
@@ -339,11 +346,21 @@ export function ColumnsBlock({
     isTable || borderedStretch ? '' : columnsTitleAlignClass(rows[0]?.length || 0)
 
   const renderColumn = (column: ColumnRow, index: number) => {
+    /*
+     * Body keeps `.prose-nazemi` for lists/quotes. Image + CTA wrap `not-prose`
+     * as siblings (not ancestors) so typography isn’t killed — same pattern as
+     * ExpandingParagraph summary vs body. Needed when Sloupce sits inside Lexical.
+     */
     const body = column.body ? (
-      <div className="prose-nazemi text-body-inter text-ground">
+      <div className="prose-nazemi text-ground">
         <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
       </div>
     ) : null
+    const cta = (
+      <div className="not-prose">
+        <ColumnCta column={column} siteSlug={siteSlug} />
+      </div>
+    )
 
     if (isFramed) {
       // Table / short bordered: flex-1 fill. Bordered 3+: fixed third-width cells.
@@ -358,10 +375,12 @@ export function ColumnsBlock({
           key={`col-${index}`}
         >
           {/* Image flush to card edges; bottom border separates from body. */}
-          <ColumnImage bordered image={column.image} />
+          <div className="not-prose">
+            <ColumnImage bordered image={column.image} />
+          </div>
           <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
             {body}
-            <ColumnCta column={column} siteSlug={siteSlug} />
+            {cta}
           </div>
         </article>
       )
@@ -370,9 +389,11 @@ export function ColumnsBlock({
     // Clean: small flex gap; first-heading mt zeroed in styles.css for [data-component=column]
     return (
       <div className={`${COLUMNS_CELL} gap-2`} data-component="column" key={`col-${index}`}>
-        <ColumnImage image={column.image} />
+        <div className="not-prose">
+          <ColumnImage image={column.image} />
+        </div>
         {body}
-        <ColumnCta column={column} siteSlug={siteSlug} />
+        {cta}
       </div>
     )
   }
@@ -419,13 +440,17 @@ export function ColumnsBlock({
       data-cols={columns.length}
       data-style={style}
     >
-      {/* Title→columns: 16px (gap-4). Same on homepage + pages. */}
-      <BlockHeader
-        className={titleAlign}
-        compact
-        title={title}
-        titleSize={titleSize}
-      />
+      {/* Title chrome: not-prose sibling so Lexical parent prose doesn’t restyle it. */}
+      {title ? (
+        <div className="not-prose">
+          <BlockHeader
+            className={titleAlign}
+            compact
+            title={title}
+            titleSize={titleSize}
+          />
+        </div>
+      ) : null}
       <div className={title ? 'mt-4' : undefined}>{columnsBody}</div>
     </section>
   )
@@ -579,7 +604,7 @@ export function PageBlocks({
 
         if (block.blockType === 'expandingParagraph' && block.body && block.summary) {
           return (
-            <div className="container max-lg:px-card" key={key}>
+            <div className="container max-lg:px-card" data-block="expandingParagraph" key={key}>
               <div className="mx-auto w-full max-w-[874px]">
                 <ExpandingParagraph
                   body={<NazemiRichText data={block.body as never} siteSlug={siteSlug} />}
@@ -613,6 +638,26 @@ export function PageBlocks({
             <div className="container max-lg:px-card" key={key}>
               <div className="mx-auto w-full max-w-[874px]">
                 <FormEmbedBlockView block={block} siteSlug={siteSlug} />
+              </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'externalLinkCard') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <ExternalLinkCardView block={block} />
+              </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'filterLink') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <FilterLinkBlockView block={block} siteSlug={siteSlug} />
               </div>
             </div>
           )
@@ -694,7 +739,7 @@ export function WorkshopContentBlocks({
 
         if (block.blockType === 'expandingParagraph' && block.body && block.summary) {
           return (
-            <div className="container max-lg:px-card" key={key}>
+            <div className="container max-lg:px-card" data-block="expandingParagraph" key={key}>
               <div className="mx-auto w-full max-w-[874px]">
                 <ExpandingParagraph
                   body={<NazemiRichText data={block.body as never} siteSlug={siteSlug} />}
@@ -728,6 +773,26 @@ export function WorkshopContentBlocks({
             <div className="container max-lg:px-card" key={key}>
               <div className="mx-auto w-full max-w-[874px]">
                 <FormEmbedBlockView block={block} siteSlug={siteSlug} />
+              </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'externalLinkCard') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <ExternalLinkCardView block={block} />
+              </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'filterLink') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <FilterLinkBlockView block={block} siteSlug={siteSlug} />
               </div>
             </div>
           )

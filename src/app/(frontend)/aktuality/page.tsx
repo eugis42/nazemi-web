@@ -1,5 +1,5 @@
-import type { Where } from 'payload'
 import type { Metadata } from 'next'
+import type { Where } from 'payload'
 
 import { NewsCard } from '@/components/frontend/cards'
 import { EmptyState, FilterBar, Pagination, type FilterChip } from '@/components/frontend/listing'
@@ -8,12 +8,14 @@ import { hrefWith, queryList, toggleQueryValue, withSiteQuery } from '@/lib/cont
 import { assertCollectionEnabled } from '@/lib/enabled-collections'
 import {
   findTaxonomyBySlugs,
+  findUsedRelationIds,
   findUsedTaxonomy,
   getListingWhere,
   getPayloadClient,
   getSourceSites,
   mergeActiveTaxonomy,
   resolveSiteFromCurrentRequest,
+  whereAnd,
 } from '@/lib/frontend'
 import { buildPageMetadata } from '@/lib/metadata'
 
@@ -50,39 +52,52 @@ export default async function NewsListingPage({
     includeCrossPosted: site.slug === 'nazemi',
     siteId: site.id,
   })
-  const filters: Where[] = [baseWhere]
 
-  const [usedTags, sourceSites] = await Promise.all([
+  const activeTagSlugs = queryList(query.tag)
+  const activeSourceSlugs = queryList(query.source)
+  const [activeTags, sourceSites] = await Promise.all([
+    findTaxonomyBySlugs({ collection: 'tags', slugs: activeTagSlugs }),
+    getSourceSites(site.slug),
+  ])
+  const activeSources = sourceSites.filter((source) => activeSourceSlugs.includes(source.slug))
+
+  const tagFilter: Where | null = activeTags.length
+    ? { tags: { in: activeTags.map((tag) => tag.id) } }
+    : null
+  const sourceFilter: Where | null = activeSources.length
+    ? { site: { in: activeSources.map((source) => source.id) } }
+    : null
+
+  const [usedTags, availableTags, availableSourceIds, news] = await Promise.all([
     findUsedTaxonomy({
       contentCollection: 'aktuality',
       relationCollection: 'tags',
       relationField: 'tags',
       where: baseWhere,
     }),
-    getSourceSites(site.slug),
+    findUsedTaxonomy({
+      contentCollection: 'aktuality',
+      relationCollection: 'tags',
+      relationField: 'tags',
+      where: whereAnd([baseWhere, sourceFilter]),
+    }),
+    findUsedRelationIds({
+      contentCollection: 'aktuality',
+      relationField: 'site',
+      where: whereAnd([baseWhere, tagFilter]),
+    }),
+    payload.find({
+      collection: 'aktuality',
+      depth: 2,
+      limit: PAGE_SIZE,
+      page,
+      sort: '-publishedAt',
+      where: whereAnd([baseWhere, tagFilter, sourceFilter]),
+    }),
   ])
 
-  const activeTagSlugs = queryList(query.tag)
-  const activeTags = await findTaxonomyBySlugs({ collection: 'tags', slugs: activeTagSlugs })
-  if (activeTags.length) {
-    filters.push({ tags: { in: activeTags.map((tag) => tag.id) } })
-  }
   const tags = mergeActiveTaxonomy(usedTags, activeTags)
-
-  const activeSourceSlugs = queryList(query.source)
-  const activeSources = sourceSites.filter((source) => activeSourceSlugs.includes(source.slug))
-  if (activeSources.length) {
-    filters.push({ site: { in: activeSources.map((source) => source.id) } })
-  }
-
-  const news = await payload.find({
-    collection: 'aktuality',
-    depth: 2,
-    limit: PAGE_SIZE,
-    page,
-    sort: '-publishedAt',
-    where: { and: filters },
-  })
+  const availableTagSlugs = new Set(availableTags.map((tag) => tag.slug))
 
   const current = { page: query.page, source: activeSourceSlugs, tag: activeTagSlugs }
   const allChip: FilterChip[] = [
@@ -98,29 +113,37 @@ export default async function NewsListingPage({
       solid: true,
     },
   ]
-  const tagChips: FilterChip[] = tags.map((tag) => ({
-    active: activeTagSlugs.includes(tag.slug),
-    clearable: true,
-    href: hrefWith(
-      '/aktuality',
-      current,
-      { page: undefined, tag: toggleQueryValue(activeTagSlugs, tag.slug) },
-      site.slug,
-    ),
-    label: tag.title,
-  }))
-  const sourceChips: FilterChip[] = sourceSites.map((source) => ({
-    active: activeSourceSlugs.includes(source.slug),
-    clearable: true,
-    href: hrefWith(
-      '/aktuality',
-      current,
-      { page: undefined, source: toggleQueryValue(activeSourceSlugs, source.slug) },
-      site.slug,
-    ),
-    label: `Aktuality ${source.name}`,
-    source: true,
-  }))
+  const tagChips: FilterChip[] = tags.map((tag) => {
+    const active = activeTagSlugs.includes(tag.slug)
+    return {
+      active,
+      clearable: true,
+      disabled: !active && !availableTagSlugs.has(tag.slug),
+      href: hrefWith(
+        '/aktuality',
+        current,
+        { page: undefined, tag: toggleQueryValue(activeTagSlugs, tag.slug) },
+        site.slug,
+      ),
+      label: tag.title,
+    }
+  })
+  const sourceChips: FilterChip[] = sourceSites.map((source) => {
+    const active = activeSourceSlugs.includes(source.slug)
+    return {
+      active,
+      clearable: true,
+      disabled: !active && !availableSourceIds.has(String(source.id)),
+      href: hrefWith(
+        '/aktuality',
+        current,
+        { page: undefined, source: toggleQueryValue(activeSourceSlugs, source.slug) },
+        site.slug,
+      ),
+      label: `Aktuality ${source.name}`,
+      source: true,
+    }
+  })
 
   return (
     <SiteShell
@@ -144,7 +167,7 @@ export default async function NewsListingPage({
             ]}
           />
           {news.docs.length ? (
-            <div className="grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-grid lg:grid-cols-3">
               {news.docs.map((item) => (
                 <NewsCard item={item} key={item.id} siteSlug={site.slug} />
               ))}

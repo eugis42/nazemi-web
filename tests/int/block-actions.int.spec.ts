@@ -89,4 +89,28 @@ describe('resolveBlockActions', () => {
     })
     expect(actions[0]).toMatchObject({ href: '/o-nas', label: 'O nás' })
   })
+
+  it('resolves forms to formId (modal) without href', () => {
+    const actions = resolveBlockActions({
+      actions: [
+        {
+          label: 'Přihlásit',
+          linkType: 'internal',
+          reference: {
+            relationTo: 'forms',
+            value: { id: 7, title: 'Přihláška' },
+          },
+          variant: 'filled',
+        },
+      ],
+      siteSlug: 'nazemi',
+    })
+    expect(actions[0]).toMatchObject({
+      formId: 7,
+      formTitle: 'Přihláška',
+      label: 'Přihlásit',
+      variant: 'filled',
+    })
+    expect(actions[0]?.href).toBeUndefined()
+  })
 })

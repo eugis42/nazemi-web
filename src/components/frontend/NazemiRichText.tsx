@@ -5,6 +5,7 @@ import {
 import type {
   SerializedBlockNode,
   SerializedLinkNode,
+  SerializedQuoteNode,
   SerializedRelationshipNode,
   SerializedUploadNode,
 } from '@payloadcms/richtext-lexical'
@@ -12,6 +13,8 @@ import type { ComponentProps, CSSProperties, ReactNode } from 'react'
 
 import { CallToActionBlockView } from '@/components/frontend/CallToActionBlock'
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
+import { ExternalLinkCardView } from '@/components/frontend/ExternalLinkCard'
+import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
@@ -114,6 +117,23 @@ type FormEmbedRtFields = {
   description?: string | null
   form?: unknown
   title?: string | null
+}
+
+type ExternalLinkCardFields = {
+  blockType: 'externalLinkCard'
+  buttonLabel?: string | null
+  description?: string | null
+  image?: unknown
+  title?: string | null
+  url?: string | null
+}
+
+type FilterLinkFields = {
+  audience?: unknown
+  blockType: 'filterLink'
+  publicationType?: unknown
+  tag?: unknown
+  target?: string | null
 }
 
 function internalDocToHref({ linkNode }: { linkNode: SerializedLinkNode }) {
@@ -272,6 +292,17 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
           />
         ),
         upload: ({ node }: { node: SerializedUploadNode }) => <UploadImage node={node} />,
+        /*
+         * Wrap quote children so Shift+Enter / multi-`<p>` never become flex
+         * columns beside the bar (plain flex+siblings → side-by-side layout).
+         */
+        quote: ({ node, nodesToJSX }) => (
+          <blockquote className="rt-quote">
+            <div className="rt-quote__body">
+              {nodesToJSX({ nodes: (node as SerializedQuoteNode).children || [] })}
+            </div>
+          </blockquote>
+        ),
         blocks: {
           gallery: ({ node }: { node: SerializedBlockNode<GalleryFields> }) => (
             <div className="not-prose w-full" data-rt-block="gallery">
@@ -307,16 +338,21 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
           },
           speakers: ({ node }: { node: SerializedBlockNode<SpeakersFields> }) => (
             <div className="not-prose w-full" data-rt-block="speakers">
-              <SpeakersBlockView bare block={node.fields} fullWidth />
+              {/* Prose column embed — never homepage fullWidth (4-col) layout. */}
+              <SpeakersBlockView bare block={node.fields} />
             </div>
           ),
           testimonials: ({ node }: { node: SerializedBlockNode<TestimonialsFields> }) => (
             <div className="not-prose w-full" data-rt-block="testimonials">
-              <TestimonialsBlockView bare block={node.fields} fullWidth />
+              <TestimonialsBlockView bare block={node.fields} />
             </div>
           ),
+          /*
+           * No outer `not-prose` — same trap as ExpandingParagraph: ancestor
+           * not-prose kills nested .prose-nazemi (lists, headings, blockquotes).
+           */
           threeColumns: ({ node }: { node: SerializedBlockNode<ThreeColumnsFields> }) => (
-            <div className="not-prose w-full" data-rt-block="threeColumns">
+            <div className="w-full" data-rt-block="threeColumns">
               <ColumnsBlock
                 block={{ ...node.fields, blockType: 'threeColumns' }}
                 siteSlug={siteSlug}
@@ -341,6 +377,20 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
                 }}
                 siteSlug={siteSlug}
               />
+            </div>
+          ),
+          externalLinkCard: ({
+            node,
+          }: {
+            node: SerializedBlockNode<ExternalLinkCardFields>
+          }) => (
+            <div className="not-prose w-full" data-rt-block="externalLinkCard">
+              <ExternalLinkCardView block={node.fields} />
+            </div>
+          ),
+          filterLink: ({ node }: { node: SerializedBlockNode<FilterLinkFields> }) => (
+            <div className="not-prose w-full" data-rt-block="filterLink">
+              <FilterLinkBlockView block={node.fields} siteSlug={siteSlug} />
             </div>
           ),
         },

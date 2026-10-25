@@ -19,6 +19,8 @@ export type BlockThumbSlug =
   | 'threeColumns'
   | 'callToAction'
   | 'formEmbed'
+  | 'externalLinkCard'
+  | 'filterLink'
 
 const THUMB_BASE = '/block-thumbs'
 

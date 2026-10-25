@@ -23,4 +23,14 @@ describe('expandingParagraph', () => {
     expect(html).not.toMatch(/<details[^>]*\bnot-prose\b/)
     expect(html).toMatch(/<summary[^>]*\bnot-prose\b/)
   })
+
+  it('body is overflow-visible so markers/quote bar aren’t clipped when open', () => {
+    const html = renderToStaticMarkup(
+      createElement(ExpandingParagraph, {
+        body: createElement('p', null, 'text'),
+        summary: 'Nadpis',
+      }),
+    )
+    expect(html).toMatch(/rt-expand__body[^"]*prose-nazemi/)
+  })
 })

@@ -15,6 +15,11 @@ export type FilterChip = {
   active?: boolean
   /** Topic chips are multi-select: an active chip clears itself and shows the ✕ affordance. */
   clearable?: boolean
+  /**
+   * No hits if added to the current filter set — 50% opacity, not clickable.
+   * Ignored when `active` (must stay clearable).
+   */
+  disabled?: boolean
   href: string
   /** Optional leading mark (e.g. collection color dot in search filters). */
   icon?: ReactNode
@@ -50,18 +55,16 @@ function FilterChipClearIcon() {
 
 function renderChip(chip: FilterChip, index: number) {
   const showClear = Boolean(chip.active && chip.clearable)
+  const disabled = Boolean(chip.disabled && !chip.active)
   const modifier = chip.source ? ' btn-filter-source' : chip.solid ? ' btn-filter-solid' : ''
-
-  return (
-    <Link
-      aria-pressed={chip.active ? 'true' : 'false'}
-      className={`${chip.active ? 'btn-filter-active' : 'btn-filter'}${modifier}${
-        chip.icon ? ' gap-1.5' : ''
-      }${showClear ? ' relative group overflow-visible' : ''}`}
-      data-filter-kind={chip.source ? 'source' : undefined}
-      href={chip.href}
-      key={`${chip.label}-${index}`}
-    >
+  const className = `${chip.active ? 'btn-filter-active' : 'btn-filter'}${modifier}${
+    chip.icon ? ' gap-1.5' : ''
+  }${showClear ? ' relative group overflow-visible' : ''}${
+    disabled ? ' pointer-events-none opacity-50' : ''
+  }`
+  const key = `${chip.label}-${index}`
+  const inner = (
+    <>
       {chip.icon ? (
         <span aria-hidden="true" className="inline-flex shrink-0 items-center">
           {chip.icon}
@@ -69,6 +72,31 @@ function renderChip(chip: FilterChip, index: number) {
       ) : null}
       {chip.label}
       {showClear ? <FilterChipClearIcon /> : null}
+    </>
+  )
+
+  if (disabled) {
+    return (
+      <span
+        aria-disabled="true"
+        className={className}
+        data-filter-kind={chip.source ? 'source' : undefined}
+        key={key}
+      >
+        {inner}
+      </span>
+    )
+  }
+
+  return (
+    <Link
+      aria-pressed={chip.active ? 'true' : 'false'}
+      className={className}
+      data-filter-kind={chip.source ? 'source' : undefined}
+      href={chip.href}
+      key={key}
+    >
+      {inner}
     </Link>
   )
 }

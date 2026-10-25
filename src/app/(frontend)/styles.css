@@ -85,6 +85,8 @@
   --spacing-content: 50px;
   /* Lexical block-level siblings (headings, embeds, media, relations). */
   --spacing-prose-block: 40px;
+  /* Consecutive expanding paragraphs (Lexical + page blocks). */
+  --rt-expand-gap: 8px;
 
   --text-hero: 83px;
   --text-display: 44px;
@@ -1149,11 +1151,19 @@
     }
   }
 
+  /*
+   * Event hero media — square beside text.
+   * Mobile: full-width square.
+   * lg+: CSS fallback square (≤50% / 28rem) so SSR/first paint isn’t the raw
+   * img intrinsic size. JS may refine to text-column height; never leave
+   * `lg:w-auto` unconstrained (that was the huge→scaled flash).
+   */
   .event-overview-media {
-    @apply relative aspect-square w-full shrink-0 overflow-hidden bg-ground lg:aspect-auto lg:w-auto;
+    @apply relative aspect-square w-full min-h-0 min-w-0 shrink-0 overflow-hidden bg-ground;
+    @apply lg:w-[min(50%,28rem)] lg:max-w-[50%] lg:shrink-0 lg:grow-0;
 
     img {
-      @apply size-full object-cover;
+      @apply absolute inset-0 size-full object-cover;
     }
   }
 
@@ -1256,30 +1266,40 @@
       margin-top: 16px;
     }
 
-    :where(h1):not(:where([class~='not-prose'], [class~='not-prose'] *)),
-    :where(h2):not(:where([class~='not-prose'], [class~='not-prose'] *)),
-    :where(h3):not(:where([class~='not-prose'], [class~='not-prose'] *)),
-    :where(h4):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      :where(strong, b, em, i) {
+    /*
+     * Headings must stay Saans. Avoid `:where()` for font-family — 0 specificity
+     * loses to wrapper `font-inter` / `text-body-inter` and to `strong`/`em`
+     * rules that force Inter on body text (Lexical often wraps heading runs).
+     */
+    :is(h1, h2, h3, h4, h5, h6):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      font-family: var(--font-saans);
+
+      :is(strong, b, em, i, .rt-text-color) {
+        font-family: inherit;
         font-weight: inherit;
         font-style: inherit;
       }
     }
 
     :where(h1):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply mb-0 font-saans text-[44px] font-medium leading-none tracking-[-0.88px] text-ground;
+      @apply mb-0 text-[44px] font-medium leading-none tracking-[-0.88px] text-ground;
     }
 
     :where(h2):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply mb-0 font-saans text-[34px] font-medium leading-none tracking-[-0.68px] text-ground;
+      @apply mb-0 text-[34px] font-medium leading-none tracking-[-0.68px] text-ground;
     }
 
     :where(h3):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply mb-0 font-saans text-[24px] font-medium leading-none tracking-[-0.48px] text-ground;
+      @apply mb-0 text-[24px] font-medium leading-none tracking-[-0.48px] text-ground;
     }
 
     :where(h4):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply font-saans text-[20px] font-medium leading-none tracking-[-0.4px] text-ground;
+      @apply text-[20px] font-medium leading-none tracking-[-0.4px] text-ground;
+    }
+
+    :where(h5):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(h6):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-[18px] font-medium leading-snug tracking-[-0.36px] text-ground;
     }
 
     :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
@@ -1293,7 +1313,10 @@
     /* Sibling rules own vertical rhythm — kill typography list/quote bottom margin. */
     :where(ul):not(:where([class~='not-prose'], [class~='not-prose'] *)),
     :where(ol):not(:where([class~='not-prose'], [class~='not-prose'] *)),
-    :where(blockquote):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    :where(.payload-richtext .rt-quote),
+    :where(.payload-richtext blockquote):not(
+        :where([class~='not-prose'], [class~='not-prose'] *, [data-component='workshop-testimonial'])
+      ) {
       margin-bottom: 0;
     }
 
@@ -1303,11 +1326,12 @@
       margin-bottom: 0;
     }
 
-    :where(strong):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    /* Body emphasis = Inter; headings override via inherit above. */
+    :where(strong):not(:where([class~='not-prose'], [class~='not-prose'] *)):not(:where(h1, h2, h3, h4, h5, h6) *) {
       @apply font-inter text-ground;
     }
 
-    :where(em):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    :where(em):not(:where([class~='not-prose'], [class~='not-prose'] *)):not(:where(h1, h2, h3, h4, h5, h6) *) {
       @apply font-inter text-ground;
     }
 
@@ -1320,17 +1344,86 @@
       color: inherit;
     }
 
-    :where(blockquote):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply flex items-center gap-card border-0 border-none py-0 pl-0 font-serif text-[24px] font-normal leading-normal not-italic text-ground;
+    /*
+     * Lexical QuoteFeature (`.rt-quote`).
+     * - Serif via `:is()` (not `:where`) so it beats Inter on p/strong/em.
+     * - Single `.rt-quote__body` flex child → Shift+Enter lines stack, not columns.
+     * - Reference testimonials use `[data-component=workshop-testimonial]` + not-prose.
+     */
+    .payload-richtext :is(blockquote.rt-quote, .rt-quote) {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-card);
+      border: 0;
+      padding: 0;
+      /* max-w-2xl — standard pull-quote measure inside 874px prose column */
+      max-width: min(100%, 42rem);
+      font-family: var(--font-serif);
+      font-size: 20px; /* one step under previous 24px (h3 → h4 scale) */
+      font-weight: 400;
+      font-style: normal;
+      line-height: normal;
+      color: var(--color-ground);
 
       &::before {
         content: '';
-        @apply h-[115px] w-0.5 shrink-0 self-stretch bg-ground;
+        flex-shrink: 0;
+        align-self: stretch;
+        width: 0.125rem;
+        min-height: 115px;
+        background-color: var(--color-ground);
       }
+    }
 
-      p {
-        @apply m-0 font-serif text-[24px] font-normal leading-normal not-italic tracking-tight text-ground;
-      }
+    .payload-richtext .rt-quote__body {
+      min-width: 0;
+      flex: 1 1 auto;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      font-style: inherit;
+      line-height: inherit;
+      color: inherit;
+    }
+
+    /* Beat Inter rules on p/strong/em — keep bold/italic, always serif. */
+    .payload-richtext .rt-quote__body :is(p, a, span:not(.rt-text-color), code) {
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      font-style: inherit;
+      line-height: inherit;
+      color: inherit;
+      letter-spacing: -0.01em;
+    }
+
+    .payload-richtext .rt-quote__body :is(strong, b) {
+      font-family: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      color: inherit;
+    }
+
+    .payload-richtext .rt-quote__body :is(em, i) {
+      font-family: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      color: inherit;
+      font-style: italic;
+    }
+
+    .payload-richtext .rt-quote__body .rt-text-color {
+      font-family: inherit;
+      font-size: inherit;
+      line-height: inherit;
+    }
+
+    .payload-richtext .rt-quote__body :is(p) {
+      margin: 0;
+    }
+
+    .payload-richtext .rt-quote__body :is(p + p) {
+      margin-top: 0.35em;
     }
 
     :where(figure):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
@@ -1459,6 +1552,48 @@
   margin-top: 0.5em;
 }
 
+/*
+ * Sloupce: vztahy + external cards use stacked (mobile) layout and fill column width.
+ * Side media rails become full-width tops instead of squeezing text.
+ */
+[data-component='column'] [data-component='richtext-relation'],
+[data-component='column-card'] [data-component='richtext-relation'],
+[data-component='column'] [data-component='external-link-card'],
+[data-component='column-card'] [data-component='external-link-card'] {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-component='column'] [data-embed-media],
+[data-component='column-card'] [data-embed-media] {
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+[data-component='column'] [data-embed-media][data-embed-aspect='landscape'],
+[data-component='column-card'] [data-embed-media][data-embed-aspect='landscape'] {
+  aspect-ratio: 16 / 10;
+}
+
+[data-component='column'] [data-embed-media][data-embed-aspect='square'],
+[data-component='column-card'] [data-embed-media][data-embed-aspect='square'] {
+  aspect-ratio: 1;
+}
+
+[data-component='column'] [data-embed-media][data-embed-aspect='portrait'],
+[data-component='column-card'] [data-embed-media][data-embed-aspect='portrait'] {
+  aspect-ratio: 2 / 3;
+  max-width: min(100%, 12rem);
+  margin-inline: auto;
+}
+
 @variant max-lg {
   @layer utilities {
     #site-nav [data-component='nav-link'],
@@ -1468,11 +1603,29 @@
   }
 }
 
-/* Expanding paragraph (page block + Lexical) — soft surface like relation embeds */
+/*
+ * Expanding paragraph (page block + Lexical).
+ * Consecutive expands share a tight stack — not full prose/content gap.
+ */
 .rt-expand {
   @apply bg-ground/5 p-[15px];
   /* Enable animating to/from `auto` height where supported */
   interpolate-size: allow-keywords;
+}
+
+/* Lexical: collapse *+* prose-block between adjacent expands */
+.prose-nazemi .payload-richtext > .rt-expand + .rt-expand,
+.prose-nazemi > .rt-expand + .rt-expand {
+  margin-top: var(--rt-expand-gap);
+}
+
+/* Page / workshop / homepage blocks: cancel parent flex gap → same stack gap */
+.gap-content > [data-block='expandingParagraph'] + [data-block='expandingParagraph'] {
+  margin-top: calc(var(--rt-expand-gap) - var(--spacing-content));
+}
+
+.section-stack > [data-block='expandingParagraph'] + [data-block='expandingParagraph'] {
+  margin-top: calc(var(--rt-expand-gap) - var(--spacing-section));
 }
 
 .rt-expand__summary {
@@ -1502,8 +1655,11 @@
 
 .rt-expand__body {
   @apply pt-3;
+  /* Markers / quote bar sit outside line box — don’t clip when open. */
+  overflow: visible;
 
-  & > :first-child {
+  & > :first-child,
+  & .payload-richtext > :first-child {
     margin-top: 0;
   }
 }
@@ -1526,6 +1682,8 @@
   .rt-expand[open]::details-content {
     block-size: auto;
     opacity: 1;
+    /* clip while closed only — open must show list markers + quote bar */
+    overflow: visible;
   }
 }
 

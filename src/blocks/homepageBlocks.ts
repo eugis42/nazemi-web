@@ -2,6 +2,7 @@ import type { Block } from 'payload'
 
 import { additionalColorField } from '@/fields/additionalColor'
 import { callToActionField } from '@/fields/cta'
+import { navLinkTargetFields } from '@/fields/menu'
 import { imageUploadFilter } from '@/fields/shared'
 import {
   BLOCK_GROUP_HOME,
@@ -182,16 +183,26 @@ export const PillarsBlock: Block = {
               name: 'buttonLabel',
               type: 'text',
               label: 'Text tlačítka',
-              admin: { width: '40%' },
+              admin: {
+                description:
+                  'Volitelné u interního odkazu — prázdné → název vybrané položky.',
+                width: '60%',
+              },
             },
             {
-              name: 'href',
-              type: 'text',
-              label: 'URL tlačítka',
-              admin: { width: '60%' },
+              name: 'linkType',
+              type: 'select',
+              label: 'Typ odkazu',
+              defaultValue: 'external',
+              options: [
+                { label: 'Interní', value: 'internal' },
+                { label: 'Zadat URL', value: 'external' },
+              ],
+              admin: { width: '40%' },
             },
           ],
         },
+        ...navLinkTargetFields({ compactDbNames: true, skipLinkType: true }),
       ],
     },
   ],
@@ -229,12 +240,12 @@ export const NewsGridBlock: Block = {
       name: 'limit',
       type: 'number',
       label: 'Počet (auto)',
-      defaultValue: 4,
-      min: 4,
-      max: 8,
+      defaultValue: 3,
+      min: 3,
+      max: 6,
       admin: {
         condition: (_, siblingData) => siblingData?.selection === 'auto',
-        description: 'Min. 4, max. 8.',
+        description: 'Min. 3, max. 6.',
       },
     },
     {
@@ -245,16 +256,16 @@ export const NewsGridBlock: Block = {
       hasMany: true,
       admin: {
         condition: (_, siblingData) => siblingData?.selection === 'manual',
-        description: 'Min. 4, max. 8 aktualit.',
+        description: 'Min. 3, max. 6 aktualit.',
       },
       validate: (value, { siblingData }) => {
         const selection = (siblingData as { selection?: string } | undefined)?.selection
         if (selection !== 'manual') return true
         if (!Array.isArray(value) || value.length === 0) {
-          return 'Vyberte alespoň 4 aktuality.'
+          return 'Vyberte alespoň 3 aktuality.'
         }
-        if (value.length < 4) return 'Vyberte alespoň 4 aktuality.'
-        if (value.length > 8) return 'Vyberte nejvýše 8 aktualit.'
+        if (value.length < 3) return 'Vyberte alespoň 3 aktuality.'
+        if (value.length > 6) return 'Vyberte nejvýše 6 aktualit.'
         return true
       },
     },

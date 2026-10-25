@@ -8,12 +8,15 @@ import { useLayoutEffect, useRef, type CSSProperties } from 'react'
  */
 export function StretchAspectThumb({
   alt,
+  aspect = 'portrait',
   aspectRatio,
   objectFit = 'cover',
   src,
   style,
 }: {
   alt: string
+  /** Stacked layout inside Sloupce — CSS aspect. */
+  aspect?: 'landscape' | 'square' | 'portrait'
   /** Width / height. Omit → image intrinsic ratio (fallback 2/3). */
   aspectRatio?: number
   objectFit?: 'cover' | 'contain'
@@ -26,6 +29,13 @@ export function StretchAspectThumb({
   useLayoutEffect(() => {
     const wrap = wrapRef.current
     if (!wrap) return
+
+    // Sloupce: CSS stacks the card — don’t force side-rail pixel width.
+    if (wrap.closest('[data-component="column"], [data-component="column-card"]')) {
+      wrap.style.height = ''
+      wrap.style.width = ''
+      return
+    }
 
     // Frame: [absolute link?][thumb][Body] — measure Body only (stable, no feedback loop).
     const body = wrap.nextElementSibling as HTMLElement | null
@@ -69,6 +79,8 @@ export function StretchAspectThumb({
     <div
       ref={wrapRef}
       className="pointer-events-none relative z-[1] w-36 shrink-0 self-stretch overflow-hidden"
+      data-embed-aspect={aspect}
+      data-embed-media
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

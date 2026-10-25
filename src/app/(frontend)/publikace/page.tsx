@@ -25,6 +25,7 @@ import {
   getPayloadClient,
   mergeActiveTaxonomy,
   resolveSiteFromCurrentRequest,
+  whereAnd,
 } from '@/lib/frontend'
 import { buildPageMetadata } from '@/lib/metadata'
 
@@ -62,9 +63,22 @@ export default async function PublikacePage({
     includeCrossPosted: site.slug === 'nazemi',
     siteId: site.id,
   })
-  const filters: Where[] = [baseWhere]
 
-  const [usedTypes, usedTopics] = await Promise.all([
+  const activeTypeSlugs = queryList(query.filter)
+  const activeTopicSlugs = queryList(query.topic)
+  const [activeTypes, activeTopics] = await Promise.all([
+    findTaxonomyBySlugs({ collection: 'publication-types', slugs: activeTypeSlugs }),
+    findTaxonomyBySlugs({ collection: 'tags', slugs: activeTopicSlugs }),
+  ])
+
+  const typeFilter: Where | null = activeTypes.length
+    ? { types: { in: activeTypes.map((type) => type.id) } }
+    : null
+  const topicFilter: Where | null = activeTopics.length
+    ? { topics: { in: activeTopics.map((topic) => topic.id) } }
+    : null
+
+  const [usedTypes, usedTopics, availableTypes, availableTopics, publications] = await Promise.all([
     findUsedTaxonomy({
       contentCollection: 'publikace',
       relationCollection: 'publication-types',
@@ -77,31 +91,32 @@ export default async function PublikacePage({
       relationField: 'topics',
       where: baseWhere,
     }),
+    findUsedTaxonomy({
+      contentCollection: 'publikace',
+      relationCollection: 'publication-types',
+      relationField: 'types',
+      where: whereAnd([baseWhere, topicFilter]),
+    }),
+    findUsedTaxonomy({
+      contentCollection: 'publikace',
+      relationCollection: 'tags',
+      relationField: 'topics',
+      where: whereAnd([baseWhere, typeFilter]),
+    }),
+    payload.find({
+      collection: 'publikace',
+      depth: 2,
+      limit: PAGE_SIZE,
+      page,
+      sort: 'title',
+      where: whereAnd([baseWhere, typeFilter, topicFilter]),
+    }),
   ])
 
-  const activeTypeSlugs = queryList(query.filter)
-  const activeTopicSlugs = queryList(query.topic)
-  const [activeTypes, activeTopics] = await Promise.all([
-    findTaxonomyBySlugs({ collection: 'publication-types', slugs: activeTypeSlugs }),
-    findTaxonomyBySlugs({ collection: 'tags', slugs: activeTopicSlugs }),
-  ])
-  if (activeTypes.length) {
-    filters.push({ types: { in: activeTypes.map((type) => type.id) } })
-  }
-  if (activeTopics.length) {
-    filters.push({ topics: { in: activeTopics.map((topic) => topic.id) } })
-  }
   const types = mergeActiveTaxonomy(usedTypes, activeTypes)
   const publicationTopics = mergeActiveTaxonomy(usedTopics, activeTopics)
-
-  const publications = await payload.find({
-    collection: 'publikace',
-    depth: 2,
-    limit: PAGE_SIZE,
-    page,
-    sort: 'title',
-    where: { and: filters },
-  })
+  const availableTypeSlugs = new Set(availableTypes.map((type) => type.slug))
+  const availableTopicSlugs = new Set(availableTopics.map((topic) => topic.slug))
 
   const isMetodiky = activeTypeSlugs.length === 1 && activeTypeSlugs[0] === METODIKY_SLUG
   const heading = isMetodiky ? 'Metodiky' : 'Publikace'
@@ -121,28 +136,36 @@ export default async function PublikacePage({
       solid: true,
     },
   ]
-  const typeChips: FilterChip[] = types.map((type) => ({
-    active: activeTypeSlugs.includes(type.slug),
-    clearable: true,
-    href: hrefWith(
-      '/publikace',
-      current,
-      { filter: toggleQueryValue(activeTypeSlugs, type.slug), page: undefined },
-      site.slug,
-    ),
-    label: type.title,
-  }))
-  const topicChips: FilterChip[] = publicationTopics.map((topic) => ({
-    active: activeTopicSlugs.includes(topic.slug),
-    clearable: true,
-    href: hrefWith(
-      '/publikace',
-      current,
-      { page: undefined, topic: toggleQueryValue(activeTopicSlugs, topic.slug) },
-      site.slug,
-    ),
-    label: topic.title,
-  }))
+  const typeChips: FilterChip[] = types.map((type) => {
+    const active = activeTypeSlugs.includes(type.slug)
+    return {
+      active,
+      clearable: true,
+      disabled: !active && !availableTypeSlugs.has(type.slug),
+      href: hrefWith(
+        '/publikace',
+        current,
+        { filter: toggleQueryValue(activeTypeSlugs, type.slug), page: undefined },
+        site.slug,
+      ),
+      label: type.title,
+    }
+  })
+  const topicChips: FilterChip[] = publicationTopics.map((topic) => {
+    const active = activeTopicSlugs.includes(topic.slug)
+    return {
+      active,
+      clearable: true,
+      disabled: !active && !availableTopicSlugs.has(topic.slug),
+      href: hrefWith(
+        '/publikace',
+        current,
+        { page: undefined, topic: toggleQueryValue(activeTopicSlugs, topic.slug) },
+        site.slug,
+      ),
+      label: topic.title,
+    }
+  })
 
   const menuMatch = menuParentForHref(site.mainMenu, listingHref)
   const breadcrumbs: BreadcrumbItem[] = [

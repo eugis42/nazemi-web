@@ -5,10 +5,12 @@ import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import type { Site } from '@/payload-types'
+import { useOpenForm } from '@/components/frontend/FormModalProvider'
 import { CaretDownIcon, CaretRightIcon, SearchIcon } from '@/components/frontend/icons'
 import { withSiteQuery } from '@/lib/content'
 import type { MenuItem } from '@/lib/menu'
 import { resolveMenuItem } from '@/lib/menu'
+import type { ResolvedNavTarget } from '@/lib/nav-target'
 
 type SecondaryItem = NonNullable<Site['secondaryMenu']>[number]
 
@@ -25,6 +27,12 @@ function isActiveHref(pathname: string, href?: string | null) {
   const target = href.split('?')[0].replace(/\/$/, '') || '/'
   if (target === '/') return pathname === '/'
   return pathname === target || pathname.startsWith(`${target}/`)
+}
+
+function menuTargetKey(target: ResolvedNavTarget, index: number) {
+  return target.kind === 'form'
+    ? `form-${target.formId}-${index}`
+    : `${target.href}-${index}`
 }
 
 function evenRowSizes(itemCount: number, rowCount: number) {
@@ -372,10 +380,13 @@ export function SiteHeader({
       const childActive = Boolean(
         item.children?.some((child) => {
           const childResolved = resolveMenuItem(child)
-          return childResolved && isActiveHref(pathname, childResolved.href)
+          return (
+            childResolved?.kind === 'link' && isActiveHref(pathname, childResolved.href)
+          )
         }),
       )
-      const active = isActiveHref(pathname, resolved.href) || childActive
+      const active =
+        (resolved.kind === 'link' && isActiveHref(pathname, resolved.href)) || childActive
 
       return (
         <NavItem
@@ -384,7 +395,7 @@ export function SiteHeader({
           isActive={active}
           isSubmenuOpen={openSubmenu === index}
           item={item}
-          key={`${resolved.href}-${index}`}
+          key={menuTargetKey(resolved, index)}
           onCloseNav={closeNav}
           onCloseSubmenu={closeSubmenu}
           onOpenSubmenu={() => {
@@ -498,22 +509,13 @@ export function SiteHeader({
                   {secondaryMenu?.map((item, index) => {
                     const resolved = resolveMenuItem(item)
                     if (!resolved) return null
-                    const { external, href, label } = resolved
-                    const active = !external && isActiveHref(pathname, href)
                     return (
-                      <a
-                        className=""
-                        data-component="nav-link"
-                        data-variant={external ? 'external' : 'default'}
-                        href={external ? href : withSiteQuery(href, siteSlug)}
-                        key={`${href}-${index}`}
-                        onClick={closeNav}
-                        rel={external ? 'noopener noreferrer' : undefined}
-                        target={external ? '_blank' : undefined}
-                        {...navLinkAttrs(active)}
-                      >
-                        {external ? `↗ ${label}` : label}
-                      </a>
+                      <MenuTargetLink
+                        key={menuTargetKey(resolved, index)}
+                        onNavigate={closeNav}
+                        siteSlug={siteSlug}
+                        target={resolved}
+                      />
                     )
                   })}
                 </div>
@@ -527,6 +529,74 @@ export function SiteHeader({
         </div>
       </div>
     </header>
+  )
+}
+
+function MenuTargetLink({
+  className = '',
+  onNavigate,
+  siteSlug,
+  target,
+  ...activeAttrs
+}: {
+  className?: string
+  onNavigate?: () => void
+  siteSlug: string
+  target: ResolvedNavTarget | null
+} & Record<string, unknown>) {
+  const openForm = useOpenForm()
+  const pathname = usePathname()
+  if (!target) return null
+
+  if (target.kind === 'form') {
+    return (
+      <button
+        className={className}
+        data-component="nav-link"
+        data-variant="form"
+        onClick={() => {
+          openForm({ formId: target.formId, title: target.formTitle || target.label })
+          onNavigate?.()
+        }}
+        type="button"
+        {...navLinkAttrs(false)}
+      >
+        {target.label}
+      </button>
+    )
+  }
+
+  const { external, href, label } = target
+  const active = !external && isActiveHref(pathname, href)
+  const attrs = Object.keys(activeAttrs).length ? activeAttrs : navLinkAttrs(active)
+
+  if (external) {
+    return (
+      <a
+        className={className}
+        data-component="nav-link"
+        data-variant="external"
+        href={href}
+        onClick={onNavigate}
+        rel="noopener noreferrer"
+        target="_blank"
+        {...attrs}
+      >
+        {`↗ ${label}`}
+      </a>
+    )
+  }
+
+  return (
+    <Link
+      className={className}
+      data-component="nav-link"
+      href={withSiteQuery(href, siteSlug)}
+      onClick={onNavigate}
+      {...attrs}
+    >
+      {label}
+    </Link>
   )
 }
 
@@ -551,52 +621,50 @@ function NavItem({
   siteSlug: string
 }) {
   const pathname = usePathname()
+  const openForm = useOpenForm()
   const resolved = resolveMenuItem(item)
   if (!resolved) return null
-  const href = withSiteQuery(resolved.href, siteSlug)
   const activeAttrs = navLinkAttrs(isActive)
   const childItems = (item.children || [])
     .map((child, childIndex) => {
       const childResolved = resolveMenuItem(child)
       if (!childResolved) return null
       return {
-        active: isActiveHref(pathname, childResolved.href),
-        href: withSiteQuery(childResolved.href, siteSlug),
-        key: `${childResolved.href}-${childIndex}`,
-        label: childResolved.label,
+        key: menuTargetKey(childResolved, childIndex),
+        target: childResolved,
       }
     })
-    .filter(Boolean) as { active: boolean; href: string; key: string; label: string }[]
+    .filter(Boolean) as { key: string; target: ResolvedNavTarget }[]
 
   const renderChildLinks = (className: string) =>
     childItems.map((child) => (
-      <Link
+      <MenuTargetLink
         className={className}
-        data-component="nav-link"
-        data-nav-level="2"
-        href={child.href}
         key={child.key}
-        onClick={onCloseNav}
-        {...navLinkAttrs(child.active)}
-      >
-        {child.label}
-      </Link>
+        onNavigate={onCloseNav}
+        siteSlug={siteSlug}
+        target={child.target}
+        {...(child.target.kind === 'link'
+          ? navLinkAttrs(isActiveHref(pathname, child.target.href))
+          : navLinkAttrs(false))}
+        {...(child.target.kind === 'link' ? { 'data-nav-level': '2' } : { 'data-nav-level': '2' })}
+      />
     ))
 
   if (!childItems.length) {
     return (
-      <Link
-        className=""
-        data-component="nav-link"
-        href={href}
-        onClick={onCloseNav}
+      <MenuTargetLink
+        onNavigate={onCloseNav}
+        siteSlug={siteSlug}
+        target={resolved}
         {...activeAttrs}
-      >
-        {resolved.label}
-      </Link>
+      />
     )
   }
 
+  // Parent with children must be a real href (forms can't own a submenu).
+  const parentHref =
+    resolved.kind === 'link' ? withSiteQuery(resolved.href, siteSlug) : '#'
   const panelOpen = isSubmenuOpen || closing
 
   return (
@@ -611,8 +679,14 @@ function NavItem({
         data-has-submenu="true"
         data-nav-level="1"
         data-nav-slot
-        href={href}
+        href={parentHref}
         onClick={(event) => {
+          if (resolved.kind === 'form') {
+            event.preventDefault()
+            openForm({ formId: resolved.formId, title: resolved.formTitle || resolved.label })
+            onCloseNav()
+            return
+          }
           if (!window.matchMedia('(max-width: 1023px)').matches) return
           event.preventDefault()
           onOpenSubmenu()
@@ -645,7 +719,7 @@ function NavItem({
                 className="nav-mobile-parent"
                 data-component="nav-link"
                 data-nav-level="1"
-                href={href}
+                href={parentHref}
                 onClick={onCloseNav}
                 {...activeAttrs}
               >

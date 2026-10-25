@@ -1,4 +1,4 @@
-import { Button } from '@/components/frontend/ui'
+import { FormOrLinkButton } from '@/components/frontend/FormOrLinkButton'
 import { resolveBlockActions } from '@/lib/block-actions'
 
 type CallToActionFields = {
@@ -30,10 +30,12 @@ export function CallToActionBlockView({
       <div className="flex flex-wrap items-center justify-start gap-3">
         {actions.map((action, index) =>
           action.label ? (
-            <Button
+            <FormOrLinkButton
               backgroundColor={action.backgroundColor}
               className="shrink-0"
               external={action.external}
+              formId={action.formId}
+              formTitle={action.formTitle}
               href={action.href || '#'}
               icon={action.icon}
               key={`${action.label}-${index}`}
@@ -41,7 +43,7 @@ export function CallToActionBlockView({
               variant={action.variant || 'outline'}
             >
               {action.label}
-            </Button>
+            </FormOrLinkButton>
           ) : null,
         )}
       </div>

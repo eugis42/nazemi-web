@@ -297,7 +297,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -327,6 +327,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -357,7 +361,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -387,6 +391,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -426,7 +434,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -456,6 +464,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -474,7 +486,50 @@ export interface Stranky {
                   color: string;
                   title: string;
                   body: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
                   buttonLabel?: string | null;
+                  linkType?: ('internal' | 'external') | null;
+                  /**
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
                   href?: string | null;
                   id?: string | null;
                 }[]
@@ -496,7 +551,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -526,6 +581,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -541,11 +600,11 @@ export interface Stranky {
               | null;
             selection?: ('auto' | 'manual') | null;
             /**
-             * Min. 4, max. 8.
+             * Min. 3, max. 6.
              */
             limit?: number | null;
             /**
-             * Min. 4, max. 8 aktualit.
+             * Min. 3, max. 6 aktualit.
              */
             items?: (number | Aktuality)[] | null;
             id?: string | null;
@@ -565,7 +624,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -595,6 +654,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -629,7 +692,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -659,6 +722,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -814,7 +881,7 @@ export interface Stranky {
                         label?: string | null;
                         linkType: 'internal' | 'external';
                         /**
-                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                          */
                         reference?:
                           | ({
@@ -844,6 +911,10 @@ export interface Stranky {
                           | ({
                               relationTo: 'projekty';
                               value: number | Projekty;
+                            } | null)
+                          | ({
+                              relationTo: 'forms';
+                              value: number | Form;
                             } | null);
                         /**
                          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -879,7 +950,7 @@ export interface Stranky {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -909,6 +980,10 @@ export interface Stranky {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -939,6 +1014,58 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'formEmbed';
+          }
+        | {
+            /**
+             * Absolutní odkaz (https://…). Tlačítko načte Open Graph do polí níže — lze pak upravit.
+             */
+            url: string;
+            /**
+             * Předvyplní se z og:title — můžete přepsat.
+             */
+            title: string;
+            /**
+             * Předvyplní se z og:description — můžete přepsat.
+             */
+            description?: string | null;
+            /**
+             * Předvyplní se z og:image (uloží se do Média). Můžete nahrát vlastní.
+             */
+            image?: (number | null) | Media;
+            /**
+             * Výchozí „Otevřít“.
+             */
+            buttonLabel?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'externalLinkCard';
+          }
+        | {
+            /**
+             * Určí listing a typ taxonomie (levá část tlačítka).
+             */
+            target:
+              | 'kalendar'
+              | 'aktuality'
+              | 'workshopy-topic'
+              | 'workshopy-audience'
+              | 'publikace-type'
+              | 'publikace-topic';
+            /**
+             * Pravá část tlačítka.
+             */
+            tag?: (number | null) | Tag;
+            /**
+             * Pravá část tlačítka.
+             */
+            audience?: (number | null) | WorkshopAudience;
+            /**
+             * Pravá část tlačítka.
+             */
+            publicationType?: (number | null) | PublicationType;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'filterLink';
           }
         | {
             title: string;
@@ -1017,7 +1144,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -1047,6 +1174,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1077,7 +1208,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -1107,6 +1238,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1146,7 +1281,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -1176,6 +1311,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1194,7 +1333,50 @@ export interface Stranky {
                   color: string;
                   title: string;
                   body: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
                   buttonLabel?: string | null;
+                  linkType?: ('internal' | 'external') | null;
+                  /**
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
                   href?: string | null;
                   id?: string | null;
                 }[]
@@ -1216,7 +1398,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -1246,6 +1428,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1261,11 +1447,11 @@ export interface Stranky {
               | null;
             selection?: ('auto' | 'manual') | null;
             /**
-             * Min. 4, max. 8.
+             * Min. 3, max. 6.
              */
             limit?: number | null;
             /**
-             * Min. 4, max. 8 aktualit.
+             * Min. 3, max. 6 aktualit.
              */
             items?: (number | Aktuality)[] | null;
             id?: string | null;
@@ -1285,7 +1471,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -1315,6 +1501,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1349,7 +1539,7 @@ export interface Stranky {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -1379,6 +1569,10 @@ export interface Stranky {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1534,7 +1728,7 @@ export interface Stranky {
                         label?: string | null;
                         linkType: 'internal' | 'external';
                         /**
-                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                          */
                         reference?:
                           | ({
@@ -1564,6 +1758,10 @@ export interface Stranky {
                           | ({
                               relationTo: 'projekty';
                               value: number | Projekty;
+                            } | null)
+                          | ({
+                              relationTo: 'forms';
+                              value: number | Form;
                             } | null);
                         /**
                          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1599,7 +1797,7 @@ export interface Stranky {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -1629,6 +1827,10 @@ export interface Stranky {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1659,6 +1861,58 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'formEmbed';
+          }
+        | {
+            /**
+             * Absolutní odkaz (https://…). Tlačítko načte Open Graph do polí níže — lze pak upravit.
+             */
+            url: string;
+            /**
+             * Předvyplní se z og:title — můžete přepsat.
+             */
+            title: string;
+            /**
+             * Předvyplní se z og:description — můžete přepsat.
+             */
+            description?: string | null;
+            /**
+             * Předvyplní se z og:image (uloží se do Média). Můžete nahrát vlastní.
+             */
+            image?: (number | null) | Media;
+            /**
+             * Výchozí „Otevřít“.
+             */
+            buttonLabel?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'externalLinkCard';
+          }
+        | {
+            /**
+             * Určí listing a typ taxonomie (levá část tlačítka).
+             */
+            target:
+              | 'kalendar'
+              | 'aktuality'
+              | 'workshopy-topic'
+              | 'workshopy-audience'
+              | 'publikace-type'
+              | 'publikace-topic';
+            /**
+             * Pravá část tlačítka.
+             */
+            tag?: (number | null) | Tag;
+            /**
+             * Pravá část tlačítka.
+             */
+            audience?: (number | null) | WorkshopAudience;
+            /**
+             * Pravá část tlačítka.
+             */
+            publicationType?: (number | null) | PublicationType;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'filterLink';
           }
         | {
             title: string;
@@ -1832,7 +2086,7 @@ export interface Site {
         label?: string | null;
         linkType: 'internal' | 'external';
         /**
-         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
          */
         reference?:
           | ({
@@ -1862,6 +2116,10 @@ export interface Site {
           | ({
               relationTo: 'projekty';
               value: number | Projekty;
+            } | null)
+          | ({
+              relationTo: 'forms';
+              value: number | Form;
             } | null);
         /**
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1881,7 +2139,7 @@ export interface Site {
         label?: string | null;
         linkType: 'internal' | 'external';
         /**
-         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
          */
         reference?:
           | ({
@@ -1911,6 +2169,63 @@ export interface Site {
           | ({
               relationTo: 'projekty';
               value: number | Projekty;
+            } | null)
+          | ({
+              relationTo: 'forms';
+              value: number | Form;
+            } | null);
+        /**
+         * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+         */
+        href?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Odkazy v dolní liště patičky (např. právní stránky). Jedna úroveň, bez podpoložek.
+   */
+  footerMenu?:
+    | {
+        /**
+         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+         */
+        label?: string | null;
+        linkType: 'internal' | 'external';
+        /**
+         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+         */
+        reference?:
+          | ({
+              relationTo: 'prehledy';
+              value: number | Prehledy;
+            } | null)
+          | ({
+              relationTo: 'stranky';
+              value: number | Stranky;
+            } | null)
+          | ({
+              relationTo: 'aktuality';
+              value: number | Aktuality;
+            } | null)
+          | ({
+              relationTo: 'kalendar';
+              value: number | Kalendar;
+            } | null)
+          | ({
+              relationTo: 'workshopy';
+              value: number | Workshopy;
+            } | null)
+          | ({
+              relationTo: 'publikace';
+              value: number | Publikace;
+            } | null)
+          | ({
+              relationTo: 'projekty';
+              value: number | Projekty;
+            } | null)
+          | ({
+              relationTo: 'forms';
+              value: number | Form;
             } | null);
         /**
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -1946,11 +2261,51 @@ export interface Site {
         note?: string | null;
         links?:
           | {
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
               label: string;
+              linkType: 'internal' | 'external';
+              /**
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
+                  } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
                */
-              href: string;
+              href?: string | null;
               id?: string | null;
             }[]
           | null;
@@ -1973,7 +2328,47 @@ export interface Site {
     title?: string | null;
     body?: string | null;
     backgroundColor?: string | null;
+    /**
+     * Volitelné u interního odkazu — prázdné → název vybrané položky.
+     */
     buttonLabel?: string | null;
+    linkType?: ('internal' | 'external') | null;
+    /**
+     * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+     */
+    reference?:
+      | ({
+          relationTo: 'prehledy';
+          value: number | Prehledy;
+        } | null)
+      | ({
+          relationTo: 'stranky';
+          value: number | Stranky;
+        } | null)
+      | ({
+          relationTo: 'aktuality';
+          value: number | Aktuality;
+        } | null)
+      | ({
+          relationTo: 'kalendar';
+          value: number | Kalendar;
+        } | null)
+      | ({
+          relationTo: 'workshopy';
+          value: number | Workshopy;
+        } | null)
+      | ({
+          relationTo: 'publikace';
+          value: number | Publikace;
+        } | null)
+      | ({
+          relationTo: 'projekty';
+          value: number | Projekty;
+        } | null)
+      | ({
+          relationTo: 'forms';
+          value: number | Form;
+        } | null);
     /**
      * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
      */
@@ -1983,11 +2378,52 @@ export interface Site {
     | {
         title: string;
         description?: string | null;
+        /**
+         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+         */
         subscribeLabel?: string | null;
+        linkType: 'internal' | 'external';
+        /**
+         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+         */
+        reference?:
+          | ({
+              relationTo: 'prehledy';
+              value: number | Prehledy;
+            } | null)
+          | ({
+              relationTo: 'stranky';
+              value: number | Stranky;
+            } | null)
+          | ({
+              relationTo: 'aktuality';
+              value: number | Aktuality;
+            } | null)
+          | ({
+              relationTo: 'kalendar';
+              value: number | Kalendar;
+            } | null)
+          | ({
+              relationTo: 'workshopy';
+              value: number | Workshopy;
+            } | null)
+          | ({
+              relationTo: 'publikace';
+              value: number | Publikace;
+            } | null)
+          | ({
+              relationTo: 'projekty';
+              value: number | Projekty;
+            } | null)
+          | ({
+              relationTo: 'forms';
+              value: number | Form;
+            } | null);
         /**
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
          */
-        subscribeUrl: string;
+        href?: string | null;
+        subscribeUrl?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2218,11 +2654,52 @@ export interface Kalendar {
    */
   ctas?:
     | {
-        title: string;
+        /**
+         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+         */
+        title?: string | null;
+        linkType: 'internal' | 'external';
+        /**
+         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+         */
+        reference?:
+          | ({
+              relationTo: 'prehledy';
+              value: number | Prehledy;
+            } | null)
+          | ({
+              relationTo: 'stranky';
+              value: number | Stranky;
+            } | null)
+          | ({
+              relationTo: 'aktuality';
+              value: number | Aktuality;
+            } | null)
+          | ({
+              relationTo: 'kalendar';
+              value: number | Kalendar;
+            } | null)
+          | ({
+              relationTo: 'workshopy';
+              value: number | Workshopy;
+            } | null)
+          | ({
+              relationTo: 'publikace';
+              value: number | Publikace;
+            } | null)
+          | ({
+              relationTo: 'projekty';
+              value: number | Projekty;
+            } | null)
+          | ({
+              relationTo: 'forms';
+              value: number | Form;
+            } | null);
         /**
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
          */
-        url: string;
+        href?: string | null;
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2324,7 +2801,7 @@ export interface Workshopy {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -2354,6 +2831,10 @@ export interface Workshopy {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -2384,7 +2865,7 @@ export interface Workshopy {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -2414,6 +2895,10 @@ export interface Workshopy {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -2453,7 +2938,7 @@ export interface Workshopy {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -2483,6 +2968,10 @@ export interface Workshopy {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -2501,7 +2990,50 @@ export interface Workshopy {
                   color: string;
                   title: string;
                   body: string;
+                  /**
+                   * Volitelné u interního odkazu — prázdné → název vybrané položky.
+                   */
                   buttonLabel?: string | null;
+                  linkType?: ('internal' | 'external') | null;
+                  /**
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+                   */
+                  reference?:
+                    | ({
+                        relationTo: 'prehledy';
+                        value: number | Prehledy;
+                      } | null)
+                    | ({
+                        relationTo: 'stranky';
+                        value: number | Stranky;
+                      } | null)
+                    | ({
+                        relationTo: 'aktuality';
+                        value: number | Aktuality;
+                      } | null)
+                    | ({
+                        relationTo: 'kalendar';
+                        value: number | Kalendar;
+                      } | null)
+                    | ({
+                        relationTo: 'workshopy';
+                        value: number | Workshopy;
+                      } | null)
+                    | ({
+                        relationTo: 'publikace';
+                        value: number | Publikace;
+                      } | null)
+                    | ({
+                        relationTo: 'projekty';
+                        value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
+                      } | null);
+                  /**
+                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+                   */
                   href?: string | null;
                   id?: string | null;
                 }[]
@@ -2523,7 +3055,7 @@ export interface Workshopy {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -2553,6 +3085,10 @@ export interface Workshopy {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -2568,11 +3104,11 @@ export interface Workshopy {
               | null;
             selection?: ('auto' | 'manual') | null;
             /**
-             * Min. 4, max. 8.
+             * Min. 3, max. 6.
              */
             limit?: number | null;
             /**
-             * Min. 4, max. 8 aktualit.
+             * Min. 3, max. 6 aktualit.
              */
             items?: (number | Aktuality)[] | null;
             id?: string | null;
@@ -2592,7 +3128,7 @@ export interface Workshopy {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -2622,6 +3158,10 @@ export interface Workshopy {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -2656,7 +3196,7 @@ export interface Workshopy {
                   label?: string | null;
                   linkType: 'internal' | 'external';
                   /**
-                   * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                   * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                    */
                   reference?:
                     | ({
@@ -2686,6 +3226,10 @@ export interface Workshopy {
                     | ({
                         relationTo: 'projekty';
                         value: number | Projekty;
+                      } | null)
+                    | ({
+                        relationTo: 'forms';
+                        value: number | Form;
                       } | null);
                   /**
                    * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -2841,7 +3385,7 @@ export interface Workshopy {
                         label?: string | null;
                         linkType: 'internal' | 'external';
                         /**
-                         * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                          */
                         reference?:
                           | ({
@@ -2871,6 +3415,10 @@ export interface Workshopy {
                           | ({
                               relationTo: 'projekty';
                               value: number | Projekty;
+                            } | null)
+                          | ({
+                              relationTo: 'forms';
+                              value: number | Form;
                             } | null);
                         /**
                          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -2906,7 +3454,7 @@ export interface Workshopy {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -2936,6 +3484,10 @@ export interface Workshopy {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -2966,6 +3518,58 @@ export interface Workshopy {
             id?: string | null;
             blockName?: string | null;
             blockType: 'formEmbed';
+          }
+        | {
+            /**
+             * Absolutní odkaz (https://…). Tlačítko načte Open Graph do polí níže — lze pak upravit.
+             */
+            url: string;
+            /**
+             * Předvyplní se z og:title — můžete přepsat.
+             */
+            title: string;
+            /**
+             * Předvyplní se z og:description — můžete přepsat.
+             */
+            description?: string | null;
+            /**
+             * Předvyplní se z og:image (uloží se do Média). Můžete nahrát vlastní.
+             */
+            image?: (number | null) | Media;
+            /**
+             * Výchozí „Otevřít“.
+             */
+            buttonLabel?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'externalLinkCard';
+          }
+        | {
+            /**
+             * Určí listing a typ taxonomie (levá část tlačítka).
+             */
+            target:
+              | 'kalendar'
+              | 'aktuality'
+              | 'workshopy-topic'
+              | 'workshopy-audience'
+              | 'publikace-type'
+              | 'publikace-topic';
+            /**
+             * Pravá část tlačítka.
+             */
+            tag?: (number | null) | Tag;
+            /**
+             * Pravá část tlačítka.
+             */
+            audience?: (number | null) | WorkshopAudience;
+            /**
+             * Pravá část tlačítka.
+             */
+            publicationType?: (number | null) | PublicationType;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'filterLink';
           }
         | {
             title: string;
@@ -3024,11 +3628,52 @@ export interface Workshopy {
    */
   ctas?:
     | {
-        title: string;
+        /**
+         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+         */
+        title?: string | null;
+        linkType: 'internal' | 'external';
+        /**
+         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+         */
+        reference?:
+          | ({
+              relationTo: 'prehledy';
+              value: number | Prehledy;
+            } | null)
+          | ({
+              relationTo: 'stranky';
+              value: number | Stranky;
+            } | null)
+          | ({
+              relationTo: 'aktuality';
+              value: number | Aktuality;
+            } | null)
+          | ({
+              relationTo: 'kalendar';
+              value: number | Kalendar;
+            } | null)
+          | ({
+              relationTo: 'workshopy';
+              value: number | Workshopy;
+            } | null)
+          | ({
+              relationTo: 'publikace';
+              value: number | Publikace;
+            } | null)
+          | ({
+              relationTo: 'projekty';
+              value: number | Projekty;
+            } | null)
+          | ({
+              relationTo: 'forms';
+              value: number | Form;
+            } | null);
         /**
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
          */
-        url: string;
+        href?: string | null;
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -3130,11 +3775,52 @@ export interface Publikace {
    */
   ctas?:
     | {
-        title: string;
+        /**
+         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+         */
+        title?: string | null;
+        linkType: 'internal' | 'external';
+        /**
+         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+         */
+        reference?:
+          | ({
+              relationTo: 'prehledy';
+              value: number | Prehledy;
+            } | null)
+          | ({
+              relationTo: 'stranky';
+              value: number | Stranky;
+            } | null)
+          | ({
+              relationTo: 'aktuality';
+              value: number | Aktuality;
+            } | null)
+          | ({
+              relationTo: 'kalendar';
+              value: number | Kalendar;
+            } | null)
+          | ({
+              relationTo: 'workshopy';
+              value: number | Workshopy;
+            } | null)
+          | ({
+              relationTo: 'publikace';
+              value: number | Publikace;
+            } | null)
+          | ({
+              relationTo: 'projekty';
+              value: number | Projekty;
+            } | null)
+          | ({
+              relationTo: 'forms';
+              value: number | Form;
+            } | null);
         /**
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
          */
-        url: string;
+        href?: string | null;
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -3241,7 +3927,7 @@ export interface Projekty {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -3271,6 +3957,10 @@ export interface Projekty {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -3301,7 +3991,7 @@ export interface Projekty {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -3331,6 +4021,10 @@ export interface Projekty {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -3370,7 +4064,7 @@ export interface Projekty {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -3400,6 +4094,10 @@ export interface Projekty {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -3418,7 +4116,50 @@ export interface Projekty {
               color: string;
               title: string;
               body: string;
+              /**
+               * Volitelné u interního odkazu — prázdné → název vybrané položky.
+               */
               buttonLabel?: string | null;
+              linkType?: ('internal' | 'external') | null;
+              /**
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+               */
+              reference?:
+                | ({
+                    relationTo: 'prehledy';
+                    value: number | Prehledy;
+                  } | null)
+                | ({
+                    relationTo: 'stranky';
+                    value: number | Stranky;
+                  } | null)
+                | ({
+                    relationTo: 'aktuality';
+                    value: number | Aktuality;
+                  } | null)
+                | ({
+                    relationTo: 'kalendar';
+                    value: number | Kalendar;
+                  } | null)
+                | ({
+                    relationTo: 'workshopy';
+                    value: number | Workshopy;
+                  } | null)
+                | ({
+                    relationTo: 'publikace';
+                    value: number | Publikace;
+                  } | null)
+                | ({
+                    relationTo: 'projekty';
+                    value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
+                  } | null);
+              /**
+               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
+               */
               href?: string | null;
               id?: string | null;
             }[]
@@ -3440,7 +4181,7 @@ export interface Projekty {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -3470,6 +4211,10 @@ export interface Projekty {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -3485,11 +4230,11 @@ export interface Projekty {
           | null;
         selection?: ('auto' | 'manual') | null;
         /**
-         * Min. 4, max. 8.
+         * Min. 3, max. 6.
          */
         limit?: number | null;
         /**
-         * Min. 4, max. 8 aktualit.
+         * Min. 3, max. 6 aktualit.
          */
         items?: (number | Aktuality)[] | null;
         id?: string | null;
@@ -3509,7 +4254,7 @@ export interface Projekty {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -3539,6 +4284,10 @@ export interface Projekty {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -3573,7 +4322,7 @@ export interface Projekty {
               label?: string | null;
               linkType: 'internal' | 'external';
               /**
-               * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+               * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                */
               reference?:
                 | ({
@@ -3603,6 +4352,10 @@ export interface Projekty {
                 | ({
                     relationTo: 'projekty';
                     value: number | Projekty;
+                  } | null)
+                | ({
+                    relationTo: 'forms';
+                    value: number | Form;
                   } | null);
               /**
                * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -3758,7 +4511,7 @@ export interface Projekty {
                     label?: string | null;
                     linkType: 'internal' | 'external';
                     /**
-                     * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+                     * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
                      */
                     reference?:
                       | ({
@@ -3788,6 +4541,10 @@ export interface Projekty {
                       | ({
                           relationTo: 'projekty';
                           value: number | Projekty;
+                        } | null)
+                      | ({
+                          relationTo: 'forms';
+                          value: number | Form;
                         } | null);
                     /**
                      * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -3823,7 +4580,7 @@ export interface Projekty {
           label?: string | null;
           linkType: 'internal' | 'external';
           /**
-           * Přehled kolekce (domovská), stránka nebo záznam obsahu.
+           * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
            */
           reference?:
             | ({
@@ -3853,6 +4610,10 @@ export interface Projekty {
             | ({
                 relationTo: 'projekty';
                 value: number | Projekty;
+              } | null)
+            | ({
+                relationTo: 'forms';
+                value: number | Form;
               } | null);
           /**
            * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
@@ -3883,6 +4644,53 @@ export interface Projekty {
         id?: string | null;
         blockName?: string | null;
         blockType: 'formEmbed';
+      }
+    | {
+        /**
+         * Absolutní odkaz (https://…). Tlačítko načte Open Graph do polí níže — lze pak upravit.
+         */
+        url: string;
+        /**
+         * Předvyplní se z og:title — můžete přepsat.
+         */
+        title: string;
+        /**
+         * Předvyplní se z og:description — můžete přepsat.
+         */
+        description?: string | null;
+        /**
+         * Předvyplní se z og:image (uloží se do Média). Můžete nahrát vlastní.
+         */
+        image?: (number | null) | Media;
+        /**
+         * Výchozí „Otevřít“.
+         */
+        buttonLabel?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'externalLinkCard';
+      }
+    | {
+        /**
+         * Určí listing a typ taxonomie (levá část tlačítka).
+         */
+        target:
+          'kalendar' | 'aktuality' | 'workshopy-topic' | 'workshopy-audience' | 'publikace-type' | 'publikace-topic';
+        /**
+         * Pravá část tlačítka.
+         */
+        tag?: (number | null) | Tag;
+        /**
+         * Pravá část tlačítka.
+         */
+        audience?: (number | null) | WorkshopAudience;
+        /**
+         * Pravá část tlačítka.
+         */
+        publicationType?: (number | null) | PublicationType;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'filterLink';
       }
     | {
         title: string;
@@ -3940,11 +4748,52 @@ export interface Projekty {
    */
   ctas?:
     | {
-        title: string;
+        /**
+         * Volitelné u interního odkazu — prázdné → název vybrané položky.
+         */
+        title?: string | null;
+        linkType: 'internal' | 'external';
+        /**
+         * Přehled kolekce, stránka, záznam obsahu — nebo formulář (otevře modal).
+         */
+        reference?:
+          | ({
+              relationTo: 'prehledy';
+              value: number | Prehledy;
+            } | null)
+          | ({
+              relationTo: 'stranky';
+              value: number | Stranky;
+            } | null)
+          | ({
+              relationTo: 'aktuality';
+              value: number | Aktuality;
+            } | null)
+          | ({
+              relationTo: 'kalendar';
+              value: number | Kalendar;
+            } | null)
+          | ({
+              relationTo: 'workshopy';
+              value: number | Workshopy;
+            } | null)
+          | ({
+              relationTo: 'publikace';
+              value: number | Publikace;
+            } | null)
+          | ({
+              relationTo: 'projekty';
+              value: number | Projekty;
+            } | null)
+          | ({
+              relationTo: 'forms';
+              value: number | Form;
+            } | null);
         /**
          * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
          */
-        url: string;
+        href?: string | null;
+        url?: string | null;
         variant?: ('filled' | 'outline' | 'colored') | null;
         /**
          * Pozadí z doplňkových barev webu. Obrys a text = primární barva.
@@ -4556,6 +5405,8 @@ export interface StrankySelect<T extends boolean = true> {
                     title?: T;
                     body?: T;
                     buttonLabel?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     id?: T;
                   };
@@ -4717,6 +5568,27 @@ export interface StrankySelect<T extends boolean = true> {
               title?: T;
               buttonLabel?: T;
               description?: T;
+              id?: T;
+              blockName?: T;
+            };
+        externalLinkCard?:
+          | T
+          | {
+              url?: T;
+              title?: T;
+              description?: T;
+              image?: T;
+              buttonLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        filterLink?:
+          | T
+          | {
+              target?: T;
+              tag?: T;
+              audience?: T;
+              publicationType?: T;
               id?: T;
               blockName?: T;
             };
@@ -4833,6 +5705,8 @@ export interface StrankySelect<T extends boolean = true> {
                     title?: T;
                     body?: T;
                     buttonLabel?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     id?: T;
                   };
@@ -4994,6 +5868,27 @@ export interface StrankySelect<T extends boolean = true> {
               title?: T;
               buttonLabel?: T;
               description?: T;
+              id?: T;
+              blockName?: T;
+            };
+        externalLinkCard?:
+          | T
+          | {
+              url?: T;
+              title?: T;
+              description?: T;
+              image?: T;
+              buttonLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        filterLink?:
+          | T
+          | {
+              target?: T;
+              tag?: T;
+              audience?: T;
+              publicationType?: T;
               id?: T;
               blockName?: T;
             };
@@ -5103,6 +5998,9 @@ export interface KalendarSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        linkType?: T;
+        reference?: T;
+        href?: T;
         url?: T;
         id?: T;
       };
@@ -5201,6 +6099,8 @@ export interface ProjektySelect<T extends boolean = true> {
                     title?: T;
                     body?: T;
                     buttonLabel?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     id?: T;
                   };
@@ -5365,6 +6265,27 @@ export interface ProjektySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        externalLinkCard?:
+          | T
+          | {
+              url?: T;
+              title?: T;
+              description?: T;
+              image?: T;
+              buttonLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        filterLink?:
+          | T
+          | {
+              target?: T;
+              tag?: T;
+              audience?: T;
+              publicationType?: T;
+              id?: T;
+              blockName?: T;
+            };
         speakers?:
           | T
           | {
@@ -5411,6 +6332,9 @@ export interface ProjektySelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        linkType?: T;
+        reference?: T;
+        href?: T;
         url?: T;
         variant?: T;
         backgroundColor?: T;
@@ -5518,6 +6442,8 @@ export interface WorkshopySelect<T extends boolean = true> {
                     title?: T;
                     body?: T;
                     buttonLabel?: T;
+                    linkType?: T;
+                    reference?: T;
                     href?: T;
                     id?: T;
                   };
@@ -5682,6 +6608,27 @@ export interface WorkshopySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        externalLinkCard?:
+          | T
+          | {
+              url?: T;
+              title?: T;
+              description?: T;
+              image?: T;
+              buttonLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        filterLink?:
+          | T
+          | {
+              target?: T;
+              tag?: T;
+              audience?: T;
+              publicationType?: T;
+              id?: T;
+              blockName?: T;
+            };
         speakers?:
           | T
           | {
@@ -5728,6 +6675,9 @@ export interface WorkshopySelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        linkType?: T;
+        reference?: T;
+        href?: T;
         url?: T;
         id?: T;
       };
@@ -5761,6 +6711,9 @@ export interface PublikaceSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        linkType?: T;
+        reference?: T;
+        href?: T;
         url?: T;
         id?: T;
       };
@@ -6178,6 +7131,15 @@ export interface SitesSelect<T extends boolean = true> {
         href?: T;
         id?: T;
       };
+  footerMenu?:
+    | T
+    | {
+        label?: T;
+        linkType?: T;
+        reference?: T;
+        href?: T;
+        id?: T;
+      };
   socialLinks?:
     | T
     | {
@@ -6202,6 +7164,8 @@ export interface SitesSelect<T extends boolean = true> {
           | T
           | {
               label?: T;
+              linkType?: T;
+              reference?: T;
               href?: T;
               id?: T;
             };
@@ -6223,6 +7187,8 @@ export interface SitesSelect<T extends boolean = true> {
         body?: T;
         backgroundColor?: T;
         buttonLabel?: T;
+        linkType?: T;
+        reference?: T;
         href?: T;
       };
   newsletters?:
@@ -6231,6 +7197,9 @@ export interface SitesSelect<T extends boolean = true> {
         title?: T;
         description?: T;
         subscribeLabel?: T;
+        linkType?: T;
+        reference?: T;
+        href?: T;
         subscribeUrl?: T;
         id?: T;
       };

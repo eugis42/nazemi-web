@@ -2,8 +2,10 @@ import Link from 'next/link'
 import type { CSSProperties, ReactNode } from 'react'
 
 import type { Aktuality, Kalendar, Lide, Projekty, Publikace, Site, Workshopy } from '@/payload-types'
+import { DocCtaButton } from '@/components/frontend/DocCtaButton'
+import { FormOrLinkButton } from '@/components/frontend/FormOrLinkButton'
 import { Button, Divider, MetaLine, TagGroup } from '@/components/frontend/ui'
-import { mapCtaVariant } from '@/lib/block-actions'
+import { resolveNavTarget } from '@/lib/nav-target'
 import { isColorToken, resolveColor } from '@/lib/colors'
 import {
   crossPostOriginSite,
@@ -319,19 +321,15 @@ function projectDetailVariant(isDark: boolean) {
   return isDark ? 'outline-sky' : 'outline'
 }
 
-function projectLinks(item: Projekty, isDark: boolean) {
-  return (item.ctas || []).map((link, index) =>
-    link.url && link.title ? (
-      <Button
-        backgroundColor={link.backgroundColor}
-        href={link.url}
-        key={`${link.title}-${index}`}
-        variant={mapCtaVariant(link.variant) || (isDark ? 'outline-sky' : 'outline')}
-      >
-        {link.title}
-      </Button>
-    ) : null,
-  )
+function projectLinks(item: Projekty, isDark: boolean, siteSlug = '') {
+  return (item.ctas || []).map((link, index) => (
+    <DocCtaButton
+      cta={link}
+      key={`${link.title || link.href || link.url || index}-${index}`}
+      siteSlug={siteSlug}
+      variant={link.variant || (isDark ? 'outline-sky' : 'outline')}
+    />
+  ))
 }
 
 function projectSurface(color?: string | null) {
@@ -383,7 +381,7 @@ export function ProjectRow({ item, siteSlug }: { item: Projekty; siteSlug: strin
         >
           {`Více o ${item.title}`}
         </Button>
-        {projectLinks(item, isDark)}
+        {projectLinks(item, isDark, siteSlug)}
       </div>
     </article>
   )
@@ -454,7 +452,7 @@ export function ProjectHeader({
                 {`Více o ${item.title}`}
               </Button>
             ) : null}
-            {projectLinks(item, isDark)}
+            {projectLinks(item, isDark, siteSlug)}
           </div>
         </div>
       </div>
@@ -493,9 +491,11 @@ type ContactDetail = NonNullable<Site['contactDetails']>[number]
 export function ContactBlock({
   block,
   className = '',
+  siteSlug = '',
 }: {
   block: ContactDetail
   className?: string
+  siteSlug?: string
 }) {
   const surface = contactBlockSurface(block.backgroundColor)
   const links = block.links || []
@@ -554,16 +554,33 @@ export function ContactBlock({
       </div>
       {links.length ? (
         <div className="mt-auto flex flex-wrap gap-2.5 pt-2.5">
-          {links.map((link, index) => (
-            <Button
-              className="self-start"
-              href={link.href || '#'}
-              key={`${link.href}-${index}`}
-              variant="outline-ground"
-            >
-              {link.label}
-            </Button>
-          ))}
+          {links.map((link, index) => {
+            const target = resolveNavTarget({
+              href: link.href,
+              label: link.label,
+              linkType: link.linkType,
+              reference: link.reference,
+            })
+            if (!target) return null
+            return (
+              <FormOrLinkButton
+                className="self-start"
+                formId={target.kind === 'form' ? target.formId : null}
+                formTitle={target.kind === 'form' ? target.formTitle : null}
+                href={
+                  target.kind === 'link'
+                    ? target.external
+                      ? target.href
+                      : withSiteQuery(target.href, siteSlug)
+                    : undefined
+                }
+                key={`${target.kind === 'form' ? target.formId : target.href}-${index}`}
+                variant="outline-ground"
+              >
+                {target.label}
+              </FormOrLinkButton>
+            )
+          })}
         </div>
       ) : null}
     </article>

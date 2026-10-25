@@ -207,17 +207,21 @@ export function menuParentForHref(
 
   for (const item of nestedMainMenu(mainMenu)) {
     const parentResolved = resolveMenuItem(item)
-    if (!parentResolved) continue
+    if (!parentResolved || parentResolved.kind !== 'link') continue
     const children = (item.children || [])
       .map((child) => resolveMenuItem(child))
-      .filter(Boolean) as MenuChild[]
+      .filter(
+        (child): child is Extract<NonNullable<typeof child>, { kind: 'link' }> =>
+          child?.kind === 'link',
+      )
+      .map((child) => ({ href: child.href, label: child.label }))
     if (!children.length) continue
     if (!children.some((child) => normaliseMenuHref(child.href) === target)) continue
     if (normaliseMenuHref(parentResolved.href) === target) continue
 
     return {
       parent: { href: parentResolved.href, label: parentResolved.label },
-      siblings: children.map((child) => ({ href: child.href, label: child.label })),
+      siblings: children,
     }
   }
 

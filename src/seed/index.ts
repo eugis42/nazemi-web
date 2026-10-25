@@ -27,6 +27,7 @@ import {
   pillarsActions,
 } from './data/homepage'
 import { MAIN_LINKS, SECONDARY_LINKS } from './data/navigation'
+import { FOOTER_LEGAL_PAGES } from '@/lib/footer-legal'
 import { flattenMenuItems } from '@/lib/menu-tree'
 import { ensureCollectionHomesForSite } from '@/lib/collection-homes'
 import { featuredNews, newsArticles } from './data/news'
@@ -670,8 +671,11 @@ const seed = async () => {
             { href: '/aktuality', label: 'Všechny aktuality', variant: 'outline' },
           ],
           blockType: 'news',
-          items: featuredNews.map((article) => newsIds.get(article.slug)).filter(Boolean),
-          limit: 4,
+          items: featuredNews
+            .map((article) => newsIds.get(article.slug))
+            .filter(Boolean)
+            .slice(0, 6),
+          limit: 3,
           selection: 'manual',
           title: 'Aktuality',
         },
@@ -769,6 +773,35 @@ const seed = async () => {
     })
   }
 
+  // ------------------------------------------- footer legal pages + menu
+  const footerMenuItems = []
+  for (const page of FOOTER_LEGAL_PAGES) {
+    const doc = await upsertByField({
+      collection: 'stranky',
+      data: {
+        _status: 'published',
+        content: [{ blockType: 'richText', content: richText('\u00a0') }],
+        isHomepage: false,
+        site: mainSite.id,
+        slug: page.slug,
+        title: page.title,
+      },
+      field: 'slug',
+      payload,
+    })
+    footerMenuItems.push({
+      label: page.title,
+      linkType: 'internal' as const,
+      reference: { relationTo: 'stranky' as const, value: doc.id as number },
+    })
+  }
+  await payload.update({
+    collection: 'sites',
+    id: mainSite.id,
+    data: { footerMenu: footerMenuItems },
+    overrideAccess: true,
+  })
+
   // ------------------------------------------------------------ subsite (Brno)
   const [brnoEventImage, brnoNewsImage] = await Promise.all([
     mediaFor('event-3.jpg'),
@@ -800,7 +833,7 @@ const seed = async () => {
         {
           actions: [{ href: '/aktuality', label: 'Všechny aktuality', variant: 'outline' }],
           blockType: 'news',
-          limit: 4,
+          limit: 3,
           selection: 'auto',
           title: 'Aktuality z Brna',
         },

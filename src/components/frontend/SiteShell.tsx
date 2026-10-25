@@ -1,5 +1,6 @@
 import type { Site } from '@/payload-types'
 
+import { FormModalProvider } from '@/components/frontend/FormModalProvider'
 import { HeroBackdrop } from '@/components/frontend/HeroBackdrop'
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/frontend/listing'
 import { SiteFooter } from '@/components/frontend/SiteFooter'
@@ -42,34 +43,38 @@ export function SiteShell({
     ? mediaURL(homepageBackground)
     : mediaSizeURL(homepageBackground, 'hero') || mediaURL(homepageBackground)
 
+  const brandStyle = siteBrandStyle(site)
+
   return (
-    <div className="page-shell relative" style={siteBrandStyle(site)}>
-      <div className="relative z-20 overflow-x-hidden">
-        <SiteHeader
-          logoAlt={mediaAlt(logo, site.name)}
-          logoNavbarPadding={site.logoNavbarPadding}
-          logoUrl={mediaURL(logo)}
-          mainMenu={mainMenu}
-          secondaryMenu={site.secondaryMenu}
-          siteName={site.name}
-          siteSlug={site.slug}
-        />
-        {breadcrumbs?.length ? <Breadcrumbs items={breadcrumbs} /> : null}
-        {beforeMain}
-      </div>
-      {backdrop ? (
-        <HeroBackdrop
-          // All subsites share NaNebi framing (75vh cover); main keeps vh/full-bleed.
-          fitWidth={isSubsite}
-          src={backdropSrc}
-        />
-      ) : null}
-      <main className={`relative z-10 overflow-x-hidden pb-section ${mainClassName}`}>
-        {stacked ? <div className="section-stack">{children}</div> : children}
-        <div className="container mt-section">
-          <SiteFooter site={site} />
+    <FormModalProvider brandStyle={brandStyle} siteSlug={site.slug}>
+      <div className="page-shell relative" style={brandStyle}>
+        <div className="relative z-20 overflow-x-hidden">
+          <SiteHeader
+            logoAlt={mediaAlt(logo, site.name)}
+            logoNavbarPadding={site.logoNavbarPadding}
+            logoUrl={mediaURL(logo)}
+            mainMenu={mainMenu}
+            secondaryMenu={site.secondaryMenu}
+            siteName={site.name}
+            siteSlug={site.slug}
+          />
+          {breadcrumbs?.length ? <Breadcrumbs items={breadcrumbs} /> : null}
+          {beforeMain}
         </div>
-      </main>
-    </div>
+        {backdrop ? (
+          <HeroBackdrop
+            // All subsites share NaNebi framing (75vh cover); main keeps vh/full-bleed.
+            fitWidth={isSubsite}
+            src={backdropSrc}
+          />
+        ) : null}
+        <main className={`relative z-10 overflow-x-hidden pb-section ${mainClassName}`}>
+          {stacked ? <div className="section-stack">{children}</div> : children}
+          <div className="container mt-section">
+            <SiteFooter site={site} />
+          </div>
+        </main>
+      </div>
+    </FormModalProvider>
   )
 }

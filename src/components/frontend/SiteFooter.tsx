@@ -3,9 +3,11 @@ import type { CSSProperties } from 'react'
 
 import type { Site } from '@/payload-types'
 
-import { Button, Divider } from '@/components/frontend/ui'
+import { FormOrLinkButton } from '@/components/frontend/FormOrLinkButton'
+import { Divider } from '@/components/frontend/ui'
 import { isColorToken, resolveColor } from '@/lib/colors'
 import { mediaAlt, mediaURL, withSiteQuery } from '@/lib/content'
+import { resolveNavTarget } from '@/lib/nav-target'
 
 const DONATE_BG_CLASS: Record<string, string> = {
   sky: 'bg-sky',
@@ -33,11 +35,51 @@ function donateBannerSurface(color?: string | null): {
   return { className: 'bg-violet' }
 }
 
+const FOOTER_LINK_CLASS =
+  'text-ground underline underline-offset-2 transition-opacity hover:opacity-70'
+
+function FooterNavLink({
+  siteSlug,
+  target,
+}: {
+  siteSlug: string
+  target: NonNullable<ReturnType<typeof resolveNavTarget>>
+}) {
+  if (target.kind === 'form') {
+    return (
+      <FormOrLinkButton
+        className="!border-0 !bg-transparent !px-0 !py-0 !shadow-none"
+        formId={target.formId}
+        formTitle={target.formTitle}
+        variant="outline-ground"
+      >
+        <span className={FOOTER_LINK_CLASS}>{target.label}</span>
+      </FormOrLinkButton>
+    )
+  }
+
+  const href = target.external ? target.href : withSiteQuery(target.href, siteSlug)
+  return (
+    <a
+      className={FOOTER_LINK_CLASS}
+      href={href}
+      rel={target.external ? 'noopener noreferrer' : undefined}
+      target={target.external ? '_blank' : undefined}
+    >
+      {target.external ? `↗ ${target.label}` : target.label}
+    </a>
+  )
+}
+
 export function SiteFooter({ site }: { site: Site }) {
   const donate = site.donateCta
-  const donateButtonLabel = donate?.buttonLabel?.trim() || ''
-  const donateHref = donate?.href?.trim() || ''
-  const showDonateButton = Boolean(donateButtonLabel && donateHref)
+  const donateTarget = resolveNavTarget({
+    href: donate?.href,
+    label: donate?.buttonLabel,
+    linkType: donate?.linkType,
+    reference: donate?.reference,
+  })
+  const showDonateButton = Boolean(donateTarget)
   const showDonate = Boolean(
     donate?.title?.trim() || donate?.body?.trim() || showDonateButton,
   )
@@ -47,6 +89,10 @@ export function SiteFooter({ site }: { site: Site }) {
   const logo = site.logo && typeof site.logo === 'object' ? site.logo : null
   const logoUrl = mediaURL(logo)
   const donateSurface = donateBannerSurface(donate?.backgroundColor)
+  const footerLinks = (site.footerMenu || [])
+    .map((item) => resolveNavTarget(item))
+    .filter((t): t is NonNullable<typeof t> => Boolean(t))
+  const socialLinks = (site.socialLinks || []).filter((link) => link.url)
 
   return (
     <footer className="border-2 border-ground bg-sky" data-component="site-footer">
@@ -60,10 +106,22 @@ export function SiteFooter({ site }: { site: Site }) {
           <div className="flex flex-col gap-2.5 p-card text-ground">
             {donate?.title ? <h2 className="text-card-title text-ground">{donate.title}</h2> : null}
             {donate?.body ? <p className="text-body-inter text-ground">{donate.body}</p> : null}
-            {showDonateButton ? (
-              <Button href={donateHref} newTab variant="filled-sky">
-                {donateButtonLabel}
-              </Button>
+            {donateTarget ? (
+              <FormOrLinkButton
+                formId={donateTarget.kind === 'form' ? donateTarget.formId : null}
+                formTitle={donateTarget.kind === 'form' ? donateTarget.formTitle : null}
+                href={
+                  donateTarget.kind === 'link'
+                    ? donateTarget.external
+                      ? donateTarget.href
+                      : withSiteQuery(donateTarget.href, site.slug)
+                    : undefined
+                }
+                newTab={donateTarget.kind === 'link' ? true : undefined}
+                variant="filled-sky"
+              >
+                {donateTarget.label}
+              </FormOrLinkButton>
             ) : null}
           </div>
         </section>
@@ -85,6 +143,13 @@ export function SiteFooter({ site }: { site: Site }) {
             ]
               .filter(Boolean)
               .join(' ')
+            const target = resolveNavTarget({
+              href: item.href,
+              label: item.subscribeLabel || 'Přihlásit se k odběru',
+              linkType: item.linkType,
+              reference: item.reference,
+              url: item.subscribeUrl,
+            })
 
             return (
               <div
@@ -101,15 +166,23 @@ export function SiteFooter({ site }: { site: Site }) {
                       </p>
                     ) : null}
                   </div>
-                  {item.subscribeUrl ? (
-                    <Button
+                  {target ? (
+                    <FormOrLinkButton
                       className="!text-[14px]"
-                      href={item.subscribeUrl}
-                      newTab
+                      formId={target.kind === 'form' ? target.formId : null}
+                      formTitle={target.kind === 'form' ? target.formTitle : null}
+                      href={
+                        target.kind === 'link'
+                          ? target.external
+                            ? target.href
+                            : withSiteQuery(target.href, site.slug)
+                          : undefined
+                      }
+                      newTab={target.kind === 'link' ? true : undefined}
                       variant="outline-ground"
                     >
-                      {item.subscribeLabel || 'Přihlásit se k odběru'}
-                    </Button>
+                      {target.label}
+                    </FormOrLinkButton>
                   ) : null}
                 </div>
               </div>
@@ -120,11 +193,19 @@ export function SiteFooter({ site }: { site: Site }) {
 
       <Divider />
 
+      {/*
+        Mobile: stack.
+        Tablet (md–lg): logo | contact↗ ; social+menu | copyright↘.
+        Desktop (lg+): logo+contact left; social | menu | copyright right.
+      */}
       <div
         className="flex flex-col gap-8 p-card lg:flex-row lg:items-center lg:justify-between"
-        data-component="footer-contact"
+        data-component="footer-bar"
       >
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-8">
+        <div
+          className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between lg:items-center lg:justify-start lg:gap-8"
+          data-component="footer-identity"
+        >
           <Link
             aria-label={`${site.name} — domů`}
             className="inline-block shrink-0"
@@ -148,7 +229,6 @@ export function SiteFooter({ site }: { site: Site }) {
             const addressLines = (block.addressLines || [])
               .map((row) => row.line)
               .filter((line): line is string => Boolean(line))
-            // Design footer hardcodes org line as first identity (e.g. "NaNebi, s. r. o.").
             const heading =
               addressLines[0] && addressLines[0].startsWith(block.title || '')
                 ? addressLines[0]
@@ -160,7 +240,7 @@ export function SiteFooter({ site }: { site: Site }) {
 
             return (
               <div
-                className="font-inter text-sm font-medium leading-snug text-ground"
+                className="font-inter text-sm font-medium leading-snug text-ground md:text-right lg:text-left"
                 key={`${block.title}-${index}`}
               >
                 <p className="m-0">
@@ -195,40 +275,75 @@ export function SiteFooter({ site }: { site: Site }) {
             )
           })}
         </div>
-        <div className="font-inter text-left text-sm font-medium leading-snug text-ground lg:text-right">
-          {(site.socialLinks || []).length ? (
-            <p className="m-0 mb-2 flex flex-wrap gap-x-3 gap-y-1 lg:justify-end" data-component="footer-social">
-              {(site.socialLinks || [])
-                .filter((link) => link.url)
-                .map((link, index) => (
-                <a
-                  className="text-ground underline"
-                  href={link.url!}
-                  key={`${link.network}-${index}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {link.network}
-                </a>
-              ))}
+
+        <div
+          className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between lg:items-start lg:justify-end lg:gap-10 xl:gap-12"
+          data-component="footer-end"
+        >
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10 lg:gap-10 xl:gap-12">
+            {socialLinks.length ? (
+              <nav
+                aria-label="Sociální sítě"
+                className="font-inter text-sm font-medium leading-snug text-ground lg:text-right"
+                data-component="footer-social"
+              >
+                <p className="m-0">
+                  {socialLinks.map((link, index) => (
+                    <span key={`${link.network}-${index}`}>
+                      {index > 0 ? <br /> : null}
+                      <a
+                        className="text-ground underline underline-offset-2 transition-opacity hover:opacity-70"
+                        href={link.url!}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        {link.network}
+                      </a>
+                    </span>
+                  ))}
+                </p>
+              </nav>
+            ) : null}
+
+            {footerLinks.length ? (
+              <nav
+                aria-label="Menu v patičce"
+                className="font-inter text-sm font-medium leading-snug text-ground lg:text-right"
+                data-component="footer-menu"
+              >
+                <p className="m-0">
+                  {footerLinks.map((target, index) => (
+                    <span key={`${target.kind === 'form' ? target.formId : target.href}-${index}`}>
+                      {index > 0 ? <br /> : null}
+                      <FooterNavLink siteSlug={site.slug} target={target} />
+                    </span>
+                  ))}
+                </p>
+              </nav>
+            ) : null}
+          </div>
+
+          <div
+            className="font-inter text-sm font-medium leading-snug text-ground md:text-right"
+            data-component="footer-credits"
+          >
+            <p className="m-0">
+              © {site.name}, {new Date().getFullYear()}
+              <br />
+              Všechna práva vyhrazena
             </p>
-          ) : null}
-          <p className="m-0">
-            © {site.name}, {new Date().getFullYear()}
-            <br />
-            Všechna práva vyhrazena
-          </p>
-          <p className="m-0 mt-2">
-            Design &amp; Dev by{' '}
-            <a
-              className="text-ground underline"
-              href="https://eugeneugen.eu"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              eugeneugen
-            </a>
-          </p>
+            <p className="m-0 mt-3">
+              Design &amp; Dev by{' '}
+              <a
+                className="text-ground underline underline-offset-2 transition-opacity hover:opacity-70"
+                href="https://eugeneugen.eu"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                eugeneugen
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

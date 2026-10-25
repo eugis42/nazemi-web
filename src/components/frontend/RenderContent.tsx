@@ -30,7 +30,7 @@ export const RenderRichText = ({ data, siteSlug = '' }: { data?: any; siteSlug?:
   }
 
   return (
-    <div className="prose prose-nazemi max-w-none font-inter">
+    <div className="prose-nazemi max-w-none">
       <NazemiRichText data={data} siteSlug={siteSlug} />
     </div>
   )

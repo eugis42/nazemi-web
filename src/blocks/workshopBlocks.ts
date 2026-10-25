@@ -1,7 +1,7 @@
 import type { Block } from 'payload'
 
 import {
-  BLOCK_GROUP_WORKSHOP,
+  BLOCK_GROUP_PAGE,
   blockPickerAdmin,
 } from '@/blocks/blockMeta'
 import { imageUploadFilter } from '@/fields/shared'
@@ -16,7 +16,7 @@ export const SpeakersBlock: Block = {
     singular: 'Lidé',
   },
   admin: blockPickerAdmin({
-    group: BLOCK_GROUP_WORKSHOP,
+    group: BLOCK_GROUP_PAGE,
     thumb: 'speakers',
   }),
   fields: [
@@ -113,7 +113,7 @@ export const TestimonialsBlock: Block = {
     singular: 'Reference',
   },
   admin: blockPickerAdmin({
-    group: BLOCK_GROUP_WORKSHOP,
+    group: BLOCK_GROUP_PAGE,
     thumb: 'testimonials',
   }),
   fields: [
@@ -121,7 +121,7 @@ export const TestimonialsBlock: Block = {
       name: 'title',
       type: 'text',
       label: 'Nadpis',
-      defaultValue: 'Co o workshopu říkají',
+      defaultValue: 'Reference',
       required: true,
     },
     {
@@ -169,7 +169,7 @@ export const TestimonialsBlock: Block = {
   ],
 }
 
-/** Workshop-only blocks (richText comes from shared pool). */
+/** Lidé + Reference — in PAGE picker group; shared across all `allBlocks` collections + Lexical. */
 export const workshopOnlyBlocks = [SpeakersBlock, TestimonialsBlock]
 
 /** @deprecated Prefer `allBlocks` — kept for imports that expect this name. */

@@ -21,6 +21,8 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   threeColumns: 'Sloupce',
   callToAction: 'Call to Action',
   formEmbed: 'Formulář',
+  externalLinkCard: 'Karta externího webu',
+  filterLink: 'Odkaz na filtr',
 }
 
 type BlockRowData = {
@@ -28,6 +30,7 @@ type BlockRowData = {
   title?: string | null
   caption?: string | null
   summary?: string | null
+  url?: string | null
   segments?: { text?: string | null }[] | null
 }
 
@@ -47,6 +50,7 @@ export function BlocksRowLabel() {
     fromSegments ||
     (typeof data?.summary === 'string' && data.summary.trim()) ||
     (typeof data?.caption === 'string' && data.caption.trim()) ||
+    (typeof data?.url === 'string' && data.url.trim()) ||
     ''
   const n = String(rowNumber ?? 0).padStart(2, '0')
   return <span>{title || `${typeLabel} ${n}`}</span>

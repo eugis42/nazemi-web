@@ -119,9 +119,7 @@ export function TestimonialsBlockView({
   const items = (block.items as TestimonialItems) || []
   if (!items.length) return null
   const title =
-    typeof block.title === 'string' && block.title.trim()
-      ? block.title
-      : 'Co o workshopu říkají'
+    typeof block.title === 'string' && block.title.trim() ? block.title : 'Reference'
   // Quotes stretch within available width. Homepage 3+: up to 4 cols; prose stays ≤2.
   const n = items.length
   const gridClass =
@@ -142,8 +140,12 @@ export function TestimonialsBlockView({
       <h2 className="text-section-title text-ground">{title}</h2>
       <div className={gridClass}>
         {items.map((item, itemIndex) => (
+          /*
+           * `not-prose` on the quote itself — survives parent .prose-nazemi even if
+           * an outer Lexical wrapper forgets not-prose (bar + items-center clash).
+           */
           <blockquote
-            className="flex flex-col gap-3 text-ground"
+            className="not-prose flex flex-col gap-3 text-ground"
             data-component="workshop-testimonial"
             key={`${item.author}-${itemIndex}`}
           >

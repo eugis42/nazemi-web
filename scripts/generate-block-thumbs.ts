@@ -27,6 +27,7 @@ const thumbs: { slug: string; icon: string }[] = [
   { slug: 'expandingParagraph', icon: 'caret-down' },
   { slug: 'callToAction', icon: 'click' },
   { slug: 'formEmbed', icon: 'forms' },
+  { slug: 'externalLinkCard', icon: 'link' },
 ]
 
 function iconInner(iconName: string): string {

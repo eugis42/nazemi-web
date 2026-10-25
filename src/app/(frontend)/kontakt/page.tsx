@@ -89,6 +89,7 @@ export default async function KontaktPage({
                             single ? 'w-full' : 'w-full lg:w-[calc((100%-2px)/2)]'
                           }
                           key={block.id || `${block.title}-${index}`}
+                          siteSlug={site.slug}
                         />
                       ))}
                     </div>
@@ -100,6 +101,7 @@ export default async function KontaktPage({
                           block={block}
                           className="w-full lg:w-[calc((100%-4px)/3)]"
                           key={block.id || `${block.title}-${index}`}
+                          siteSlug={site.slug}
                         />
                       ))}
                     </div>

@@ -12,6 +12,8 @@ import {
 } from '@/components/frontend/BlockRenderers'
 import { CallToActionBlockView } from '@/components/frontend/CallToActionBlock'
 import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
+import { ExternalLinkCardView } from '@/components/frontend/ExternalLinkCard'
+import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
@@ -81,7 +83,11 @@ export async function HomepageBlocks({
       case 'expandingParagraph':
         if (block.body && block.summary) {
           rendered.push(
-            <div className="mx-auto w-full max-w-[874px]" key={key}>
+            <div
+              className="mx-auto w-full max-w-[874px]"
+              data-block="expandingParagraph"
+              key={key}
+            >
               <ExpandingParagraph
                 body={<NazemiRichText data={block.body as never} siteSlug={site.slug} />}
                 summary={String(block.summary)}
@@ -124,6 +130,20 @@ export async function HomepageBlocks({
       case 'formEmbed':
         rendered.push(
           <FormEmbedBlockView block={block} key={key} siteSlug={site.slug} />,
+        )
+        break
+      case 'externalLinkCard':
+        rendered.push(
+          <div className="mx-auto w-full max-w-[874px]" key={key}>
+            <ExternalLinkCardView block={block} />
+          </div>,
+        )
+        break
+      case 'filterLink':
+        rendered.push(
+          <div className="mx-auto w-full max-w-[874px]" key={key}>
+            <FilterLinkBlockView block={block} siteSlug={site.slug} />
+          </div>,
         )
         break
       default:
@@ -230,14 +250,14 @@ async function renderNews({
 }) {
   const payload = await getPayloadClient()
   const selection = (block.selection as string) || 'auto'
-  const limit = clamp(typeof block.limit === 'number' ? block.limit : 4, 4, 8)
+  const limit = clamp(typeof block.limit === 'number' ? block.limit : 3, 3, 6)
   let items: Aktuality[] = []
 
   if (selection === 'manual' && Array.isArray(block.items)) {
     const ids = block.items
       .map((item) => (typeof item === 'object' && item !== null ? item.id : item))
       .filter((id): id is number | string => id !== null && id !== undefined && id !== '')
-      .slice(0, 8)
+      .slice(0, 6)
     if (ids.length) {
       const result = await payload.find({
         collection: 'aktuality',

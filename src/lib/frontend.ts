@@ -248,21 +248,29 @@ export const getListingWhere = async ({
 
 type TaxonomyDoc = { id: number | string; slug: string; title: string }
 
+type ListingContentCollection = 'aktuality' | 'kalendar' | 'publikace' | 'workshopy'
+
+/** AND-combine Where clauses (skips empty). */
+export const whereAnd = (parts: (Where | null | undefined | false)[]): Where => {
+  const list = parts.filter((part): part is Where => Boolean(part))
+  if (!list.length) return {}
+  if (list.length === 1) return list[0]!
+  return { and: list }
+}
+
 /**
- * Taxonomy chips that yield ≥1 matching doc under `where`.
- * Avoids empty filters + arbitrary `tags` list limits.
+ * Distinct related ids on docs matching `where` (hasMany or single relationship).
+ * Used for facet availability (gray out chips that yield 0 hits).
  */
-export const findUsedTaxonomy = async ({
+export const findUsedRelationIds = async ({
   contentCollection,
-  relationCollection,
   relationField,
   where,
 }: {
-  contentCollection: 'aktuality' | 'kalendar' | 'publikace' | 'workshopy'
-  relationCollection: 'tags' | 'publication-types' | 'workshop-audiences'
+  contentCollection: ListingContentCollection
   relationField: string
   where: Where
-}): Promise<TaxonomyDoc[]> => {
+}): Promise<Set<string>> => {
   const payload = await getPayloadClient()
   const scoped = await payload.find({
     collection: contentCollection,
@@ -273,22 +281,41 @@ export const findUsedTaxonomy = async ({
     where,
   })
 
-  const ids = [
-    ...new Set(
-      scoped.docs.flatMap((doc) => {
-        const value = (doc as Record<string, unknown>)[relationField]
-        if (!Array.isArray(value)) return []
-        return value.map((item) =>
-          item && typeof item === 'object' && 'id' in item
-            ? (item as { id: number | string }).id
-            : (item as number | string),
-        )
-      }),
-    ),
-  ].filter((id) => id != null)
+  const ids = new Set<string>()
+  for (const doc of scoped.docs) {
+    const value = (doc as Record<string, unknown>)[relationField]
+    const items = Array.isArray(value) ? value : value != null ? [value] : []
+    for (const item of items) {
+      const id =
+        item && typeof item === 'object' && item !== null && 'id' in item
+          ? (item as { id: number | string }).id
+          : (item as number | string)
+      if (id != null && id !== '') ids.add(String(id))
+    }
+  }
+  return ids
+}
 
+/**
+ * Taxonomy chips that yield ≥1 matching doc under `where`.
+ * Avoids empty filters + arbitrary `tags` list limits.
+ */
+export const findUsedTaxonomy = async ({
+  contentCollection,
+  relationCollection,
+  relationField,
+  where,
+}: {
+  contentCollection: ListingContentCollection
+  relationCollection: 'tags' | 'publication-types' | 'workshop-audiences'
+  relationField: string
+  where: Where
+}): Promise<TaxonomyDoc[]> => {
+  const idSet = await findUsedRelationIds({ contentCollection, relationField, where })
+  const ids = [...idSet]
   if (!ids.length) return []
 
+  const payload = await getPayloadClient()
   const result = await payload.find({
     collection: relationCollection,
     depth: 0,
