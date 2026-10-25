@@ -9,6 +9,7 @@ import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
 import { ExternalLinkCardBlock } from '@/blocks/externalLinkCard'
 import { FilterLinkBlock } from '@/blocks/filterLink'
 import { FormEmbedBlock } from '@/blocks/formEmbed'
+import { IframeEmbedBlock } from '@/blocks/iframeEmbed'
 import { additionalColorField } from '@/fields/additionalColor'
 import { columnCallToActionField } from '@/fields/cta'
 import { imageUploadFilter } from '@/fields/shared'
@@ -275,4 +276,5 @@ export const pageBlocks = [
   FormEmbedBlock,
   ExternalLinkCardBlock,
   FilterLinkBlock,
+  IframeEmbedBlock,
 ]

@@ -7,6 +7,7 @@ import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { ExternalLinkCardView } from '@/components/frontend/ExternalLinkCard'
 import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
+import { IframeEmbedBlockView } from '@/components/frontend/IframeEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { EmptyState } from '@/components/frontend/listing'
@@ -663,6 +664,16 @@ export function PageBlocks({
           )
         }
 
+        if (block.blockType === 'iframeEmbed') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <IframeEmbedBlockView block={block} />
+              </div>
+            </div>
+          )
+        }
+
         return null
       })}
     </div>
@@ -793,6 +804,16 @@ export function WorkshopContentBlocks({
             <div className="container max-lg:px-card" key={key}>
               <div className="mx-auto w-full max-w-[874px]">
                 <FilterLinkBlockView block={block} siteSlug={siteSlug} />
+              </div>
+            </div>
+          )
+        }
+
+        if (block.blockType === 'iframeEmbed') {
+          return (
+            <div className="container max-lg:px-card" key={key}>
+              <div className="mx-auto w-full max-w-[874px]">
+                <IframeEmbedBlockView block={block} />
               </div>
             </div>
           )

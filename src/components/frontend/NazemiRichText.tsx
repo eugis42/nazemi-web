@@ -16,6 +16,7 @@ import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { ExternalLinkCardView } from '@/components/frontend/ExternalLinkCard'
 import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
+import { IframeEmbedBlockView } from '@/components/frontend/IframeEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
@@ -134,6 +135,13 @@ type FilterLinkFields = {
   publicationType?: unknown
   tag?: unknown
   target?: string | null
+}
+
+type IframeEmbedFields = {
+  aspect?: string | null
+  blockType: 'iframeEmbed'
+  source?: string | null
+  title?: string | null
 }
 
 function internalDocToHref({ linkNode }: { linkNode: SerializedLinkNode }) {
@@ -391,6 +399,11 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
           filterLink: ({ node }: { node: SerializedBlockNode<FilterLinkFields> }) => (
             <div className="not-prose w-full" data-rt-block="filterLink">
               <FilterLinkBlockView block={node.fields} siteSlug={siteSlug} />
+            </div>
+          ),
+          iframeEmbed: ({ node }: { node: SerializedBlockNode<IframeEmbedFields> }) => (
+            <div className="not-prose w-full" data-rt-block="iframeEmbed">
+              <IframeEmbedBlockView block={node.fields} />
             </div>
           ),
         },

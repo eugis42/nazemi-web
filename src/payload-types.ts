@@ -1068,6 +1068,23 @@ export interface Stranky {
             blockType: 'filterLink';
           }
         | {
+            /**
+             * Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.
+             */
+            source: string;
+            /**
+             * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
+             */
+            title?: string | null;
+            /**
+             * Výška se počítá z šířky obsahu.
+             */
+            aspect?: ('16/9' | '4/3' | '1/1' | '21/9') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'iframeEmbed';
+          }
+        | {
             title: string;
             /**
              * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
@@ -1913,6 +1930,23 @@ export interface Stranky {
             id?: string | null;
             blockName?: string | null;
             blockType: 'filterLink';
+          }
+        | {
+            /**
+             * Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.
+             */
+            source: string;
+            /**
+             * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
+             */
+            title?: string | null;
+            /**
+             * Výška se počítá z šířky obsahu.
+             */
+            aspect?: ('16/9' | '4/3' | '1/1' | '21/9') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'iframeEmbed';
           }
         | {
             title: string;
@@ -3572,6 +3606,23 @@ export interface Workshopy {
             blockType: 'filterLink';
           }
         | {
+            /**
+             * Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.
+             */
+            source: string;
+            /**
+             * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
+             */
+            title?: string | null;
+            /**
+             * Výška se počítá z šířky obsahu.
+             */
+            aspect?: ('16/9' | '4/3' | '1/1' | '21/9') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'iframeEmbed';
+          }
+        | {
             title: string;
             /**
              * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
@@ -4693,6 +4744,23 @@ export interface Projekty {
         blockType: 'filterLink';
       }
     | {
+        /**
+         * Vložte https URL, nebo celý &lt;iframe&gt; z YouTube / Map / formuláře. Uloží se jen bezpečný src — skripty a jiný HTML se nevykreslí.
+         */
+        source: string;
+        /**
+         * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
+         */
+        title?: string | null;
+        /**
+         * Výška se počítá z šířky obsahu.
+         */
+        aspect?: ('16/9' | '4/3' | '1/1' | '21/9') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'iframeEmbed';
+      }
+    | {
         title: string;
         /**
          * Osoby v bloku. Lze předvyplnit z kolekce Lidé; Výrok je samostatný.
@@ -5592,6 +5660,15 @@ export interface StrankySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        iframeEmbed?:
+          | T
+          | {
+              source?: T;
+              title?: T;
+              aspect?: T;
+              id?: T;
+              blockName?: T;
+            };
         speakers?:
           | T
           | {
@@ -5889,6 +5966,15 @@ export interface StrankySelect<T extends boolean = true> {
               tag?: T;
               audience?: T;
               publicationType?: T;
+              id?: T;
+              blockName?: T;
+            };
+        iframeEmbed?:
+          | T
+          | {
+              source?: T;
+              title?: T;
+              aspect?: T;
               id?: T;
               blockName?: T;
             };
@@ -6286,6 +6372,15 @@ export interface ProjektySelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        iframeEmbed?:
+          | T
+          | {
+              source?: T;
+              title?: T;
+              aspect?: T;
+              id?: T;
+              blockName?: T;
+            };
         speakers?:
           | T
           | {
@@ -6626,6 +6721,15 @@ export interface WorkshopySelect<T extends boolean = true> {
               tag?: T;
               audience?: T;
               publicationType?: T;
+              id?: T;
+              blockName?: T;
+            };
+        iframeEmbed?:
+          | T
+          | {
+              source?: T;
+              title?: T;
+              aspect?: T;
               id?: T;
               blockName?: T;
             };

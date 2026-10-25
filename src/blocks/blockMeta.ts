@@ -21,6 +21,7 @@ export type BlockThumbSlug =
   | 'formEmbed'
   | 'externalLinkCard'
   | 'filterLink'
+  | 'iframeEmbed'
 
 const THUMB_BASE = '/block-thumbs'
 

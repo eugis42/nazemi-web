@@ -15,6 +15,7 @@ import { ExpandingParagraph } from '@/components/frontend/ExpandingParagraph'
 import { ExternalLinkCardView } from '@/components/frontend/ExternalLinkCard'
 import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
+import { IframeEmbedBlockView } from '@/components/frontend/IframeEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
@@ -143,6 +144,13 @@ export async function HomepageBlocks({
         rendered.push(
           <div className="mx-auto w-full max-w-[874px]" key={key}>
             <FilterLinkBlockView block={block} siteSlug={site.slug} />
+          </div>,
+        )
+        break
+      case 'iframeEmbed':
+        rendered.push(
+          <div className="mx-auto w-full max-w-[874px]" key={key}>
+            <IframeEmbedBlockView block={block} />
           </div>,
         )
         break

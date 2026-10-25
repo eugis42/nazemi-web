@@ -23,6 +23,7 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   formEmbed: 'Formulář',
   externalLinkCard: 'Karta externího webu',
   filterLink: 'Odkaz na filtr',
+  iframeEmbed: 'Vlastní kód',
 }
 
 type BlockRowData = {

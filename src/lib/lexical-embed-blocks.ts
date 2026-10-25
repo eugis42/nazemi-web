@@ -5,6 +5,7 @@ import { ExpandingParagraphBlock } from '@/blocks/expandingParagraph'
 import { ExternalLinkCardBlock } from '@/blocks/externalLinkCard'
 import { FilterLinkBlock } from '@/blocks/filterLink'
 import { FormEmbedBlock } from '@/blocks/formEmbed'
+import { IframeEmbedBlock } from '@/blocks/iframeEmbed'
 import { GalleryBlock, LogoStripBlock, ThreeColumnsBlock } from '@/blocks/pageBlocks'
 import { SpeakersBlock, TestimonialsBlock } from '@/blocks/workshopBlocks'
 import { nazemiNestedLexicalEditor } from '@/lib/lexical-nested-editor'
@@ -47,6 +48,7 @@ export const nazemiLexicalEmbedBlocks: Block[] = [
   FormEmbedBlock,
   ExternalLinkCardBlock,
   FilterLinkBlock,
+  IframeEmbedBlock,
   SpeakersBlock,
   TestimonialsBlock,
   threeColumnsForLexical(ThreeColumnsBlock),
