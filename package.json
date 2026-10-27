@@ -17,6 +17,7 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/index.ts",
     "import:aktuality": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/import-aktuality.ts",
+    "import:metodiky": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/import-metodiky.ts",
     "db:push": "python3 scripts/db-push-pty.py",
     "db:push:inner": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/push-schema.ts",
     "db:dump-content": "bash scripts/db-dump-content.sh",

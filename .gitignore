@@ -74,6 +74,7 @@ scripts/.*-backup*.json
 # WP import download cache + last run report
 /.cache/
 scripts/import-aktuality-report.json
+scripts/import-metodiky-report.json
 
 # Editor local
 .cursor/

@@ -268,20 +268,19 @@ export function BookCard({ item, siteSlug }: { item: Publikace; siteSlug: string
       component="book-card"
       href={withSiteQuery(`/publikace/${item.slug}`, siteSlug)}
     >
-      <div className="relative mb-2 aspect-[2/3] w-1/2 shrink-0 overflow-hidden bg-ground/5">
-        {cover && mediaSizeURL(cover, 'portrait') ? (
+      <div className="relative mb-2 flex aspect-square w-full shrink-0 items-end justify-start overflow-hidden">
+        {cover && mediaSizeURL(cover, 'large') ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={mediaAlt(cover, item.title)}
-            className="absolute inset-0 size-full object-cover object-center"
+            className="max-h-full max-w-full object-contain"
             loading="lazy"
-            src={mediaSizeURL(cover, 'portrait') || ''}
-            style={mediaFocalStyle(cover)}
+            src={mediaSizeURL(cover, 'large') || ''}
           />
         ) : null}
       </div>
       <div className="flex flex-col gap-0.5">
-        <h3 className="text-card-title text-ground">{item.title}</h3>
+        <h3 className="text-card-title text-pretty text-ground">{item.title}</h3>
         {item.authorName ? (
           <p className="font-saans text-body text-ground/70">{item.authorName}</p>
         ) : null}

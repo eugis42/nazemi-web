@@ -35,7 +35,7 @@ export const CallToActionBlock: Block = {
         description: 'Jedno nebo více tlačítek.',
         initCollapsed: true,
       },
-      maxRows: 6,
+      maxRows: 24,
       minRows: 1,
       required: true,
     }),
