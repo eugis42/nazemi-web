@@ -1,14 +1,23 @@
 /**
  * Export Publikace slug → publishedAt JSON (local source of truth).
  *
- *   npx tsx scripts/export-publikace-published-at.ts > /tmp/publikace-published-at.json
+ *   npx tsx scripts/export-publikace-published-at.ts
+ *   npx tsx scripts/export-publikace-published-at.ts --out=/tmp/publikace-published-at.json
  */
 import 'dotenv/config'
+
+import fs from 'node:fs'
 
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
+const argValue = (args: string[], name: string) => {
+  const hit = args.find((arg) => arg.startsWith(`${name}=`))
+  return hit ? hit.slice(name.length + 1) : undefined
+}
+
 async function main() {
+  const out = argValue(process.argv.slice(2), '--out') || '/tmp/publikace-published-at.json'
   const payload = await getPayload({ config })
   const rows: { slug: string; publishedAt: string }[] = []
   let page = 1
@@ -32,7 +41,8 @@ async function main() {
     page += 1
   }
 
-  process.stdout.write(`${JSON.stringify(rows, null, 2)}\n`)
+  fs.writeFileSync(out, `${JSON.stringify(rows, null, 2)}\n`)
+  console.error(`Wrote ${rows.length} rows → ${out}`)
   process.exit(0)
 }
 
