@@ -2,9 +2,16 @@
 
 import { useLayoutEffect, useRef, type CSSProperties } from 'react'
 
+const ASPECT_PRESETS: Record<'landscape' | 'square' | 'portrait', number> = {
+  landscape: 16 / 9,
+  square: 1,
+  portrait: 2 / 3,
+}
+
 /**
  * Side thumb: height matches Body sibling; width = height × aspect ratio.
  * ResizeObserver — CSS flex/grid cannot reliably do height→width aspect transfer here.
+ * Initial aspect-ratio + self-stretch ≈ final box (avoids w-36 → wide CLS).
  */
 export function StretchAspectThumb({
   alt,
@@ -25,6 +32,8 @@ export function StretchAspectThumb({
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
+  const cssRatio =
+    aspectRatio && aspectRatio > 0 ? aspectRatio : ASPECT_PRESETS[aspect]
 
   useLayoutEffect(() => {
     const wrap = wrapRef.current
@@ -51,7 +60,7 @@ export function StretchAspectThumb({
         ratio =
           img && img.naturalWidth > 0 && img.naturalHeight > 0
             ? img.naturalWidth / img.naturalHeight
-            : 2 / 3
+            : ASPECT_PRESETS.portrait
       }
 
       wrap.style.height = `${h}px`
@@ -78,9 +87,10 @@ export function StretchAspectThumb({
   return (
     <div
       ref={wrapRef}
-      className="pointer-events-none relative z-[1] w-36 shrink-0 self-stretch overflow-hidden"
+      className="pointer-events-none relative z-[1] h-full shrink-0 self-stretch overflow-hidden"
       data-embed-aspect={aspect}
       data-embed-media
+      style={{ aspectRatio: String(cssRatio) }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

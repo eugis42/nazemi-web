@@ -14,12 +14,31 @@
   font-display: swap;
 }
 
+/* Metric-tuned local fallbacks — cut swap CLS while preload lands. */
+@font-face {
+  font-family: 'Saans Fallback';
+  src: local('Arial');
+  size-adjust: 102%;
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
 @font-face {
   font-family: 'Inter';
   src: url('/fonts/InterVariable.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107.4%;
+  ascent-override: 90%;
+  descent-override: 22.43%;
+  line-gap-override: 0%;
 }
 
 /* Source Serif 4 — OFL; latin + latin-ext for Czech diacritics */
@@ -72,8 +91,8 @@
   --color-brown: #c7b299;
   --color-gray: #bdccd4;
 
-  --font-saans: 'Saans', system-ui, sans-serif;
-  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-saans: 'Saans', 'Saans Fallback', system-ui, sans-serif;
+  --font-inter: 'Inter', 'Inter Fallback', system-ui, sans-serif;
   --font-serif: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
 
   --spacing-section: 100px;
@@ -127,7 +146,54 @@
 
   .page-shell {
     @apply min-h-screen bg-sky;
-    padding-top: var(--site-header-offset, 89px);
+    /* Match measured desktop header after fonts (~78px). Avoid 89→78 shrink CLS. */
+    padding-top: var(--site-header-offset, 78px);
+  }
+
+  /* Homepage only (`backdrop` → page-shell--home-enter). HeroBackdrop untouched. */
+  @keyframes home-nav-enter {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes home-content-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .page-shell--home-enter [data-component='site-header'] {
+    animation: home-nav-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .page-shell--home-enter > main {
+    animation: home-content-enter 480ms ease-out 90ms both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-shell--home-enter [data-component='site-header'],
+    .page-shell--home-enter > main {
+      animation: none;
+    }
+  }
+
+  /* Stable first-paint chrome — JS still syncs --site-header-offset after measure. */
+  [data-component='site-header'] [data-component='mobile-menubar'] {
+    min-height: 69px;
+  }
+
+  @variant lg {
+    /* Logo 57 + menubar separator 76 + border-b ≈ measured ~78. */
+    [data-component='site-header'] > .container > div {
+      min-height: 76px;
+    }
   }
 
   .container {
@@ -1169,7 +1235,7 @@
 
   .event-overview-sticky {
     @apply pointer-events-none fixed inset-x-0 z-40;
-    top: var(--event-sticky-top, 89px);
+    top: var(--event-sticky-top, 78px);
     transform: translateY(-100%);
     transition: transform 200ms ease-out;
 

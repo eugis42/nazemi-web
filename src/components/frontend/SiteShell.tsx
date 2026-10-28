@@ -51,7 +51,10 @@ export function SiteShell({
 
   return (
     <FormModalProvider brandStyle={brandStyle} siteSlug={site.slug}>
-      <div className="page-shell relative" style={brandStyle}>
+      <div
+        className={backdrop ? 'page-shell page-shell--home-enter relative' : 'page-shell relative'}
+        style={brandStyle}
+      >
         <div className="relative z-20 overflow-x-hidden">
           <SiteHeader
             logoAlt={mediaAlt(logo, site.name)}

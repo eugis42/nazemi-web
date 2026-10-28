@@ -99,25 +99,26 @@ export function LogoStrip({ logos: raw, title }: LogoStripProps) {
           {title.trim()}
         </h2>
       ) : null}
-      <ul className="flex flex-wrap items-center justify-start gap-x-8 gap-y-6" role="list">
+      <ul className="flex h-auto flex-wrap items-center justify-start gap-x-8 gap-y-6" role="list">
         {logos.map((logo, index) => {
           const img = (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={logo.alt}
-              className="h-auto max-h-16 w-auto max-w-[160px] object-contain object-left"
+              className="max-h-16 max-w-[160px] object-contain object-left"
               height={64}
               loading="lazy"
               src={logo.url}
+              width={160}
             />
           )
           const key = `${logo.url}-${index}`
           if (logo.href) {
             const external = isExternalHref(logo.href)
             return (
-              <li className="flex max-h-16 max-w-[160px] items-center" key={key}>
+              <li className="flex h-16 w-[160px] max-w-[160px] items-center" key={key}>
                 <a
-                  className="inline-flex max-h-16 max-w-[160px] items-center transition-opacity duration-150 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground"
+                  className="inline-flex h-16 w-full max-w-[160px] items-center transition-opacity duration-150 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground"
                   href={logo.href}
                   rel={external ? 'noopener noreferrer' : undefined}
                   target={external ? '_blank' : undefined}
@@ -128,7 +129,7 @@ export function LogoStrip({ logos: raw, title }: LogoStripProps) {
             )
           }
           return (
-            <li className="flex max-h-16 max-w-[160px] items-center" key={key}>
+            <li className="flex h-16 w-[160px] max-w-[160px] items-center" key={key}>
               {img}
             </li>
           )

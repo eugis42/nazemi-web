@@ -24,7 +24,7 @@ function isSvgUrl(src: string) {
 
 function wrapClassName(fitWidth: boolean) {
   const top = fitWidth
-    ? 'top-[var(--site-header-offset,89px)]'
+    ? 'top-[var(--site-header-offset,78px)]'
     : 'top-0'
   // 75vh clip on mobile/tablet for every site; main drops the clip at lg+.
   if (fitWidth) {

@@ -13,6 +13,7 @@ import Lightbox, { type SlideImage } from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 
 import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
+import { aspectStyleFromDims } from '@/lib/content'
 import type { GalleryImage } from '@/lib/gallery'
 
 export type { GalleryImage }
@@ -89,9 +90,16 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
     const image = images[0]
     return (
       <figure className="w-full" data-block="gallery" data-count="1">
-        <div className="relative">
+        <div className="relative w-full overflow-hidden" style={aspectStyleFromDims(image.width, image.height)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt={image.alt || ''} className="h-auto w-full" src={image.url} />
+          <img
+            alt={image.alt || ''}
+            className="absolute inset-0 size-full object-cover"
+            height={image.height || undefined}
+            src={image.url}
+            style={image.style}
+            width={image.width || undefined}
+          />
           <MediaAuthorshipTag authorship={image.authorship} />
         </div>
         {caption ? (
@@ -120,13 +128,21 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
               type="button"
               aria-label={`Zvětšit: ${image.alt || `Obrázek ${index + 1}`}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt={image.alt || ''}
-                className="h-auto w-full transition-opacity duration-150 group-hover:opacity-90"
-                src={image.url}
-              />
-              <MediaAuthorshipTag authorship={image.authorship} />
+              <span
+                className="relative block w-full overflow-hidden"
+                style={aspectStyleFromDims(image.width, image.height)}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt={image.alt || ''}
+                  className="absolute inset-0 size-full object-cover transition-opacity duration-150 group-hover:opacity-90"
+                  height={image.height || undefined}
+                  src={image.url}
+                  style={image.style}
+                  width={image.width || undefined}
+                />
+                <MediaAuthorshipTag authorship={image.authorship} />
+              </span>
             </button>
           </li>
         ))}
@@ -229,14 +245,22 @@ function GalleryCarousel({
                 type="button"
                 aria-label={`Zvětšit: ${image.alt || `Obrázek ${index + 1}`}`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  alt={image.alt || ''}
-                  className="h-auto w-full"
-                  draggable={false}
-                  src={image.url}
-                />
-                <MediaAuthorshipTag authorship={image.authorship} />
+                <span
+                  className="relative block w-full overflow-hidden"
+                  style={aspectStyleFromDims(image.width, image.height)}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt={image.alt || ''}
+                    className="absolute inset-0 size-full object-cover"
+                    draggable={false}
+                    height={image.height || undefined}
+                    src={image.url}
+                    style={image.style}
+                    width={image.width || undefined}
+                  />
+                  <MediaAuthorshipTag authorship={image.authorship} />
+                </span>
               </button>
             </div>
           ))}

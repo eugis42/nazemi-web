@@ -64,6 +64,53 @@ export function mediaFocalStyle(media: MediaLike): CSSProperties | undefined {
   return { objectPosition: `${x ?? 50}% ${y ?? 50}%` }
 }
 
+/** Prefer named-size dims, then original upload width/height. */
+export function mediaDims(
+  media: MediaLike,
+  size?: MediaSizeName,
+): { width: number; height: number } | null {
+  if (!media || typeof media === 'number') return null
+  if (size) {
+    const sized = media.sizes?.[size]
+    const w = sized?.width
+    const h = sized?.height
+    if (typeof w === 'number' && w > 0 && typeof h === 'number' && h > 0) {
+      return { width: w, height: h }
+    }
+  }
+  const w = media.width
+  const h = media.height
+  if (typeof w === 'number' && w > 0 && typeof h === 'number' && h > 0) {
+    return { width: w, height: h }
+  }
+  return null
+}
+
+/**
+ * Reserve image box before decode (CLS). Uses media dims when present,
+ * otherwise `fallbackRatio` (default 3/2 for gallery/about).
+ */
+export function mediaAspectStyle(
+  media: MediaLike,
+  options?: { fallbackRatio?: string; size?: MediaSizeName },
+): CSSProperties {
+  const dims = mediaDims(media, options?.size)
+  if (dims) return { aspectRatio: `${dims.width} / ${dims.height}` }
+  return { aspectRatio: options?.fallbackRatio ?? '3 / 2' }
+}
+
+/** Aspect style from explicit width/height (gallery FE items). */
+export function aspectStyleFromDims(
+  width?: number | null,
+  height?: number | null,
+  fallbackRatio = '3 / 2',
+): CSSProperties {
+  if (typeof width === 'number' && width > 0 && typeof height === 'number' && height > 0) {
+    return { aspectRatio: `${width} / ${height}` }
+  }
+  return { aspectRatio: fallbackRatio }
+}
+
 export function mediaAlt(media: MediaLike, fallback = ''): string {
   if (!media || typeof media === 'number') return fallback
   return media.alt || fallback

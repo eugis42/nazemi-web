@@ -21,7 +21,13 @@ import { FormOrLinkButton } from '@/components/frontend/FormOrLinkButton'
 import { BlockHeader } from '@/components/frontend/ui'
 import { resolveBlockActions } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
-import { mediaAlt, mediaAuthorship, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
+import {
+  mediaAlt,
+  mediaAspectStyle,
+  mediaAuthorship,
+  mediaFocalStyle,
+  mediaSizeURL,
+} from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
 import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
@@ -485,11 +491,14 @@ export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug:
         title={(block.title as string) || 'NaZemi'}
       />
       {imageUrl ? (
-        <div className="relative overflow-hidden border-x-2 border-t-2 border-x-ground border-t-ground">
+        <div
+          className="relative w-full overflow-hidden border-x-2 border-t-2 border-x-ground border-t-ground"
+          style={mediaAspectStyle(image, { size: 'large' })}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt={mediaAlt(image, 'Tým NaZemi')}
-            className="block h-auto w-full"
+            className="absolute inset-0 size-full object-cover"
             loading="lazy"
             src={imageUrl}
           />
