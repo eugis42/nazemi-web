@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { contentCollectionAccess } from '@/access/roles'
 import {
+  adminDayAndTimePickerCs,
   adminDocumentTitleClass,
   authorField,
   authorNameField,
@@ -24,7 +25,15 @@ export const Publikace = {
   access: contentCollectionAccess,
   admin: {
     baseFilter: getScopedBaseFilter({ includeCrossPostedOnMain: true }),
-    defaultColumns: ['title', 'authorName', 'types', 'topics', 'site', '_status'],
+    defaultColumns: [
+      'title',
+      'authorName',
+      'types',
+      'topics',
+      'site',
+      'publishedAt',
+      '_status',
+    ],
     group: ADMIN_NAV_SITE_CONTENT,
     listSearchableFields: ['title', 'slug', 'authorName'],
     livePreview: {
@@ -39,12 +48,13 @@ export const Publikace = {
     excerpt: true,
     coverImage: true,
     authorName: true,
+    publishedAt: true,
     ctas: true,
     site: true,
     types: true,
     topics: true,
   },
-  defaultSort: 'title',
+  defaultSort: '-publishedAt',
   fields: [
     {
       name: 'coverImage',
@@ -55,6 +65,21 @@ export const Publikace = {
       filterOptions: imageUploadFilter,
       admin: {
         position: 'sidebar',
+      },
+    },
+    {
+      name: 'publishedAt',
+      type: 'date',
+      defaultValue: () => new Date().toISOString(),
+      label: 'Datum publikace',
+      required: true,
+      admin: {
+        position: 'sidebar',
+        width: '100%',
+        date: {
+          ...adminDayAndTimePickerCs,
+          displayFormat: 'd. M. yyyy',
+        },
       },
     },
     {

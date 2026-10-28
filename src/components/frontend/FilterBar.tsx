@@ -160,7 +160,7 @@ function FilterToggleButton({
     <button
       aria-controls="listing-filter-panel"
       aria-expanded={open}
-      className={`btn-filter filter-toggle cursor-pointer border-0 sm:ml-auto${
+      className={`btn-filter filter-toggle cursor-pointer border-0${
         showActiveLabel ? ' is-active-filters' : ''
       }`}
       data-open={open ? 'true' : 'false'}
@@ -194,10 +194,13 @@ export function FilterBar({
   ariaLabel = 'Filtrovat',
   primary,
   sections = [],
+  trailing,
 }: {
   ariaLabel?: string
   primary: FilterChip[]
   sections?: FilterSection[]
+  /** Extra controls next to Filtrovat (e.g. Pořadí). */
+  trailing?: ReactNode
 }) {
   const visibleSections = sections.filter((section) => section.chips.length)
   const activeCount = visibleSections.reduce(
@@ -205,8 +208,9 @@ export function FilterBar({
     0,
   )
   const [open, setOpen] = useState(activeCount > 0)
+  const showTrailing = Boolean(trailing) || visibleSections.length > 0
 
-  if (!primary.length && !visibleSections.length) return null
+  if (!primary.length && !visibleSections.length && !trailing) return null
 
   return (
     <div aria-label={ariaLabel} className="flex flex-col py-2" data-component="event-filter-bar">
@@ -218,12 +222,17 @@ export function FilterBar({
         <div className="contents sm:flex sm:min-w-0 sm:flex-wrap sm:items-center sm:gap-2">
           {primary.map(renderChip)}
         </div>
-        {visibleSections.length ? (
-          <FilterToggleButton
-            activeCount={activeCount}
-            open={open}
-            onToggle={() => setOpen((value) => !value)}
-          />
+        {showTrailing ? (
+          <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
+            {trailing}
+            {visibleSections.length ? (
+              <FilterToggleButton
+                activeCount={activeCount}
+                open={open}
+                onToggle={() => setOpen((value) => !value)}
+              />
+            ) : null}
+          </div>
         ) : null}
       </div>
 

@@ -141,6 +141,16 @@ export const TestimonialsBlock: Block = {
       },
       fields: [
         {
+          name: 'profileImage',
+          type: 'upload',
+          label: 'Profilová fotografie',
+          relationTo: 'media',
+          filterOptions: imageUploadFilter,
+          admin: {
+            description: 'Volitelná kruhová fotka nad citátem.',
+          },
+        },
+        {
           name: 'quote',
           type: 'textarea',
           label: 'Citát',

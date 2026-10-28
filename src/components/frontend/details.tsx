@@ -6,10 +6,19 @@ import { EventOverviewMotion } from '@/components/frontend/EventOverviewMotion'
 import { PageBlocks } from '@/components/frontend/BlockRenderers'
 import { DocCtaButton, firstDocCta } from '@/components/frontend/DocCtaButton'
 import { CalendarIcon, ClockIcon, PinIcon } from '@/components/frontend/icons'
+import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { Button, TagGroup, type TagItem } from '@/components/frontend/ui'
 import { WorkshopHeaderMotion } from '@/components/frontend/WorkshopHeaderMotion'
-import { crossPostSiteName, formatEventPlace, mediaAlt, mediaFocalStyle, mediaSizeURL, withSiteQuery } from '@/lib/content'
+import {
+  crossPostSiteName,
+  formatEventPlace,
+  mediaAlt,
+  mediaAuthorship,
+  mediaFocalStyle,
+  mediaSizeURL,
+  withSiteQuery,
+} from '@/lib/content'
 import { formatDate, formatDateRange, formatTimeRange } from '@/lib/format'
 
 /** Full-bleed container + 874px prose column — matches the design content rhythm. */
@@ -171,12 +180,15 @@ export function EventOverview({ item, siteSlug }: { item: Kalendar; siteSlug: st
           <div className="flex flex-col border-x-2 border-b-2 border-solid border-ground max-sm:border-x-0 lg:flex-row lg:items-stretch">
             <div className="event-overview-media">
               {cover && mediaSizeURL(cover, 'hero') ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  alt={mediaAlt(cover, item.title)}
-                  src={mediaSizeURL(cover, 'hero') || ''}
-                  style={mediaFocalStyle(cover)}
-                />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt={mediaAlt(cover, item.title)}
+                    src={mediaSizeURL(cover, 'hero') || ''}
+                    style={mediaFocalStyle(cover)}
+                  />
+                  <MediaAuthorshipTag authorship={mediaAuthorship(cover)} large />
+                </>
               ) : null}
             </div>
             <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-ground p-card">
@@ -281,21 +293,24 @@ export function NewsArticleHero({ item }: { item: Aktuality }) {
   const cover = item.coverImage && typeof item.coverImage === 'object' ? item.coverImage : null
   const heroUrl = cover ? mediaSizeURL(cover, 'hero') : null
   if (!heroUrl || item.layout === 'small') return null
+  const credit = mediaAuthorship(cover)
 
   return (
     <div
-      aria-hidden="true"
       className="article-hero-big border-b-2 border-b-ground"
       data-component="news-article-hero"
       data-variant="big"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt=""
-        className="size-full object-cover"
-        src={heroUrl}
-        style={mediaFocalStyle(cover)}
-      />
+      <div aria-hidden="true" className="absolute inset-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          alt=""
+          className="size-full object-cover"
+          src={heroUrl}
+          style={mediaFocalStyle(cover)}
+        />
+      </div>
+      <MediaAuthorshipTag authorship={credit} large />
     </div>
   )
 }
@@ -335,18 +350,20 @@ export function NewsArticle({
     <article data-component="news-article" data-layout={small ? 'small' : 'big'}>
       {heroUrl && !small && !skipBigHero ? (
         <div
-          aria-hidden="true"
           className="article-hero-big border-b-2 border-b-ground"
           data-component="news-article-hero"
           data-variant="big"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt=""
-            className="size-full object-cover"
-            src={heroUrl}
-            style={mediaFocalStyle(cover)}
-          />
+          <div aria-hidden="true" className="absolute inset-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt=""
+              className="size-full object-cover"
+              src={heroUrl}
+              style={mediaFocalStyle(cover)}
+            />
+          </div>
+          <MediaAuthorshipTag authorship={mediaAuthorship(cover)} large />
         </div>
       ) : null}
 
@@ -361,18 +378,20 @@ export function NewsArticle({
 
         {cardUrl && small ? (
           <div
-            aria-hidden="true"
-            className="article-hero-small mx-auto w-full max-w-[1094px] overflow-hidden border-2 border-ground"
+            className="article-hero-small relative mx-auto w-full max-w-[1094px] overflow-hidden border-2 border-ground"
             data-component="news-article-hero"
             data-variant="small"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              alt=""
-              className="size-full object-cover"
-              src={cardUrl}
-              style={mediaFocalStyle(cover)}
-            />
+            <div aria-hidden="true" className="absolute inset-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt=""
+                className="size-full object-cover"
+                src={cardUrl}
+                style={mediaFocalStyle(cover)}
+              />
+            </div>
+            <MediaAuthorshipTag authorship={mediaAuthorship(cover)} large />
           </div>
         ) : null}
 
@@ -438,13 +457,16 @@ export function WorkshopHeader({
           <div className="relative">
             <div className="relative aspect-4/3 overflow-hidden bg-ground lg:absolute lg:inset-y-0 lg:left-0 lg:z-0 lg:aspect-auto lg:w-[min(42%,480px)]">
               {cover && mediaSizeURL(cover, 'landscape') ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  alt=""
-                  className="absolute inset-0 size-full object-cover object-center"
-                  src={mediaSizeURL(cover, 'landscape') || ''}
-                  style={mediaFocalStyle(cover)}
-                />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt=""
+                    className="absolute inset-0 size-full object-cover object-center"
+                    src={mediaSizeURL(cover, 'landscape') || ''}
+                    style={mediaFocalStyle(cover)}
+                  />
+                  <MediaAuthorshipTag authorship={mediaAuthorship(cover)} large />
+                </>
               ) : null}
             </div>
             <div className="relative z-10 flex flex-col divide-y-2 divide-ground shadow-[inset_0_2px_0_0_var(--color-ground)] lg:ml-[min(42%,480px)] lg:shadow-[inset_2px_0_0_0_var(--color-ground)]">

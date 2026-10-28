@@ -15,9 +15,15 @@ import {
   resolveSiteFromCurrentRequest,
   whereAnd,
 } from '@/lib/frontend'
+import { MAIN_SITE_SLUG } from '@/lib/site-context'
 import { buildPageMetadata } from '@/lib/metadata'
 
 const PAGE_SIZE = 50
+
+/** Main mixed listing uses `mainSiteOrder`; sub-sites use Payload `_order`. */
+function workshopsListSort(siteSlug: string) {
+  return siteSlug === MAIN_SITE_SLUG ? 'mainSiteOrder' : '_order'
+}
 
 export async function generateMetadata({
   searchParams,
@@ -45,7 +51,11 @@ export default async function WorkshopsPage({
   const payload = await getPayloadClient()
   const page = Math.max(1, Number(query.page) || 1)
 
-  const baseWhere = await getListingWhere({ collection: 'workshopy', siteId: site.id })
+  const baseWhere = await getListingWhere({
+    collection: 'workshopy',
+    includeCrossPosted: site.slug === 'nazemi',
+    siteId: site.id,
+  })
 
   const activeAudienceSlugs = queryList(query.audience)
   const activeTopicSlugs = queryList(query.topic)
@@ -92,7 +102,7 @@ export default async function WorkshopsPage({
         depth: 2,
         limit: PAGE_SIZE,
         page,
-        sort: 'title',
+        sort: workshopsListSort(site.slug),
         where: whereAnd([baseWhere, audienceFilter, topicFilter]),
       }),
     ])

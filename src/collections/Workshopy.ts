@@ -11,10 +11,14 @@ import {
   imageUploadFilter,
   metaTabDescription,
   seoFields,
-  siteField,
+  siteSidebarGroup,
   tagsListCellAdmin,
 } from '@/fields/shared'
 import { makeSlugUniqueOnDuplicate, populateSlugAndDescription } from '@/hooks/content-hooks'
+import {
+  workshopOrderAfterChange,
+  workshopOrderBeforeChange,
+} from '@/hooks/workshop-order'
 import { ADMIN_NAV_SITE_CONTENT } from '@/lib/admin-nav-groups'
 import { siteContentLivePreviewUrl } from '@/lib/live-preview'
 import { validateWorkshopSiteAgainstKalendar } from '@/lib/same-site-workshop'
@@ -23,8 +27,10 @@ import { getScopedBaseFilter } from '@/lib/site-context'
 export const Workshopy = {
   slug: 'workshopy',
   access: contentCollectionAccess,
+  /** Drag-and-drop list order (`_order`). Cross-posts use `mainSiteOrder` on main. */
+  orderable: true,
   admin: {
-    baseFilter: getScopedBaseFilter(),
+    baseFilter: getScopedBaseFilter({ includeCrossPostedOnMain: true }),
     defaultColumns: ['title', 'topics', 'duration', 'site', '_status'],
     group: ADMIN_NAV_SITE_CONTENT,
     listSearchableFields: ['title', 'slug'],
@@ -43,8 +49,22 @@ export const Workshopy = {
     topics: true,
     audiences: true,
   },
-  defaultSort: 'title',
+  // Payload also sets this when orderable; keep explicit for FE clarity.
+  defaultSort: '_order',
   fields: [
+    {
+      name: 'mainSiteOrder',
+      type: 'text',
+      index: true,
+      admin: {
+        description:
+          'Pořadí na hlavním webu (včetně cross-postů). Mění se přetažením v seznamu na hlavním webu; pořadí na sub-webu (`_order`) nemění.',
+        disableBulkEdit: true,
+        disabled: true,
+        hidden: true,
+        readOnly: true,
+      },
+    },
     {
       name: 'coverImage',
       type: 'upload',
@@ -191,18 +211,14 @@ export const Workshopy = {
         },
       ],
     },
-    {
-      ...siteField,
-      admin: {
-        ...siteField.admin,
-        description: 'Na kterém webu se workshop nabízí.',
-      },
+    siteSidebarGroup('Na kterém webu se workshop nabízí.', {
       validate: validateWorkshopSiteAgainstKalendar,
-    },
+    }),
     draftStatusListCellField,
   ],
   hooks: {
-    beforeChange: [populateSlugAndDescription],
+    afterChange: [workshopOrderAfterChange],
+    beforeChange: [populateSlugAndDescription, workshopOrderBeforeChange],
     beforeDuplicate: [makeSlugUniqueOnDuplicate],
   },
   indexes: [

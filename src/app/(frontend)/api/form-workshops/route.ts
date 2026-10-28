@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     depth: 1,
     limit: 200,
     overrideAccess: true,
-    sort: 'title',
+    sort: '_order',
     where,
   })
 

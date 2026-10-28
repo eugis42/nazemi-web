@@ -117,6 +117,15 @@ export const Media: CollectionConfig = {
         description: 'Volitelný popisek u obrázku v obsahu.',
       },
     },
+    {
+      name: 'authorship',
+      type: 'text',
+      label: 'Autorství',
+      admin: {
+        description:
+          'Volitelný kredit fotografie (např. „Foto: Eugen Korda“). Zobrazí se u vybraných obrázků na webu.',
+      },
+    },
   ],
   hooks: {
     beforeValidate: [

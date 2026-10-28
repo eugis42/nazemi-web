@@ -188,6 +188,10 @@ export interface Media {
    * Volitelný popisek u obrázku v obsahu.
    */
   caption?: string | null;
+  /**
+   * Volitelný kredit fotografie (např. „Foto: Eugen Korda“). Zobrazí se u vybraných obrázků na webu.
+   */
+  authorship?: string | null;
   searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -1109,6 +1113,10 @@ export interface Stranky {
             title: string;
             items?:
               | {
+                  /**
+                   * Volitelná kruhová fotka nad citátem.
+                   */
+                  profileImage?: (number | null) | Media;
                   quote: string;
                   author: string;
                   role?: string | null;
@@ -1969,6 +1977,10 @@ export interface Stranky {
             title: string;
             items?:
               | {
+                  /**
+                   * Volitelná kruhová fotka nad citátem.
+                   */
+                  profileImage?: (number | null) | Media;
                   quote: string;
                   author: string;
                   role?: string | null;
@@ -2776,6 +2788,11 @@ export interface Kalendar {
  */
 export interface Workshopy {
   id: number;
+  _order?: string | null;
+  /**
+   * Pořadí na hlavním webu (včetně cross-postů). Mění se přetažením v seznamu na hlavním webu; pořadí na sub-webu (`_order`) nemění.
+   */
+  mainSiteOrder?: string | null;
   coverImage?: (number | null) | Media;
   /**
    * Volný text (např. 6 hodin, 2 dny).
@@ -3639,6 +3656,10 @@ export interface Workshopy {
             title: string;
             items?:
               | {
+                  /**
+                   * Volitelná kruhová fotka nad citátem.
+                   */
+                  profileImage?: (number | null) | Media;
                   quote: string;
                   author: string;
                   role?: string | null;
@@ -3756,6 +3777,10 @@ export interface Workshopy {
    * Na kterém webu se workshop nabízí.
    */
   site: number | Site;
+  /**
+   * Zobrazí obsah kromě aktuálního webu i na hlavním webu NaZemi.
+   */
+  showOnMainSite?: boolean | null;
   searchFold?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -3783,6 +3808,7 @@ export interface WorkshopAudience {
 export interface Publikace {
   id: number;
   coverImage: number | Media;
+  publishedAt: string;
   types?: (number | PublicationType)[] | null;
   topics?: (number | Tag)[] | null;
   title: string;
@@ -4773,6 +4799,10 @@ export interface Projekty {
         title: string;
         items?:
           | {
+              /**
+               * Volitelná kruhová fotka nad citátem.
+               */
+              profileImage?: (number | null) | Media;
               quote: string;
               author: string;
               role?: string | null;
@@ -5676,6 +5706,7 @@ export interface StrankySelect<T extends boolean = true> {
               items?:
                 | T
                 | {
+                    profileImage?: T;
                     quote?: T;
                     author?: T;
                     role?: T;
@@ -5984,6 +6015,7 @@ export interface StrankySelect<T extends boolean = true> {
               items?:
                 | T
                 | {
+                    profileImage?: T;
                     quote?: T;
                     author?: T;
                     role?: T;
@@ -6386,6 +6418,7 @@ export interface ProjektySelect<T extends boolean = true> {
               items?:
                 | T
                 | {
+                    profileImage?: T;
                     quote?: T;
                     author?: T;
                     role?: T;
@@ -6433,6 +6466,8 @@ export interface ProjektySelect<T extends boolean = true> {
  * via the `definition` "workshopy_select".
  */
 export interface WorkshopySelect<T extends boolean = true> {
+  _order?: T;
+  mainSiteOrder?: T;
   coverImage?: T;
   duration?: T;
   groupSize?: T;
@@ -6737,6 +6772,7 @@ export interface WorkshopySelect<T extends boolean = true> {
               items?:
                 | T
                 | {
+                    profileImage?: T;
                     quote?: T;
                     author?: T;
                     role?: T;
@@ -6774,6 +6810,7 @@ export interface WorkshopySelect<T extends boolean = true> {
   noindex?: T;
   author?: T;
   site?: T;
+  showOnMainSite?: T;
   searchFold?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -6785,6 +6822,7 @@ export interface WorkshopySelect<T extends boolean = true> {
  */
 export interface PublikaceSelect<T extends boolean = true> {
   coverImage?: T;
+  publishedAt?: T;
   types?: T;
   topics?: T;
   title?: T;
@@ -7048,6 +7086,7 @@ export interface SitePatickaSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  authorship?: T;
   searchFold?: T;
   updatedAt?: T;
   createdAt?: T;

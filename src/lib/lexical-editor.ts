@@ -9,6 +9,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+import { NazemiTableCsFeature, NazemiTableFeature } from '@/features/NazemiTableFeature'
 import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
 import { StripEmptyLexicalNodesFeature } from '@/features/StripEmptyLexicalNodesFeature'
 import {
@@ -70,6 +71,7 @@ const uploadWidthPercentField = {
  * - FixedToolbarFeature: persistent top toolbar
  * - TextStateFeature: text colour tokens from document site palette
  * - BlocksFeature: Galerie + Pás log + Rozbalovací + Lidé + Reference + Sloupce + …
+ * - NazemiTableFeature: Lexical tables — admin label “Tabulka” (CZ)
  * - BlockquoteFeature: kept via defaultFeatures (Quote in Aa / slash) — FE styles in
  *   `.prose-nazemi .payload-richtext blockquote` (not Reference testimonial quotes)
  * - StripEmptyLexicalNodesFeature: beforeChange strips empty paragraphs / nulls empty docs
@@ -120,6 +122,8 @@ export const nazemiLexicalEditor = lexicalEditor({
     }),
     SiteTextColorVarsFeature(),
     StripEmptyLexicalNodesFeature(),
+    NazemiTableFeature(),
+    NazemiTableCsFeature(),
     FixedToolbarFeature(),
     BlocksFeature({
       blocks: nazemiLexicalEmbedBlocks,

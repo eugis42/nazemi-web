@@ -75,6 +75,14 @@ const normalizeUrl = (url: string) => {
   }
 }
 
+/** WP `Y-m-d H:i:s` → ISO; bad/empty → now. */
+const toIsoPublishedAt = (wpDate: string | null | undefined) => {
+  if (!wpDate || wpDate.startsWith('1970')) return new Date().toISOString()
+  const parsed = new Date(wpDate.replace(' ', 'T'))
+  if (Number.isNaN(parsed.getTime())) return new Date().toISOString()
+  return parsed.toISOString()
+}
+
 const isDownloadUrl = (url: string) => DOWNLOAD_EXT_RE.test(url)
 
 const fileLabel = (att: WpAttachment | undefined, url: string) => {
@@ -429,6 +437,7 @@ async function main() {
         ctas,
         description: seoDescription({ ...post, content: post.content }),
         excerpt: null,
+        publishedAt: toIsoPublishedAt(post.date),
         site: siteId,
         slug,
         title: post.title || slug,

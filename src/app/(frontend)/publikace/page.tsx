@@ -2,6 +2,7 @@ import type { Where } from 'payload'
 import type { Metadata } from 'next'
 
 import { BookCard } from '@/components/frontend/cards'
+import { ListingSortControl } from '@/components/frontend/ListingSortControl'
 import {
   EmptyState,
   FilterBar,
@@ -27,6 +28,11 @@ import {
   resolveSiteFromCurrentRequest,
   whereAnd,
 } from '@/lib/frontend'
+import {
+  PUBLIKACE_ORDER_OPTIONS,
+  publikaceOrderQueryValue,
+  resolvePublikaceOrder,
+} from '@/lib/listing-sort'
 import { buildPageMetadata } from '@/lib/metadata'
 
 const PAGE_SIZE = 16
@@ -47,6 +53,7 @@ export default async function PublikacePage({
 }: {
   searchParams: Promise<{
     filter?: string | string[]
+    order?: string | string[]
     page?: string
     site?: string
     topic?: string | string[]
@@ -57,6 +64,8 @@ export default async function PublikacePage({
   assertCollectionEnabled(site, 'publikace')
   const payload = await getPayloadClient()
   const page = Math.max(1, Number(query.page) || 1)
+  const order = resolvePublikaceOrder(query.order)
+  const orderQuery = publikaceOrderQueryValue(order.value)
 
   const baseWhere = await getListingWhere({
     collection: 'publikace',
@@ -108,7 +117,7 @@ export default async function PublikacePage({
       depth: 2,
       limit: PAGE_SIZE,
       page,
-      sort: 'title',
+      sort: order.sort,
       where: whereAnd([baseWhere, typeFilter, topicFilter]),
     }),
   ])
@@ -122,7 +131,12 @@ export default async function PublikacePage({
   const heading = isMetodiky ? 'Metodiky' : 'Publikace'
   const listingHref = isMetodiky ? `/publikace?filter=${METODIKY_SLUG}` : '/publikace'
 
-  const current = { filter: activeTypeSlugs, page: query.page, topic: activeTopicSlugs }
+  const current = {
+    filter: activeTypeSlugs,
+    order: orderQuery,
+    page: query.page,
+    topic: activeTopicSlugs,
+  }
   const allChip: FilterChip[] = [
     {
       active: !activeTypes.length && !activeTopics.length,
@@ -166,6 +180,21 @@ export default async function PublikacePage({
       label: topic.title,
     }
   })
+  const sortOptions = PUBLIKACE_ORDER_OPTIONS.map((option) => ({
+    href: hrefWith(
+      '/publikace',
+      current,
+      {
+        order: publikaceOrderQueryValue(option.value),
+        page: undefined,
+      },
+      site.slug,
+    ),
+    label: option.label,
+    value: option.value,
+  }))
+  const sortCurrent =
+    sortOptions.find((option) => option.value === order.value) || sortOptions[0]
 
   const menuMatch = menuParentForHref(site.mainMenu, listingHref)
   const breadcrumbs: BreadcrumbItem[] = [
@@ -197,6 +226,7 @@ export default async function PublikacePage({
               { label: 'Typ publikace', chips: typeChips },
               { label: 'Téma', chips: topicChips },
             ]}
+            trailing={<ListingSortControl current={sortCurrent} options={sortOptions} />}
           />
           {publications.docs.length ? (
             <div className="grid min-w-0 grid-cols-1 items-start gap-x-8 gap-y-20 sm:grid-cols-2 sm:items-stretch lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-10 xl:gap-y-24">

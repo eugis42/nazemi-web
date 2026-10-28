@@ -10,6 +10,7 @@ import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { IframeEmbedBlockView } from '@/components/frontend/IframeEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
+import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
 import { EmptyState } from '@/components/frontend/listing'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import {
@@ -20,7 +21,7 @@ import { FormOrLinkButton } from '@/components/frontend/FormOrLinkButton'
 import { BlockHeader } from '@/components/frontend/ui'
 import { resolveBlockActions } from '@/lib/block-actions'
 import { isColorToken, resolveColor } from '@/lib/colors'
-import { mediaAlt, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
+import { mediaAlt, mediaAuthorship, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
 import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
@@ -228,27 +229,31 @@ function ColumnCta({ column, siteSlug }: { column: ColumnCtaRow; siteSlug: strin
     siteSlug,
   })[0]
   if (!action?.label) return null
+  // `mt-auto` on this flex child (not the button) — column stretches with the row,
+  // free space sits above the CTA so buttons align across columns.
   return (
-    <FormOrLinkButton
-      backgroundColor={action.backgroundColor}
-      className="mt-auto self-start"
-      external={action.external}
-      formId={action.formId}
-      formTitle={action.formTitle}
-      href={action.href || '#'}
-      newTab={action.newTab}
-      variant={action.variant || 'outline'}
-    >
-      {action.label}
-    </FormOrLinkButton>
+    <div className="not-prose mt-auto">
+      <FormOrLinkButton
+        backgroundColor={action.backgroundColor}
+        className="self-start"
+        external={action.external}
+        formId={action.formId}
+        formTitle={action.formTitle}
+        href={action.href || '#'}
+        newTab={action.newTab}
+        variant={action.variant || 'outline'}
+      >
+        {action.label}
+      </FormOrLinkButton>
+    </div>
   )
 }
 
 /**
  * Sloupce layout: fixed third-width cells, max 3 per row, wrap.
  * Exactly 4 columns → 2 per row (2+2), not 3+1.
- * Do NOT put `h-full` on cells — % height fights flex stretch when the row
- * height is content-sized, so `mt-auto` on ColumnCta has no free space.
+ * Row `items-stretch` + column `flex-col` + CTA `mt-auto` → buttons align.
+ * Do NOT put `h-full` on cells — % height fights flex stretch.
  * Short rows (<3) centered (`lg:justify-center`).
  */
 const COLUMNS_PER_ROW = 3
@@ -304,6 +309,7 @@ function ColumnImage({
         src={src}
         style={mediaFocalStyle(media)}
       />
+      <MediaAuthorshipTag authorship={mediaAuthorship(media)} />
     </div>
   )
 }
@@ -357,11 +363,7 @@ export function ColumnsBlock({
         <NazemiRichText data={column.body as never} siteSlug={siteSlug} />
       </div>
     ) : null
-    const cta = (
-      <div className="not-prose">
-        <ColumnCta column={column} siteSlug={siteSlug} />
-      </div>
-    )
+    const cta = <ColumnCta column={column} siteSlug={siteSlug} />
 
     if (isFramed) {
       // Table / short bordered: flex-1 fill. Bordered 3+: fixed third-width cells.
@@ -376,7 +378,7 @@ export function ColumnsBlock({
           key={`col-${index}`}
         >
           {/* Image flush to card edges; bottom border separates from body. */}
-          <div className="not-prose">
+          <div className="not-prose shrink-0">
             <ColumnImage bordered image={column.image} />
           </div>
           <div className="flex min-h-0 flex-1 flex-col gap-6 p-card">
@@ -390,7 +392,7 @@ export function ColumnsBlock({
     // Clean: small flex gap; first-heading mt zeroed in styles.css for [data-component=column]
     return (
       <div className={`${COLUMNS_CELL} gap-2`} data-component="column" key={`col-${index}`}>
-        <div className="not-prose">
+        <div className="not-prose shrink-0">
           <ColumnImage image={column.image} />
         </div>
         {body}
@@ -483,7 +485,7 @@ export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug:
         title={(block.title as string) || 'NaZemi'}
       />
       {imageUrl ? (
-        <div className="overflow-hidden border-x-2 border-t-2 border-x-ground border-t-ground">
+        <div className="relative overflow-hidden border-x-2 border-t-2 border-x-ground border-t-ground">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt={mediaAlt(image, 'Tým NaZemi')}
@@ -491,6 +493,7 @@ export function AboutBlock({ block, siteSlug }: { block: ContentBlock; siteSlug:
             loading="lazy"
             src={imageUrl}
           />
+          <MediaAuthorshipTag authorship={mediaAuthorship(image)} />
         </div>
       ) : null}
       <div
@@ -542,6 +545,7 @@ export function PageBlocks({
             <PageIntro
               color={(block.headerColor as string) || null}
               coverAlt={mediaAlt(cover, '')}
+              coverAuthorship={mediaAuthorship(cover)}
               coverStyle={mediaFocalStyle(cover)}
               coverUrl={coverUrl}
               description={block.lead ? String(block.lead) : null}

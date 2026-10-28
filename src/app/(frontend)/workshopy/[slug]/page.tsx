@@ -16,6 +16,7 @@ import { draftFindOptions,
 import { resolveAdminEditHref } from '@/lib/frontend-edit'
 import { upcomingScheduledWorkshopsJoin } from '@/lib/menu-relation-picker'
 import { buildPageMetadata } from '@/lib/metadata'
+import { MAIN_SITE_SLUG } from '@/lib/site-context'
 
 export async function generateMetadata({
   params,
@@ -36,7 +37,11 @@ export async function generateMetadata({
     ...(await draftFindOptions()),
     where: {
       and: [
-        await getListingWhere({ collection: 'workshopy', siteId: site.id }),
+        await getListingWhere({
+          collection: 'workshopy',
+          includeCrossPosted: site.slug === 'nazemi',
+          siteId: site.id,
+        }),
         { slug: { equals: slug } },
       ],
     },
@@ -62,6 +67,11 @@ export default async function WorkshopDetailPage({
   const payload = await getPayloadClient()
   const listingWhere = await getListingWhere({
     collection: 'workshopy',
+    includeCrossPosted: site.slug === 'nazemi',
+    siteId: site.id,
+  })
+  const siblingsWhere = await getListingWhere({
+    collection: 'workshopy',
     siteId: site.id,
   })
   const [result, siblings] = await Promise.all([
@@ -81,8 +91,8 @@ export default async function WorkshopDetailPage({
       depth: 0,
       limit: 100,
       pagination: false,
-      sort: 'title',
-      where: listingWhere,
+      sort: site.slug === MAIN_SITE_SLUG ? 'mainSiteOrder' : '_order',
+      where: siblingsWhere,
     }),
   ])
 

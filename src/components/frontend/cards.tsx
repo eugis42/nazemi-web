@@ -7,6 +7,7 @@ import { FormOrLinkButton } from '@/components/frontend/FormOrLinkButton'
 import { Button, Divider, MetaLine, TagGroup } from '@/components/frontend/ui'
 import { resolveNavTarget } from '@/lib/nav-target'
 import { isColorToken, resolveColor } from '@/lib/colors'
+import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
 import {
   crossPostOriginSite,
   mediaAlt,
@@ -220,14 +221,21 @@ export function NewsCard({ item, siteSlug }: { item: Aktuality; siteSlug: string
 
 export function WorkshopCard({ item, siteSlug }: { item: Workshopy; siteSlug: string }) {
   const cover = item.coverImage && typeof item.coverImage === 'object' ? item.coverImage : null
+  const originSite = crossPostOriginSite({
+    currentSiteSlug: siteSlug,
+    docSite: item.site,
+  })
   const buttonLabel = 'Více o workshopu'
+  const href = withSiteQuery(`/workshopy/${item.slug}`, originSite?.slug || siteSlug)
 
   return (
     <CardLink
       ariaLabel={`${item.title}. ${buttonLabel}`}
       className="card-tile flex h-full flex-col overflow-hidden border-2 border-ground bg-sky"
       component="workshop-card"
-      href={withSiteQuery(`/workshopy/${item.slug}`, siteSlug)}
+      external={Boolean(originSite)}
+      href={href}
+      style={originSite ? siteBrandStyle(originSite) : undefined}
     >
       <div className="relative aspect-4/3 w-full shrink-0 overflow-hidden bg-ground">
         {cover ? (
@@ -249,9 +257,17 @@ export function WorkshopCard({ item, siteSlug }: { item: Workshopy; siteSlug: st
           </div>
           <h3 className="text-card-title text-ground">{item.title}</h3>
         </div>
-        <Button tag="span" variant="outline-ground">
-          {buttonLabel}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button className="shrink-0" tag="span" variant="outline-ground">
+            {buttonLabel}
+          </Button>
+          {originSite ? (
+            <span className="min-w-0 font-saans text-tag leading-tight text-ground opacity-75">
+              <span className="inline-block">↗ Na webu</span>{' '}
+              <span className="inline-block">{originSite.name}</span>
+            </span>
+          ) : null}
+        </div>
       </div>
     </CardLink>
   )
@@ -641,6 +657,7 @@ export function TeamMemberCard({ person }: { person: Lide }) {
 export function PageIntro({
   color,
   coverAlt,
+  coverAuthorship,
   coverStyle,
   coverUrl,
   description,
@@ -648,6 +665,7 @@ export function PageIntro({
 }: {
   color?: string | null
   coverAlt?: string
+  coverAuthorship?: string | null
   coverStyle?: CSSProperties
   coverUrl?: string | null
   description?: string | null
@@ -675,6 +693,7 @@ export function PageIntro({
           />
           <div className="absolute inset-0 bg-ground/33" />
         </div>
+        <MediaAuthorshipTag authorship={coverAuthorship} large />
         <div className="container relative z-10 flex min-h-[66vh] flex-col justify-end py-card max-lg:px-card lg:pt-8 lg:pb-card">
           <PageIntroContent description={description} textClass="text-sky" title={title} />
         </div>

@@ -14,6 +14,7 @@ const KEEP_TYPES = new Set([
   'upload',
   'relationship',
   'horizontalrule',
+  'table',
 ])
 
 function isWhitespaceOnlyText(node: LexNode): boolean {

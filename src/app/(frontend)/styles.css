@@ -1496,16 +1496,50 @@
     }
 
     :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply w-full border-collapse font-inter text-[18px] text-ground;
+      @apply w-full min-w-[36rem] border-collapse font-inter text-[18px] leading-snug text-ground;
     }
 
     :where(th):not(:where([class~='not-prose'], [class~='not-prose'] *)),
     :where(td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply border border-ground px-3 py-2 text-left text-ground;
+      @apply border border-ground px-3 py-2.5 text-left align-top text-ground;
     }
 
-    :where(thead th):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply bg-transparent font-saans font-medium text-ground;
+    :where(th):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(thead th):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(.lexical-table-cell-header-1):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(.lexical-table-cell-header-2):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(.lexical-table-cell-header-3):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply font-saans font-medium text-ground;
+      background-color: color-mix(in srgb, var(--color-ground) 6%, var(--color-sky));
+    }
+
+    /* Row header column — slightly stronger wash so grid reads 2-axis. */
+    :where(.lexical-table-cell-header-2):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+    :where(.lexical-table-cell-header-3):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      background-color: color-mix(in srgb, var(--color-ground) 10%, var(--color-sky));
+    }
+
+    :where(table[data-row-striping='true'] tbody tr:nth-child(even) td):not(
+        :where([class~='not-prose'], [class~='not-prose'] *)
+      ) {
+      background-color: color-mix(in srgb, var(--color-ground) 4%, var(--color-sky));
+    }
+
+    :where(.lexical-table-container):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply my-6 max-w-full;
+    }
+
+    /* Tighten Lexical cell paragraphs — table density, not prose article rhythm. */
+    :where(.lexical-table td p, .lexical-table th p):not(
+        :where([class~='not-prose'], [class~='not-prose'] *)
+      ) {
+      @apply my-0;
+    }
+
+    :where(.lexical-table td p + p, .lexical-table th p + p):not(
+        :where([class~='not-prose'], [class~='not-prose'] *)
+      ) {
+      @apply mt-1.5;
     }
 
     :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
@@ -1769,6 +1803,19 @@
 
 .nazemi-lightbox .yarl__navigation_next {
   right: var(--yarl__toolbar_padding, 1.25rem);
+}
+
+/* Photo credit chip over lightbox slide (render.slideFooter). */
+.nazemi-lightbox .yarl__slide {
+  position: relative;
+}
+
+.nazemi-lightbox .yarl__slide_footer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

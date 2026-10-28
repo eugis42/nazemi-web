@@ -69,6 +69,13 @@ export function mediaAlt(media: MediaLike, fallback = ''): string {
   return media.alt || fallback
 }
 
+/** Trimmed photo credit from Media.authorship; empty → null. */
+export function mediaAuthorship(media: MediaLike): string | null {
+  if (!media || typeof media === 'number') return null
+  const value = typeof media.authorship === 'string' ? media.authorship.trim() : ''
+  return value || null
+}
+
 /** Event header / meta: Název místa, ulice, město — skip empties. */
 export function formatEventPlace(location?: {
   address?: string | null

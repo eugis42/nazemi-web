@@ -156,6 +156,26 @@ export function CaretRightIcon() {
   )
 }
 
+/** Tabler Icons outline `arrows-sort` — listing order control. */
+export function ArrowsSortIcon({ className = 'size-3.5' }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M3 9l4 -4l4 4m-4 -4v14" />
+      <path d="M21 15l-4 4l-4 -4m4 4v-14" />
+    </svg>
+  )
+}
+
 /** Tabler Icons outline `filter`. */
 export function FilterIcon({ className = 'size-3.5' }: { className?: string }) {
   return (
@@ -171,6 +191,26 @@ export function FilterIcon({ className = 'size-3.5' }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" />
+    </svg>
+  )
+}
+
+/** Tabler Icons outline `camera` — photo credit chip. */
+export function CameraIcon({ className = 'size-2.5' }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" />
+      <path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
     </svg>
   )
 }

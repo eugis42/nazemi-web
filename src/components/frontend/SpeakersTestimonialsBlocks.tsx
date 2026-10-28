@@ -17,7 +17,12 @@ export type TestimonialsBlockData = {
 }
 
 type SpeakersPeople = { name?: string; role?: string; image?: unknown; quote?: string }[]
-type TestimonialItems = { quote?: string; author?: string; role?: string }[]
+type TestimonialItems = {
+  author?: string
+  profileImage?: unknown
+  quote?: string
+  role?: string
+}[]
 
 /**
  * Lidé / Reference layout:
@@ -93,7 +98,9 @@ export function SpeakersBlockView({
                 )}
                 <div className="flex min-w-0 flex-col justify-center gap-1">
                   <h3 className="text-card-title text-ground">{person.name}</h3>
-                  {person.role ? <p className="text-body-inter text-ground">{person.role}</p> : null}
+                  {person.role ? (
+                    <p className="text-body-inter leading-tight text-ground/75">{person.role}</p>
+                  ) : null}
                 </div>
               </div>
               {quote ? <p className="text-body-inter text-ground">{quote}</p> : null}
@@ -139,27 +146,45 @@ export function TestimonialsBlockView({
     >
       <h2 className="text-section-title text-ground">{title}</h2>
       <div className={gridClass}>
-        {items.map((item, itemIndex) => (
+        {items.map((item, itemIndex) => {
+          const img =
+            item.profileImage && typeof item.profileImage === 'object'
+              ? (item.profileImage as Media)
+              : null
+          const imgUrl = img ? mediaSizeURL(img, 'thumb') : null
           /*
            * `not-prose` on the quote itself — survives parent .prose-nazemi even if
            * an outer Lexical wrapper forgets not-prose (bar + items-center clash).
+           * Profile photo = 75% of Lidé `size-20` (80px → 60px).
            */
-          <blockquote
-            className="not-prose flex flex-col gap-3 text-ground"
-            data-component="workshop-testimonial"
-            key={`${item.author}-${itemIndex}`}
-          >
-            <p className="font-serif text-xl font-normal leading-snug tracking-tight text-ground">
-              „{item.quote}“
-            </p>
-            <footer className="font-saans text-sm leading-snug text-ground/70">
-              <cite className="not-italic">
-                {item.author}
-                {item.role ? ` · ${item.role}` : ''}
-              </cite>
-            </footer>
-          </blockquote>
-        ))}
+          return (
+            <blockquote
+              className="not-prose flex flex-col gap-3 text-ground"
+              data-component="workshop-testimonial"
+              key={`${item.author}-${itemIndex}`}
+            >
+              {imgUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  alt={mediaAlt(img, item.author || '')}
+                  className="size-[60px] shrink-0 self-start rounded-full border-2 border-ground object-cover"
+                  loading="lazy"
+                  src={imgUrl}
+                  style={mediaFocalStyle(img)}
+                />
+              ) : null}
+              <p className="font-serif text-xl font-normal leading-snug tracking-tight text-ground">
+                „{item.quote}“
+              </p>
+              <footer className="font-saans text-sm leading-snug text-ground/70">
+                <cite className="not-italic">
+                  {item.author}
+                  {item.role ? ` · ${item.role}` : ''}
+                </cite>
+              </footer>
+            </blockquote>
+          )
+        })}
       </div>
     </section>
   )

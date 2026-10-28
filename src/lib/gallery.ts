@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 
 import type { Media } from '@/payload-types'
 
-import { mediaFocalStyle, mediaSizeURL } from '@/lib/content'
+import { mediaAuthorship, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
 
 export type GalleryImage = {
   /** Grid / inline display — optimised `large` (no crop). */
@@ -11,6 +11,7 @@ export type GalleryImage = {
   fullUrl?: string
   alt?: string | null
   caption?: string | null
+  authorship?: string | null
   style?: CSSProperties
 }
 
@@ -28,6 +29,7 @@ export function resolveGalleryImages(raw: unknown): GalleryImage[] {
       fullUrl: url,
       alt: media.alt,
       caption: media.caption,
+      authorship: mediaAuthorship(media),
       style: mediaFocalStyle(media),
     })
   }

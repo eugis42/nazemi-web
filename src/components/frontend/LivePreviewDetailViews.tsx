@@ -18,7 +18,7 @@ import {
   PublicationHeader,
   WorkshopHeader,
 } from '@/components/frontend/details'
-import { mediaFocalStyle, mediaSizeURL } from '@/lib/content'
+import { mediaAuthorship, mediaFocalStyle, mediaSizeURL } from '@/lib/content'
 
 export { DocLivePreviewProvider }
 
@@ -30,6 +30,7 @@ export function StrankaIntroLivePreview() {
     <PageIntro
       color={page.headerColor}
       coverAlt={cover?.alt || page.title}
+      coverAuthorship={mediaAuthorship(cover)}
       coverStyle={mediaFocalStyle(cover)}
       coverUrl={cover ? mediaSizeURL(cover, 'hero') : null}
       description={page.excerpt}

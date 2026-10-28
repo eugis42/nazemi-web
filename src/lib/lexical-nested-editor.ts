@@ -7,6 +7,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+import { NazemiTableCsFeature, NazemiTableFeature } from '@/features/NazemiTableFeature'
 import { SiteTextColorVarsFeature } from '@/features/SiteTextColorVarsFeature'
 import { StripEmptyLexicalNodesFeature } from '@/features/StripEmptyLexicalNodesFeature'
 import { RICH_TEXT_RELATION_COLLECTIONS } from '@/lib/lexical-collections'
@@ -56,5 +57,7 @@ export const nazemiNestedLexicalEditor = lexicalEditor({
     }),
     SiteTextColorVarsFeature(),
     StripEmptyLexicalNodesFeature(),
+    NazemiTableFeature(),
+    NazemiTableCsFeature(),
   ],
 })

@@ -7,6 +7,7 @@ import type {
   SerializedLinkNode,
   SerializedQuoteNode,
   SerializedRelationshipNode,
+  SerializedTableCellNode,
   SerializedUploadNode,
 } from '@payloadcms/richtext-lexical'
 import type { ComponentProps, CSSProperties, ReactNode } from 'react'
@@ -19,12 +20,13 @@ import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { IframeEmbedBlockView } from '@/components/frontend/IframeEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
 import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
+import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import {
   SpeakersBlockView,
   TestimonialsBlockView,
 } from '@/components/frontend/SpeakersTestimonialsBlocks'
-import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
+import { mediaAlt, mediaAuthorship, mediaSizeURL, mediaURL } from '@/lib/content'
 import { resolveGalleryImages } from '@/lib/gallery'
 import { textColorCss } from '@/lib/lexical-text-color'
 import { isExternalHref } from '@/lib/links'
@@ -231,17 +233,22 @@ function UploadImage({ node }: { node: SerializedUploadNode }) {
         ? { height: 'auto', ['--upload-w' as string]: `${percent}%` }
         : undefined
 
+  const credit = mediaAuthorship(uploadDoc)
+
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      alt={alt}
-      data-max-width={capPx ?? undefined}
-      data-upload-w={effective === 'auto' ? undefined : effective}
-      height={uploadDoc.height ?? undefined}
-      src={url}
-      style={style}
-      width={capPx ?? naturalWidth ?? undefined}
-    />
+    <span className="relative inline-block max-w-full">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt={alt}
+        data-max-width={capPx ?? undefined}
+        data-upload-w={effective === 'auto' ? undefined : effective}
+        height={uploadDoc.height ?? undefined}
+        src={url}
+        style={style}
+        width={capPx ?? naturalWidth ?? undefined}
+      />
+      <MediaAuthorshipTag authorship={credit} />
+    </span>
   )
 }
 
@@ -310,6 +317,40 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
             </div>
           </blockquote>
         ),
+        /* Drop Payload default #ccc inline borders — `.prose-nazemi` owns table chrome. */
+        table: ({ node, nodesToJSX }) => {
+          const table = node as {
+            children?: unknown[]
+            rowStriping?: boolean
+          }
+          return (
+            <div className="lexical-table-container overflow-x-auto">
+              <table
+                className="lexical-table"
+                data-row-striping={table.rowStriping ? 'true' : undefined}
+              >
+                <tbody>{nodesToJSX({ nodes: (table.children || []) as never })}</tbody>
+              </table>
+            </div>
+          )
+        },
+        tablecell: ({ node, nodesToJSX }) => {
+          const cell = node as SerializedTableCellNode & { verticalAlign?: string }
+          const Tag = cell.headerState > 0 ? 'th' : 'td'
+          const style: CSSProperties = {}
+          if (cell.backgroundColor) style.backgroundColor = cell.backgroundColor
+          if (cell.verticalAlign) style.verticalAlign = cell.verticalAlign as CSSProperties['verticalAlign']
+          return (
+            <Tag
+              className={`lexical-table-cell lexical-table-cell-header-${cell.headerState}`}
+              colSpan={cell.colSpan && cell.colSpan > 1 ? cell.colSpan : undefined}
+              rowSpan={cell.rowSpan && cell.rowSpan > 1 ? cell.rowSpan : undefined}
+              style={Object.keys(style).length ? style : undefined}
+            >
+              {nodesToJSX({ nodes: cell.children || [] })}
+            </Tag>
+          )
+        },
         blocks: {
           gallery: ({ node }: { node: SerializedBlockNode<GalleryFields> }) => (
             <div className="not-prose w-full" data-rt-block="gallery">

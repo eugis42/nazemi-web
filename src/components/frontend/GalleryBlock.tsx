@@ -12,9 +12,12 @@ import {
 import Lightbox, { type SlideImage } from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 
+import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
 import type { GalleryImage } from '@/lib/gallery'
 
 export type { GalleryImage }
+
+type AuthorshipSlide = SlideImage & { authorship?: string | null }
 
 type GalleryBlockProps = {
   images: GalleryImage[]
@@ -65,11 +68,12 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
   const reducedMotion = usePrefersReducedMotion()
   const colKey = columns === '1' || columns === '3' ? columns : '2'
 
-  const slides: SlideImage[] = useMemo(
+  const slides: AuthorshipSlide[] = useMemo(
     () =>
       images.map((img) => ({
         src: img.fullUrl || img.url,
         alt: img.alt || '',
+        authorship: img.authorship || null,
       })),
     [images],
   )
@@ -85,8 +89,11 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
     const image = images[0]
     return (
       <figure className="w-full" data-block="gallery" data-count="1">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt={image.alt || ''} className="h-auto w-full" src={image.url} />
+        <div className="relative">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt={image.alt || ''} className="h-auto w-full" src={image.url} />
+          <MediaAuthorshipTag authorship={image.authorship} />
+        </div>
         {caption ? (
           <figcaption className="font-inter mt-3 text-[14px] leading-snug text-ground">
             {caption}
@@ -108,7 +115,7 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
         {images.map((image, index) => (
           <li className="mb-grid break-inside-avoid" key={`${image.url}-${index}`}>
             <button
-              className="group relative block w-full cursor-zoom-in text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground"
+              className="group relative block w-full cursor-zoom-in overflow-hidden text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground"
               onClick={() => openAt(index)}
               type="button"
               aria-label={`Zvětšit: ${image.alt || `Obrázek ${index + 1}`}`}
@@ -119,6 +126,7 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
                 className="h-auto w-full transition-opacity duration-150 group-hover:opacity-90"
                 src={image.url}
               />
+              <MediaAuthorshipTag authorship={image.authorship} />
             </button>
           </li>
         ))}
@@ -156,6 +164,13 @@ export function GalleryBlock({ images: rawImages, columns, caption }: GalleryBlo
           // Prefer page-shell (inherits brand); vars also copied onto container.
           root: () => document.querySelector('.page-shell') ?? document.body,
           container: { style: portalBrandStyle },
+        }}
+        render={{
+          slideFooter: ({ slide }) => {
+            const authorship = (slide as AuthorshipSlide).authorship
+            if (!authorship) return null
+            return <MediaAuthorshipTag authorship={authorship} large />
+          },
         }}
       />
     </figure>
@@ -209,7 +224,7 @@ function GalleryCarousel({
               key={`${image.url}-${index}`}
             >
               <button
-                className="block w-full cursor-zoom-in text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground"
+                className="relative block w-full cursor-zoom-in overflow-hidden text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground"
                 onClick={() => onSelect(index)}
                 type="button"
                 aria-label={`Zvětšit: ${image.alt || `Obrázek ${index + 1}`}`}
@@ -221,6 +236,7 @@ function GalleryCarousel({
                   draggable={false}
                   src={image.url}
                 />
+                <MediaAuthorshipTag authorship={image.authorship} />
               </button>
             </div>
           ))}

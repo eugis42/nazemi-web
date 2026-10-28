@@ -474,6 +474,7 @@ const seed = async () => {
         groupSize: workshop.groupSize,
         price: formatWorkshopPrice(workshop.pricing),
         excerpt: workshop.shortDescription,
+        showOnMainSite: false,
         site: mainSite.id,
         slug: workshop.slug,
         takeaways: workshop.takeaways.map((item) => ({ item })),
