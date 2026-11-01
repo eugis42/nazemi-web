@@ -11,6 +11,7 @@ export type FrontendEditableCollection =
   | 'workshopy'
   | 'publikace'
   | 'projekty'
+  | 'lide'
 
 /**
  * Admin edit URL for the current doc, or null if visitor cannot update.
