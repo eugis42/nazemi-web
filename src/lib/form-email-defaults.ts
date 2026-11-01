@@ -20,7 +20,8 @@ function formTitle(data: Record<string, unknown> | undefined): string {
 
 async function siteName(
   data: Record<string, unknown> | undefined,
-  req: { payload?: { findByID: (args: unknown) => Promise<{ name?: string | null } | null> } } | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BeforeEmail req; avoid PayloadRequest coupling
+  req: any,
 ): Promise<string> {
   const siteRef = data?.site
   if (siteRef == null || !req?.payload) return 'NaZemi'
