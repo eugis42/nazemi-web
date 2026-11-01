@@ -5100,6 +5100,9 @@ export interface Form {
         bcc?: string | null;
         replyTo?: string | null;
         emailFrom?: string | null;
+        /**
+         * Proměnné: {{siteName}} = název webu, {{formTitle}} = název formuláře. Pole formuláře: {{nazevPole}}.
+         */
         subject: string;
         message?: {
           root: {
@@ -5148,14 +5151,32 @@ export interface Lide {
   sortOrder?: number | null;
   name: string;
   /**
-   * Vygeneruje se ze jména při prvním uložení.
+   * Vygeneruje se ze jména při prvním uložení. Veřejná stránka: /lide/{slug}.
    */
   slug?: string | null;
   role?: string | null;
   phone?: string | null;
   email?: string | null;
   /**
-   * Web, na kterém se osoba zobrazí v kontaktech.
+   * Bio / text na veřejné stránce osoby.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Web, na kterém se osoba zobrazí v kontaktech a má veřejnou stránku.
    */
   site: number | Site;
   searchFold?: string | null;
@@ -6865,6 +6886,7 @@ export interface LideSelect<T extends boolean = true> {
   role?: T;
   phone?: T;
   email?: T;
+  content?: T;
   site?: T;
   searchFold?: T;
   updatedAt?: T;

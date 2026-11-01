@@ -136,8 +136,10 @@ Full production order (standalone build on laptop, media symlink, seeds, Kontakt
 cp .env.example .env
 docker compose up -d postgres   # or host Postgres on 5432
 npm run db:push
-npm run dev
+npm run dev   # portless → http://nazemi.localhost (:4100)
 ```
+
+Needs global `portless` (`npm i -g portless`). Set `NEXT_PUBLIC_SERVER_URL=http://nazemi.localhost`. Skip with `PORTLESS=0 npm run dev:app` if needed.
 
 Default seed admin (local): `admin@nazemi.local` / `payload-demo-password` after `npm run seed`.
 

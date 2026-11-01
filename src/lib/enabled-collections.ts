@@ -13,6 +13,7 @@ const HREF_TO_COLLECTION: { prefix: string; key: EnabledCollectionKey }[] = [
   { prefix: '/workshopy', key: 'workshopy' },
   { prefix: '/publikace', key: 'publikace' },
   { prefix: '/kontakt', key: 'lide' },
+  { prefix: '/lide', key: 'lide' },
 ]
 
 export function collectionKeyForHref(href?: string | null): EnabledCollectionKey | null {

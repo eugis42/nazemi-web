@@ -16,7 +16,7 @@ npm run db:push
 npm run dev
 ```
 
-Open http://localhost:3000 — admin at `/admin`. Optional: `npm run seed` for demo content.
+Open http://nazemi.localhost (app :4100 via portless) — admin at `/admin`. Optional: `npm run seed` for demo content.
 
 ## Deployment
 

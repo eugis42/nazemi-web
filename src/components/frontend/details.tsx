@@ -1,14 +1,15 @@
 import type { ReactNode } from 'react'
 
-import type { Aktuality, Kalendar, Projekty, Publikace, Workshopy } from '@/payload-types'
+import type { Aktuality, Kalendar, Lide, Projekty, Publikace, Workshopy } from '@/payload-types'
 
 import { EventOverviewMotion } from '@/components/frontend/EventOverviewMotion'
 import { PageBlocks } from '@/components/frontend/BlockRenderers'
 import { DocCtaButton, firstDocCta } from '@/components/frontend/DocCtaButton'
-import { CalendarIcon, ClockIcon, PinIcon } from '@/components/frontend/icons'
+import { Button } from '@/components/frontend/Button'
+import { CalendarIcon, ClockIcon, MailIcon, PhoneIcon, PinIcon } from '@/components/frontend/icons'
 import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
-import { Button, TagGroup, type TagItem } from '@/components/frontend/ui'
+import { TagGroup, type TagItem } from '@/components/frontend/ui'
 import { WorkshopHeaderMotion } from '@/components/frontend/WorkshopHeaderMotion'
 import {
   crossPostSiteName,
@@ -627,4 +628,64 @@ export function PublicationDetail({
 
 export function ProjectDetail({ item, siteSlug = '' }: { item: Projekty; siteSlug?: string }) {
   return <PageBlocks blocks={item.content as never} siteSlug={siteSlug} />
+}
+
+/** Person profile — photo + meta, then Lexical bio in prose column. */
+export function PersonDetail({ item, siteSlug = '' }: { item: Lide; siteSlug?: string }) {
+  const image = item.image && typeof item.image === 'object' ? item.image : null
+  const initials = (item.name || '')
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+  const photo = image ? mediaSizeURL(image, 'square') || mediaSizeURL(image, 'card') : null
+
+  return (
+    <article data-component="person-detail">
+      <header className={`${CONTENT_WRAPPER_CLASS} pb-content`}>
+        <div className={`${CONTENT_INNER_CLASS} flex flex-col gap-8 sm:flex-row sm:items-center sm:gap-10`}>
+          <div className="flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-ground bg-green/30 sm:size-44 lg:size-52">
+            {photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                alt={mediaAlt(image, item.name)}
+                className="size-full object-cover"
+                src={photo}
+                style={mediaFocalStyle(image)}
+              />
+            ) : (
+              <span aria-hidden className="font-saans text-4xl leading-none text-ground sm:text-5xl">
+                {initials || '?'}
+              </span>
+            )}
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-3">
+            <h1 className="text-display text-ground">{item.name}</h1>
+            {item.role ? (
+              <p className="font-saans text-section-title leading-tight text-ground/80">{item.role}</p>
+            ) : null}
+            {item.phone || item.email ? (
+              <div className="mt-2 flex flex-wrap gap-2.5">
+                {item.phone ? (
+                  <Button
+                    href={`tel:${item.phone.replace(/[^\d+]/g, '')}`}
+                    icon={<PhoneIcon />}
+                    variant="outline-ground"
+                  >
+                    {item.phone}
+                  </Button>
+                ) : null}
+                {item.email ? (
+                  <Button href={`mailto:${item.email}`} icon={<MailIcon />} variant="outline-ground">
+                    {item.email}
+                  </Button>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </header>
+      {item.content ? <Prose data={item.content} siteSlug={siteSlug} /> : null}
+    </article>
+  )
 }

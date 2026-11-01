@@ -284,12 +284,13 @@ export function BookCard({ item, siteSlug }: { item: Publikace; siteSlug: string
       component="book-card"
       href={withSiteQuery(`/publikace/${item.slug}`, siteSlug)}
     >
-      <div className="relative mb-2 flex aspect-square w-full shrink-0 items-end justify-start overflow-hidden">
+      {/* Mobile 1-col: natural book size, capped + left. Desktop: square tile. */}
+      <div className="relative mb-2 flex w-full shrink-0 items-end justify-start overflow-hidden max-sm:h-auto sm:aspect-square">
         {cover && mediaSizeURL(cover, 'large') ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={mediaAlt(cover, item.title)}
-            className="max-h-full max-w-full object-contain"
+            className="object-contain object-left max-sm:h-auto max-sm:max-h-64 max-sm:w-auto max-sm:max-w-[11rem] sm:max-h-full sm:max-w-full"
             loading="lazy"
             src={mediaSizeURL(cover, 'large') || ''}
           />
@@ -602,19 +603,23 @@ export function ContactBlock({
   )
 }
 
-export function TeamMemberCard({ person }: { person: Lide }) {
+export function TeamMemberCard({
+  person,
+  siteSlug = '',
+}: {
+  person: Lide
+  siteSlug?: string
+}) {
   const image = person.image && typeof person.image === 'object' ? person.image : null
   const initials = person.name
     .split(/\s+/)
     .map((part) => part[0])
     .join('')
     .slice(0, 2)
+  const href = person.slug ? withSiteQuery(`/lide/${person.slug}`, siteSlug) : null
 
-  return (
-    <article
-      className="box-border flex w-full shrink-0 grow-0 flex-col items-start gap-2.5 bg-sky p-card text-left sm:w-[calc((100%-2px)/2)] lg:w-[calc((100%-4px)/3)] xl:w-[calc((100%-6px)/4)]"
-      data-component="team-member-card"
-    >
+  const inner = (
+    <>
       <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-ground bg-green/30 lg:size-24">
         {image && mediaSizeURL(image, 'thumb') ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -635,7 +640,7 @@ export function TeamMemberCard({ person }: { person: Lide }) {
         <h3 className="text-card-title text-ground">{person.name}</h3>
         {person.role ? <p className="text-body-inter text-ground">{person.role}</p> : null}
         {person.phone || person.email ? (
-          <p className="text-body-inter mt-4 text-ground">
+          <p className="pointer-events-auto relative z-[1] text-body-inter mt-4 text-ground">
             {person.phone ? (
               <a className="underline" href={`tel:${person.phone.replace(/[^\d+]/g, '')}`}>
                 {person.phone}
@@ -650,6 +655,26 @@ export function TeamMemberCard({ person }: { person: Lide }) {
           </p>
         ) : null}
       </div>
+    </>
+  )
+
+  const shellClass =
+    'relative box-border flex w-full shrink-0 grow-0 flex-col items-start gap-2.5 bg-sky p-card text-left sm:w-[calc((100%-2px)/2)] lg:w-[calc((100%-4px)/3)] xl:w-[calc((100%-6px)/4)]'
+
+  if (href) {
+    return (
+      <article className={shellClass} data-component="team-member-card">
+        <a aria-label={person.name} className="absolute inset-0 z-0" href={href} />
+        <div className="pointer-events-none relative z-[1] flex w-full flex-col items-start gap-2.5 [&_a]:pointer-events-auto">
+          {inner}
+        </div>
+      </article>
+    )
+  }
+
+  return (
+    <article className={shellClass} data-component="team-member-card">
+      {inner}
     </article>
   )
 }

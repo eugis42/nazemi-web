@@ -164,6 +164,8 @@ function internalDocToHref({ linkNode }: { linkNode: SerializedLinkNode }) {
       return `/workshopy/${slug}`
     case 'publikace':
       return `/publikace/${slug}`
+    case 'lide':
+      return `/lide/${slug}`
     case 'stranky':
       return slug === 'home' ? '/' : `/${slug}`
     default:

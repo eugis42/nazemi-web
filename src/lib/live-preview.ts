@@ -11,14 +11,14 @@ export type SiteContentCollectionSlug =
   | 'stranky'
   | 'workshopy'
 
-const COLLECTION_PATH_PREFIX: Record<Exclude<SiteContentCollectionSlug, 'stranky' | 'lide'>, string> =
-  {
-    aktuality: '/aktuality',
-    kalendar: '/kalendar',
-    projekty: '/projekty',
-    publikace: '/publikace',
-    workshopy: '/workshopy',
-  }
+const COLLECTION_PATH_PREFIX: Record<Exclude<SiteContentCollectionSlug, 'stranky'>, string> = {
+  aktuality: '/aktuality',
+  kalendar: '/kalendar',
+  lide: '/lide',
+  projekty: '/projekty',
+  publikace: '/publikace',
+  workshopy: '/workshopy',
+}
 
 export function siteContentPath(
   collectionSlug: SiteContentCollectionSlug,
@@ -30,10 +30,6 @@ export function siteContentPath(
     // Homepage always lives at `/` (slug may still be `home` in CMS).
     if (data?.isHomepage) return '/'
     return slug ? ensureLeadingSlash(slug) : '/'
-  }
-
-  if (collectionSlug === 'lide') {
-    return '/kontakt'
   }
 
   const prefix = COLLECTION_PATH_PREFIX[collectionSlug]

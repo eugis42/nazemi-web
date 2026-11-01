@@ -1347,20 +1347,21 @@
       }
     }
 
+    /* leading-tight (not none) so Shift+Enter soft breaks stay readable in-element. */
     :where(h1):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply mb-0 text-[44px] font-medium leading-none tracking-[-0.88px] text-ground;
+      @apply mb-0 text-[44px] font-medium leading-tight tracking-[-0.88px] text-ground;
     }
 
     :where(h2):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply mb-0 text-[34px] font-medium leading-none tracking-[-0.68px] text-ground;
+      @apply mb-0 text-[34px] font-medium leading-tight tracking-[-0.68px] text-ground;
     }
 
     :where(h3):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply mb-0 text-[24px] font-medium leading-none tracking-[-0.48px] text-ground;
+      @apply mb-0 text-[24px] font-medium leading-tight tracking-[-0.48px] text-ground;
     }
 
     :where(h4):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply text-[20px] font-medium leading-none tracking-[-0.4px] text-ground;
+      @apply text-[20px] font-medium leading-tight tracking-[-0.4px] text-ground;
     }
 
     :where(h5):not(:where([class~='not-prose'], [class~='not-prose'] *)),

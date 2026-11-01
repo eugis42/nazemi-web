@@ -11,9 +11,11 @@ import type {
   Stranky,
   Workshopy,
 } from '@/payload-types'
+import { Button } from '@/components/frontend/Button'
 import { DocCtaButton, firstDocCta } from '@/components/frontend/DocCtaButton'
+import { MailIcon, PhoneIcon, UserIcon } from '@/components/frontend/icons'
 import { StretchAspectThumb } from '@/components/frontend/StretchAspectThumb'
-import { Button, TagGroup } from '@/components/frontend/ui'
+import { TagGroup } from '@/components/frontend/ui'
 import {
   crossPostOriginSite,
   mediaAlt,
@@ -210,9 +212,17 @@ function Title({
   )
 }
 
-function Actions({ children }: { children: ReactNode }) {
+function Actions({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
   return (
-    <div className="pointer-events-auto relative z-[1] mt-auto flex flex-wrap gap-2.5 pt-1">
+    <div
+      className={`pointer-events-auto relative z-[1] mt-auto flex flex-wrap gap-2.5 pt-1 ${className}`}
+    >
       {children}
     </div>
   )
@@ -455,7 +465,7 @@ function PublicationEmbed({ doc, siteSlug }: { doc: Publikace; siteSlug: string 
   )
 }
 
-function PersonEmbed({ doc }: { doc: Lide }) {
+function PersonEmbed({ doc, siteSlug }: { doc: Lide; siteSlug: string }) {
   const image = doc.image && typeof doc.image === 'object' ? doc.image : null
   const title = docTitle(doc)
   const initials = title
@@ -463,14 +473,11 @@ function PersonEmbed({ doc }: { doc: Lide }) {
     .map((part) => part[0])
     .join('')
     .slice(0, 2)
-  const href = doc.email
-    ? `mailto:${doc.email}`
-    : doc.phone
-      ? `tel:${doc.phone.replace(/[^\d+]/g, '')}`
-      : null
+  const href = doc.slug ? withSiteQuery(`/lide/${doc.slug}`, siteSlug) : null
 
   return (
-    <Frame className={`items-start ${FREE_SURFACE}`} external={Boolean(href)} href={href} label={title}>
+    // Column CSS forces gap:0 + stretch (left) — !gap-3 restores avatar↔copy; items-center only for row
+    <Frame className={`items-center !gap-3 ${FREE_SURFACE}`} href={href} label={title}>
       <div className="pointer-events-none relative z-[1] flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-ground bg-green/30 sm:size-20">
         {image && mediaSizeURL(image, 'thumb') ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -487,24 +494,32 @@ function PersonEmbed({ doc }: { doc: Lide }) {
           </span>
         )}
       </div>
-      <Body>
-        <Title>{title}</Title>
-        {doc.role ? <p className="text-body-inter text-ground">{doc.role}</p> : null}
-        {doc.phone || doc.email ? (
-          <p className="pointer-events-auto text-body-inter text-ground/80">
-            {doc.phone ? (
-              <a className="underline" href={`tel:${doc.phone.replace(/[^\d+]/g, '')}`}>
-                {doc.phone}
-              </a>
-            ) : null}
-            {doc.phone && doc.email ? <br /> : null}
-            {doc.email ? (
-              <a className="break-all underline" href={`mailto:${doc.email}`}>
-                {doc.email}
-              </a>
-            ) : null}
-          </p>
-        ) : null}
+      <Body className="w-full gap-3">
+        <div className="flex flex-col gap-0.5">
+          <Title>{title}</Title>
+          {doc.role ? <p className="text-body-inter leading-snug text-ground/80">{doc.role}</p> : null}
+        </div>
+        <Actions className="!mt-0 pt-0">
+          {href ? (
+            <Button href={href} icon={<UserIcon />} variant="outline-ground">
+              Profil
+            </Button>
+          ) : null}
+          {doc.phone ? (
+            <Button
+              href={`tel:${doc.phone.replace(/[^\d+]/g, '')}`}
+              icon={<PhoneIcon />}
+              variant="outline-ground"
+            >
+              {doc.phone}
+            </Button>
+          ) : null}
+          {doc.email ? (
+            <Button href={`mailto:${doc.email}`} icon={<MailIcon />} variant="outline-ground">
+              E-mail
+            </Button>
+          ) : null}
+        </Actions>
       </Body>
     </Frame>
   )
@@ -577,7 +592,7 @@ export function RichTextRelation({
     }
     case 'lide': {
       const doc = asDoc<Lide>(value)
-      return doc?.name ? <PersonEmbed doc={doc} /> : null
+      return doc?.name ? <PersonEmbed doc={doc} siteSlug={siteSlug} /> : null
     }
     case 'workshopy': {
       const doc = asDoc<Workshopy>(value)

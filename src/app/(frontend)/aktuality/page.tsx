@@ -19,7 +19,7 @@ import {
 } from '@/lib/frontend'
 import { buildPageMetadata } from '@/lib/metadata'
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 12
 
 export async function generateMetadata({
   searchParams,

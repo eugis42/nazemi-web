@@ -85,8 +85,8 @@ type LogoStripProps = {
 }
 
 /**
- * Funding / support logos — left-aligned strip, capped size, no lightbox.
- * Optional external link per logo.
+ * Funding / support logos — equal slots, contain inside fixed track.
+ * Same visual cap (~64px tall / ~160px wide), even gaps regardless of asset ratio.
  */
 export function LogoStrip({ logos: raw, title }: LogoStripProps) {
   const logos = raw.filter((item) => Boolean(item.url))
@@ -99,26 +99,31 @@ export function LogoStrip({ logos: raw, title }: LogoStripProps) {
           {title.trim()}
         </h2>
       ) : null}
-      <ul className="flex h-auto flex-wrap items-center justify-start gap-x-8 gap-y-6" role="list">
+      <ul
+        className="grid grid-cols-2 items-center justify-items-center gap-x-8 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:flex lg:flex-wrap lg:justify-start"
+        role="list"
+      >
         {logos.map((logo, index) => {
           const img = (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={logo.alt}
-              className="max-h-16 max-w-[160px] object-contain object-left"
-              height={64}
+              className="max-h-12 max-w-[140px] object-contain object-center lg:max-h-14 lg:max-w-[160px] lg:object-left"
+              height={56}
               loading="lazy"
               src={logo.url}
               width={160}
             />
           )
           const key = `${logo.url}-${index}`
+          const slot =
+            'flex h-14 w-full max-w-[160px] items-center justify-center lg:h-16 lg:w-[160px] lg:justify-start'
           if (logo.href) {
             const external = isExternalHref(logo.href)
             return (
-              <li className="flex h-16 w-[160px] max-w-[160px] items-center" key={key}>
+              <li className={slot} key={key}>
                 <a
-                  className="inline-flex h-16 w-full max-w-[160px] items-center transition-opacity duration-150 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground"
+                  className="inline-flex h-full w-full items-center justify-center transition-opacity duration-150 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground lg:justify-start"
                   href={logo.href}
                   rel={external ? 'noopener noreferrer' : undefined}
                   target={external ? '_blank' : undefined}
@@ -129,7 +134,7 @@ export function LogoStrip({ logos: raw, title }: LogoStripProps) {
             )
           }
           return (
-            <li className="flex h-16 w-[160px] max-w-[160px] items-center" key={key}>
+            <li className={slot} key={key}>
               {img}
             </li>
           )

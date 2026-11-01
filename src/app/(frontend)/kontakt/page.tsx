@@ -116,7 +116,7 @@ export default async function KontaktPage({
                   <h2 className="bg-sky p-card text-section-title text-ground">Lidé v NaZemi</h2>
                   <div className="flex flex-wrap gap-[2px] bg-ground">
                     {people.docs.map((person) => (
-                      <TeamMemberCard key={person.id} person={person} />
+                      <TeamMemberCard key={person.id} person={person} siteSlug={site.slug} />
                     ))}
                     {/* Design spacers: fill incomplete sm / lg / xl rows so sky gutters stay. */}
                     <div

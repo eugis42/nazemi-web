@@ -75,4 +75,23 @@ describe('sanitizeLexicalOnSave', () => {
     expect(cleaned?.root.children).toHaveLength(1)
     expect(cleaned?.root.children[0]).toMatchObject({ type: 'upload' })
   })
+
+  it('keeps Shift+Enter linebreaks inside headings / paragraphs', () => {
+    const linebreak = { type: 'linebreak', version: 1 }
+    const cleaned = sanitizeLexicalOnSave(
+      editor([
+        {
+          children: [text('Řádek jedna'), linebreak, text('Řádek dva')],
+          direction: null,
+          format: '',
+          indent: 0,
+          tag: 'h2',
+          type: 'heading',
+          version: 1,
+        },
+      ]),
+    )
+    const heading = cleaned?.root.children[0] as unknown as { children: { type: string }[] }
+    expect(heading.children.map((c) => c.type)).toEqual(['text', 'linebreak', 'text'])
+  })
 })

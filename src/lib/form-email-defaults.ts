@@ -6,6 +6,13 @@ import { richTextParagraphs } from '@/seed/html'
 
 export { formFieldLabelMap } from '@/lib/form-field-labels'
 
+/** Tokens editors can put in email subject / body (resolved at send). */
+export const FORM_EMAIL_SITE_TOKEN = '{{siteName}}'
+export const FORM_EMAIL_TITLE_TOKEN = '{{formTitle}}'
+
+/** Default subject — variables resolved in `nazemiFormBeforeEmail`. */
+export const DEFAULT_FORM_EMAIL_SUBJECT = `${FORM_EMAIL_SITE_TOKEN}: Vyplněný formulář ${FORM_EMAIL_TITLE_TOKEN}`
+
 function formTitle(data: Record<string, unknown> | undefined): string {
   const title = data?.title
   return typeof title === 'string' && title.trim() ? title.trim() : 'formuláře'
@@ -16,12 +23,12 @@ async function siteName(
   req: { payload?: { findByID: (args: unknown) => Promise<{ name?: string | null } | null> } } | undefined,
 ): Promise<string> {
   const siteRef = data?.site
-  if (siteRef == null || !req?.payload) return 'webu'
+  if (siteRef == null || !req?.payload) return 'NaZemi'
   const id =
     typeof siteRef === 'object' && siteRef !== null && 'id' in siteRef
       ? (siteRef as { id: unknown }).id
       : siteRef
-  if (typeof id !== 'number' && typeof id !== 'string') return 'webu'
+  if (typeof id !== 'number' && typeof id !== 'string') return 'NaZemi'
   try {
     const site = await req.payload.findByID({
       collection: 'sites',
@@ -30,23 +37,15 @@ async function siteName(
       overrideAccess: true,
     })
     const name = site?.name
-    return typeof name === 'string' && name.trim() ? name.trim() : 'webu'
+    return typeof name === 'string' && name.trim() ? name.trim() : 'NaZemi'
   } catch {
-    return 'webu'
+    return 'NaZemi'
   }
 }
 
-/** Subject for a newly added form notification email. */
-export async function defaultFormEmailSubject({
-  data,
-  req,
-}: {
-  data?: Record<string, unknown>
-  req?: Parameters<typeof siteName>[1]
-}): Promise<string> {
-  const title = formTitle(data)
-  const site = await siteName(data, req)
-  return `Nová zpráva z formuláře ${title} na webu ${site}`
+/** Subject default when adding a new notification email row. */
+export function defaultFormEmailSubject(): string {
+  return DEFAULT_FORM_EMAIL_SUBJECT
 }
 
 /** Lexical body — HTML table of all answers (`{{*:table}}`). */
@@ -82,7 +81,24 @@ export function remapEmailHtmlFieldKeys(
   return out
 }
 
-/** beforeEmail — rewrite wildcard table/list keys to human labels. */
+/**
+ * Resolve subject tokens for the final outbound email.
+ * Payload `replaceDoubleCurlys` runs *before* `beforeEmail` and turns unknown
+ * `{{siteName}}` / `{{formTitle}}` into bare `siteName` / `formTitle` — handle both.
+ */
+export function applySubjectTokens(subject: string, site: string, title: string): string {
+  return subject
+    .split(FORM_EMAIL_SITE_TOKEN)
+    .join(site)
+    .split(FORM_EMAIL_TITLE_TOKEN)
+    .join(title)
+    .split('siteName')
+    .join(site)
+    .split('formTitle')
+    .join(title)
+}
+
+/** beforeEmail — site/form tokens + rewrite wildcard table keys to human labels. */
 export const nazemiFormBeforeEmail: BeforeEmail = async (emails, { data, req }) => {
   const formRef = data?.form
   const formId =
@@ -91,6 +107,7 @@ export const nazemiFormBeforeEmail: BeforeEmail = async (emails, { data, req }) 
       : formRef
 
   let labels: Record<string, string> = { formSubmissionID: 'ID odpovědi' }
+  let formDoc: Record<string, unknown> | null = null
   if (
     (typeof formId === 'number' || typeof formId === 'string') &&
     req?.payload
@@ -102,18 +119,24 @@ export const nazemiFormBeforeEmail: BeforeEmail = async (emails, { data, req }) 
         depth: 0,
         overrideAccess: true,
       })
+      formDoc = form && typeof form === 'object' ? (form as Record<string, unknown>) : null
       labels = formFieldLabelMap(
-        form && typeof form === 'object' && 'fields' in form
-          ? (form as { fields?: unknown }).fields
-          : null,
+        formDoc && 'fields' in formDoc ? formDoc.fields : null,
       )
     } catch {
       // keep fallback map
     }
   }
 
+  const title = formTitle(formDoc || undefined)
+  const site = await siteName(formDoc || undefined, req)
+
   return emails.map((email) => ({
     ...email,
+    subject:
+      typeof email.subject === 'string'
+        ? applySubjectTokens(email.subject, site, title)
+        : email.subject,
     html: typeof email.html === 'string'
       ? remapEmailHtmlFieldKeys(email.html, labels)
       : email.html,
@@ -149,6 +172,11 @@ export function withFormEmailDefaults(field: Field): Field {
         return {
           ...inner,
           defaultValue: defaultFormEmailSubject,
+          admin: {
+            ...inner.admin,
+            description:
+              'Proměnné: {{siteName}} = název webu, {{formTitle}} = název formuláře. Pole formuláře: {{nazevPole}}.',
+          },
         }
       }
 

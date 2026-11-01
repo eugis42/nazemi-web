@@ -17,14 +17,21 @@ const KEEP_TYPES = new Set([
   'table',
 ])
 
+/** Soft breaks / tabs — keep as leaves; ignore when checking “empty” parent. */
+function isIgnorableInline(node: LexNode): boolean {
+  return node.type === 'linebreak' || node.type === 'tab'
+}
+
 function isWhitespaceOnlyText(node: LexNode): boolean {
-  if (node.type === 'linebreak' || node.type === 'tab') return true
+  if (isIgnorableInline(node)) return true
   if (node.type === 'text') return !String(node.text ?? '').trim()
   return false
 }
 
 function sanitizeNode(node: LexNode): LexNode | null {
   if (KEEP_TYPES.has(node.type)) return node
+  // Keep Shift+Enter soft breaks (was wrongly stripped as whitespace-only leaves).
+  if (isIgnorableInline(node)) return node
 
   if (Array.isArray(node.children)) {
     const children = node.children

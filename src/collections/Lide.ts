@@ -1,11 +1,17 @@
 import type { CollectionConfig } from 'payload'
 
 import { contentCollectionAccess } from '@/access/roles'
-import { adminDocumentTitleClass, draftStatusListCellField, imageUploadFilter, siteField, uploadPreviewListCellAdmin } from '@/fields/shared'
+import {
+  adminDocumentTitleClass,
+  draftStatusListCellField,
+  imageUploadFilter,
+  siteField,
+  uploadPreviewListCellAdmin,
+} from '@/fields/shared'
 import { makeSlugUniqueOnDuplicate } from '@/hooks/content-hooks'
 import { ADMIN_NAV_SITE_CONTENT } from '@/lib/admin-nav-groups'
-import { getAdminSiteSlugFromRequest } from '@/lib/site-context'
-import { getScopedBaseFilter } from '@/lib/site-context'
+import { siteContentLivePreviewUrl } from '@/lib/live-preview'
+import { getAdminSiteSlugFromRequest, getScopedBaseFilter } from '@/lib/site-context'
 import { slugify } from '@/lib/slug'
 
 export const Lide = {
@@ -16,6 +22,10 @@ export const Lide = {
     defaultColumns: ['name', 'image', 'role', 'site', '_status'],
     group: ADMIN_NAV_SITE_CONTENT,
     listSearchableFields: ['name', 'role', 'email', 'slug'],
+    livePreview: {
+      url: ({ data, payload }) => siteContentLivePreviewUrl('lide', data, payload),
+    },
+    preview: (data, { req }) => siteContentLivePreviewUrl('lide', data, req.payload),
     useAsTitle: 'name',
   },
   defaultPopulate: {
@@ -65,7 +75,7 @@ export const Lide = {
       index: true,
       admin: {
         position: 'sidebar',
-        description: 'Vygeneruje se ze jména při prvním uložení.',
+        description: 'Vygeneruje se ze jména při prvním uložení. Veřejná stránka: /lide/{slug}.',
       },
     },
     {
@@ -91,10 +101,18 @@ export const Lide = {
       ],
     },
     {
+      name: 'content',
+      type: 'richText',
+      label: 'Obsah',
+      admin: {
+        description: 'Bio / text na veřejné stránce osoby.',
+      },
+    },
+    {
       ...siteField,
       admin: {
         ...siteField.admin,
-        description: 'Web, na kterém se osoba zobrazí v kontaktech.',
+        description: 'Web, na kterém se osoba zobrazí v kontaktech a má veřejnou stránku.',
       },
     },
     draftStatusListCellField,

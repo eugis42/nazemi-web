@@ -1,24 +1,60 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  applySubjectTokens,
   defaultFormEmailMessage,
   defaultFormEmailSubject,
+  nazemiFormBeforeEmail,
   remapEmailHtmlFieldKeys,
   withFormEmailDefaults,
 } from '@/lib/form-email-defaults'
 import { formFieldLabelMap } from '@/lib/form-field-labels'
 
 describe('form email defaults', () => {
-  it('builds subject with form + site names', async () => {
-    const subject = await defaultFormEmailSubject({
-      data: { title: 'Kontakt', site: 1 },
-      req: {
-        payload: {
-          findByID: async () => ({ name: 'NaZemi' }),
+  it('default subject uses siteName + formTitle tokens', () => {
+    expect(defaultFormEmailSubject()).toBe(
+      '{{siteName}}: Vyplněný formulář {{formTitle}}',
+    )
+  })
+
+  it('resolves braced tokens and bare names left by replaceDoubleCurlys', () => {
+    expect(
+      applySubjectTokens('{{siteName}}: Vyplněný formulář {{formTitle}}', 'NaZemi', 'Kontakt'),
+    ).toBe('NaZemi: Vyplněný formulář Kontakt')
+    // Payload replaceDoubleCurlys unknown {{x}} → bare `x` before beforeEmail
+    expect(applySubjectTokens('siteName: Vyplněný formulář formTitle', 'Flowmakers', 'Poptávka')).toBe(
+      'Flowmakers: Vyplněný formulář Poptávka',
+    )
+  })
+
+  it('beforeEmail rewrites subject with real site + form titles', async () => {
+    const emails = await nazemiFormBeforeEmail(
+      [
+        {
+          from: 'web@nazemi.cz',
+          html: '<div></div>',
+          subject: 'siteName: Vyplněný formulář formTitle',
+          to: 'a@b.cz',
         },
-      },
-    })
-    expect(subject).toBe('Nová zpráva z formuláře Kontakt na webu NaZemi')
+      ],
+      {
+        data: { form: 7 },
+        req: {
+          payload: {
+            findByID: async ({ collection }: { collection: string }) => {
+              if (collection === 'forms') {
+                return { fields: [], site: 3, title: 'Přihláška workshop' }
+              }
+              if (collection === 'sites') {
+                return { name: 'Flowmakers' }
+              }
+              return null
+            },
+          },
+        },
+      } as never,
+    )
+    expect(emails[0]?.subject).toBe('Flowmakers: Vyplněný formulář Přihláška workshop')
   })
 
   it('default body uses {{*:table}} wildcard', () => {
