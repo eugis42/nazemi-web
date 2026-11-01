@@ -89,11 +89,8 @@ export const GalleryBlock: Block = {
 }
 
 /**
- * Funding / government support logos — left-aligned strip, no lightbox.
- *
- * Upload is `hasMany` (not array→upload): Lexical BlocksFeature remounts the
- * block form when an upload drawer opens; array→upload nests break that drawer
- * (flash open/close). Same pattern as Galerie. Optional links align by index.
+ * Funding / support logos — title, align, per-logo image + optional link.
+ * Row shape (not hasMany+side links) so href sits next to the upload.
  */
 export const LogoStripBlock: Block = {
   slug: 'logoStrip',
@@ -110,45 +107,43 @@ export const LogoStripBlock: Block = {
       name: 'title',
       type: 'text',
       label: 'Nadpis',
+    },
+    {
+      name: 'align',
+      type: 'radio',
+      label: 'Zarovnání',
+      defaultValue: 'left',
+      options: [
+        { label: 'Doleva', value: 'left' },
+        { label: 'Na střed', value: 'center' },
+      ],
       admin: {
-        description: 'Volitelně — např. „Projekt podpořili“.',
+        layout: 'horizontal',
       },
     },
     {
-      name: 'images',
-      type: 'upload',
-      label: 'Loga',
-      relationTo: 'media',
-      hasMany: true,
-      required: true,
-      minRows: 1,
-      filterOptions: imageUploadFilter,
-      admin: {
-        description:
-          'Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.',
-      },
-    },
-    {
-      name: 'links',
+      name: 'logos',
       type: 'array',
-      label: 'Odkazy (volitelně)',
+      label: 'Loga',
       labels: {
-        plural: 'Odkazy',
-        singular: 'Odkaz',
+        plural: 'Loga',
+        singular: 'Logo',
       },
-      admin: {
-        description:
-          'Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.',
-        initCollapsed: true,
-      },
+      minRows: 1,
+      required: true,
       fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          label: 'Obrázek',
+          relationTo: 'media',
+          required: true,
+          filterOptions: imageUploadFilter,
+        },
         {
           name: 'href',
           type: 'text',
-          label: 'Externí odkaz',
-          admin: {
-            description: hrefFieldDescription,
-          },
+          label: 'Odkaz',
           validate: validateOptionalHref,
         },
       ],

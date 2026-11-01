@@ -1,145 +1,210 @@
-import type { Media } from '@/payload-types'
+'use client'
 
-import { mediaAlt, mediaSizeURL, mediaURL } from '@/lib/content'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+
+import type { LogoStripAlign, LogoStripItem } from '@/lib/logo-strip'
 import { isExternalHref } from '@/lib/links'
 
-export type LogoStripItem = {
-  alt: string
-  href?: string | null
-  url: string
+const GAP_PX = 40 // gap-10 — equal space between logo edges (inline-block feel)
+const MAX_LOGO_W = 160
+const MAX_LOGO_H = 56
+
+/** Split n items into rows so counts stay as even as possible. */
+function balanceRowCounts(n: number, maxPerRow: number): number[] {
+  if (n <= 0) return []
+  const cap = Math.max(1, maxPerRow)
+  if (n <= cap) return [n]
+  const rows = Math.ceil(n / cap)
+  const base = Math.floor(n / rows)
+  let rem = n % rows
+  const counts = Array.from({ length: rows }, () => base)
+  for (let i = 0; i < rem; i++) counts[i]!++
+  return counts
 }
 
-type LogoStripSource = {
-  images?: unknown
-  links?: unknown
-  /** Legacy array shape (upload-per-row) — kept for old drafts. */
-  logos?: unknown
-}
+/** Greedy wrap like flex-wrap, then prefer even counts when they still fit. */
+function planRows(widths: number[], containerWidth: number, gap: number): number[][] {
+  const n = widths.length
+  if (!n) return []
+  if (containerWidth <= 0) return [widths.map((_, i) => i)]
 
-function asSource(raw: unknown): LogoStripSource | null {
-  if (!raw || typeof raw !== 'object') return null
-  return raw as LogoStripSource
-}
-
-function mediaFromUnknown(image: unknown): Media | null {
-  if (!image || typeof image !== 'object') return null
-  return image as Media
-}
-
-function hrefAt(links: unknown, index: number): string | null {
-  if (!Array.isArray(links)) return null
-  const row = links[index]
-  if (!row || typeof row !== 'object') return null
-  const href = (row as { href?: unknown }).href
-  if (typeof href !== 'string') return null
-  const trimmed = href.trim()
-  return trimmed || null
-}
-
-/** Normalize Payload logo-strip fields into FE items. */
-export function resolveLogoStripItems(raw: unknown): LogoStripItem[] {
-  const source = asSource(raw)
-  if (!source) return []
-
-  // Legacy: logos[{ image, href }]
-  if (Array.isArray(source.logos) && source.logos.length) {
-    const out: LogoStripItem[] = []
-    for (const row of source.logos) {
-      if (!row || typeof row !== 'object') continue
-      const media = mediaFromUnknown((row as { image?: unknown }).image)
-      if (!media) continue
-      const url = mediaSizeURL(media, 'large') || mediaURL(media)
-      if (!url) continue
-      const href =
-        typeof (row as { href?: unknown }).href === 'string'
-          ? (row as { href: string }).href.trim() || null
-          : null
-      out.push({
-        alt: mediaAlt(media, media.filename || 'Logo'),
-        href,
-        url,
-      })
+  const pack = (counts: number[]): number[][] | null => {
+    const rows: number[][] = []
+    let i = 0
+    for (const count of counts) {
+      const idxs = Array.from({ length: count }, (_, k) => i + k)
+      const rowW =
+        idxs.reduce((sum, idx) => sum + (widths[idx] || 0), 0) + gap * Math.max(0, count - 1)
+      if (rowW > containerWidth + 1) return null
+      rows.push(idxs)
+      i += count
     }
-    return out
+    return rows
   }
 
-  if (!Array.isArray(source.images)) return []
-  const out: LogoStripItem[] = []
-  source.images.forEach((image, index) => {
-    const media = mediaFromUnknown(image)
-    if (!media) return
-    const url = mediaSizeURL(media, 'large') || mediaURL(media)
-    if (!url) return
-    out.push({
-      alt: mediaAlt(media, media.filename || 'Logo'),
-      href: hrefAt(source.links, index),
-      url,
-    })
-  })
-  return out
+  // Greedy: how many rows / max per row flex would need
+  const greedy: number[][] = []
+  let row: number[] = []
+  let used = 0
+  for (let i = 0; i < n; i++) {
+    const w = widths[i] || 0
+    const need = row.length === 0 ? w : used + gap + w
+    if (row.length && need > containerWidth) {
+      greedy.push(row)
+      row = [i]
+      used = w
+    } else {
+      row.push(i)
+      used = need
+    }
+  }
+  if (row.length) greedy.push(row)
+
+  const maxPer = Math.max(...greedy.map((r) => r.length), 1)
+  const balanced = pack(balanceRowCounts(n, maxPer))
+  return balanced ?? greedy
+}
+
+function LogoCell({ logo }: { logo: LogoStripItem }) {
+  const img = (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      alt={logo.alt}
+      className="h-12 w-auto max-h-14 max-w-[160px] object-contain object-left lg:h-14"
+      height={MAX_LOGO_H}
+      loading="lazy"
+      src={logo.url}
+      width={MAX_LOGO_W}
+    />
+  )
+  // Shrink-to-content — gaps are between real logo edges, not fixed columns.
+  const slot = 'inline-flex h-14 shrink-0 items-center lg:h-16'
+  if (logo.href) {
+    const external = isExternalHref(logo.href)
+    return (
+      <li className={slot}>
+        <a
+          className="inline-flex h-full items-center transition-opacity duration-150 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground"
+          href={logo.href}
+          rel={external ? 'noopener noreferrer' : undefined}
+          target={external ? '_blank' : undefined}
+        >
+          {img}
+        </a>
+      </li>
+    )
+  }
+  return <li className={slot}>{img}</li>
 }
 
 type LogoStripProps = {
+  align?: LogoStripAlign | null
   logos: LogoStripItem[]
   title?: string | null
 }
 
 /**
- * Funding / support logos — equal slots, contain inside fixed track.
- * Same visual cap (~64px tall / ~160px wide), even gaps regardless of asset ratio.
+ * Partner logos as inline flex items (natural width + equal gap), not table columns.
+ * Multi-line: balance item counts when the balanced plan still fits.
  */
-export function LogoStrip({ logos: raw, title }: LogoStripProps) {
+export function LogoStrip({ align: alignProp, logos: raw, title }: LogoStripProps) {
   const logos = raw.filter((item) => Boolean(item.url))
+  const align: LogoStripAlign = alignProp === 'center' ? 'center' : 'left'
+  const trackRef = useRef<HTMLDivElement>(null)
+  const measureRef = useRef<HTMLUListElement>(null)
+  const [rowIndexes, setRowIndexes] = useState<number[][] | null>(null)
+
+  const relayout = () => {
+    const track = trackRef.current
+    const measure = measureRef.current
+    if (!track || !measure) return
+    const items = [...measure.querySelectorAll<HTMLElement>('[data-logo-measure]')]
+    if (items.length !== logos.length) return
+    const widths = items.map((el) => el.getBoundingClientRect().width)
+    const containerWidth = track.clientWidth
+    setRowIndexes(planRows(widths, containerWidth, GAP_PX))
+  }
+
+  useLayoutEffect(() => {
+    relayout()
+    // Images may load late and change intrinsic width.
+    const measure = measureRef.current
+    if (!measure) return undefined
+    const imgs = [...measure.querySelectorAll('img')]
+    for (const img of imgs) {
+      if (!img.complete) img.addEventListener('load', relayout)
+    }
+    const ro = new ResizeObserver(() => relayout())
+    if (trackRef.current) ro.observe(trackRef.current)
+    return () => {
+      for (const img of imgs) img.removeEventListener('load', relayout)
+      ro.disconnect()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- relayout closes over logos.length
+  }, [logos.length, align])
+
+  useEffect(() => {
+    // Fallback if layout effect ran before fonts/images settled.
+    const t = window.setTimeout(relayout, 100)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logos.length])
+
   if (!logos.length) return null
 
+  const rows: LogoStripItem[][] =
+    rowIndexes?.map((idxs) => idxs.map((i) => logos[i]!).filter(Boolean)) ?? [logos]
+
   return (
-    <section className="w-full" data-block="logoStrip">
+    <section className="w-full" data-align={align} data-block="logoStrip">
       {title?.trim() ? (
-        <h2 className="font-saans mb-6 text-[20px] font-medium leading-none tracking-tight text-ground lg:text-[24px]">
+        <h2
+          className={`font-saans mb-6 text-[20px] font-medium leading-none tracking-tight text-ground lg:text-[24px] ${align === 'center' ? 'text-center' : 'text-left'}`}
+        >
           {title.trim()}
         </h2>
       ) : null}
-      <ul
-        className="grid grid-cols-2 items-center justify-items-center gap-x-8 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:flex lg:flex-wrap lg:justify-start"
-        role="list"
-      >
-        {logos.map((logo, index) => {
-          const img = (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt={logo.alt}
-              className="max-h-12 max-w-[140px] object-contain object-center lg:max-h-14 lg:max-w-[160px] lg:object-left"
-              height={56}
-              loading="lazy"
-              src={logo.url}
-              width={160}
-            />
-          )
-          const key = `${logo.url}-${index}`
-          const slot =
-            'flex h-14 w-full max-w-[160px] items-center justify-center lg:h-16 lg:w-[160px] lg:justify-start'
-          if (logo.href) {
-            const external = isExternalHref(logo.href)
-            return (
-              <li className={slot} key={key}>
-                <a
-                  className="inline-flex h-full w-full items-center justify-center transition-opacity duration-150 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ground lg:justify-start"
-                  href={logo.href}
-                  rel={external ? 'noopener noreferrer' : undefined}
-                  target={external ? '_blank' : undefined}
-                >
-                  {img}
-                </a>
-              </li>
-            )
-          }
-          return (
-            <li className={slot} key={key}>
-              {img}
+
+      <div className="relative w-full" ref={trackRef}>
+        {/* Off-flow measure strip: natural widths for packing math */}
+        <ul
+          aria-hidden
+          className="pointer-events-none invisible absolute inset-x-0 top-0 flex flex-wrap"
+          ref={measureRef}
+          style={{ gap: GAP_PX }}
+        >
+          {logos.map((logo, index) => (
+            <li className="inline-flex" data-logo-measure key={`m-${logo.url}-${index}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt=""
+                className="h-12 w-auto max-h-14 max-w-[160px] object-contain lg:h-14"
+                height={MAX_LOGO_H}
+                src={logo.url}
+                width={MAX_LOGO_W}
+              />
             </li>
-          )
-        })}
-      </ul>
+          ))}
+        </ul>
+
+        <div
+          className={`flex w-full flex-col ${align === 'center' ? 'items-center' : 'items-start'}`}
+          style={{ gap: GAP_PX }}
+        >
+          {rows.map((row, rowIndex) => (
+            <ul
+              className={`flex flex-wrap ${align === 'center' ? 'justify-center' : 'justify-start'}`}
+              key={`row-${rowIndex}`}
+              role="list"
+              style={{ gap: GAP_PX }}
+            >
+              {row.map((logo, index) => (
+                <LogoCell key={`${logo.url}-${rowIndex}-${index}`} logo={logo} />
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }

@@ -19,7 +19,8 @@ import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { IframeEmbedBlockView } from '@/components/frontend/IframeEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
-import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
+import { LogoStrip } from '@/components/frontend/LogoStrip'
+import { resolveLogoStripItems } from '@/lib/logo-strip'
 import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
 import { RichTextRelation } from '@/components/frontend/RichTextRelation'
 import {
@@ -81,12 +82,13 @@ type ExpandingParagraphFields = {
 }
 
 type LogoStripFields = {
+  align?: string | null
   blockType: 'logoStrip'
   images?: unknown
   links?: unknown
   logos?: unknown
   title?: string | null
-}
+} // images/links = legacy shape until editors re-save
 
 type SpeakersFields = {
   blockType: 'speakers'
@@ -368,7 +370,11 @@ export function NazemiRichText({ className, data, siteSlug = '', ...rest }: Rich
             if (!logos.length) return null
             return (
               <div className="not-prose w-full" data-rt-block="logoStrip">
-                <LogoStrip logos={logos} title={node.fields.title} />
+                <LogoStrip
+                  align={node.fields.align === 'center' ? 'center' : 'left'}
+                  logos={logos}
+                  title={node.fields.title}
+                />
               </div>
             )
           },

@@ -820,26 +820,13 @@ export interface Stranky {
             blockType: 'gallery';
           }
         | {
-            /**
-             * Volitelně — např. „Projekt podpořili“.
-             */
             title?: string | null;
-            /**
-             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.
-             */
-            images: (number | Media)[];
-            /**
-             * Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.
-             */
-            links?:
-              | {
-                  /**
-                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                   */
-                  href?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
+            align?: ('left' | 'center') | null;
+            logos: {
+              image: number | Media;
+              href?: string | null;
+              id?: string | null;
+            }[];
             id?: string | null;
             blockName?: string | null;
             blockType: 'logoStrip';
@@ -1684,26 +1671,13 @@ export interface Stranky {
             blockType: 'gallery';
           }
         | {
-            /**
-             * Volitelně — např. „Projekt podpořili“.
-             */
             title?: string | null;
-            /**
-             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.
-             */
-            images: (number | Media)[];
-            /**
-             * Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.
-             */
-            links?:
-              | {
-                  /**
-                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                   */
-                  href?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
+            align?: ('left' | 'center') | null;
+            logos: {
+              image: number | Media;
+              href?: string | null;
+              id?: string | null;
+            }[];
             id?: string | null;
             blockName?: string | null;
             blockType: 'logoStrip';
@@ -3363,26 +3337,13 @@ export interface Workshopy {
             blockType: 'gallery';
           }
         | {
-            /**
-             * Volitelně — např. „Projekt podpořili“.
-             */
             title?: string | null;
-            /**
-             * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.
-             */
-            images: (number | Media)[];
-            /**
-             * Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.
-             */
-            links?:
-              | {
-                  /**
-                   * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-                   */
-                  href?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
+            align?: ('left' | 'center') | null;
+            logos: {
+              image: number | Media;
+              href?: string | null;
+              id?: string | null;
+            }[];
             id?: string | null;
             blockName?: string | null;
             blockType: 'logoStrip';
@@ -4511,26 +4472,13 @@ export interface Projekty {
         blockType: 'gallery';
       }
     | {
-        /**
-         * Volitelně — např. „Projekt podpořili“.
-         */
         title?: string | null;
-        /**
-         * Loga partnerů / podpory. Bez lightboxu; zarovnání vlevo, max. 160×64.
-         */
-        images: (number | Media)[];
-        /**
-         * Pořadí = pořadí log výše (1. odkaz → 1. logo). Prázdné řádky = bez odkazu.
-         */
-        links?:
-          | {
-              /**
-               * Relativní cesta (/aktuality) nebo absolutní URL (https://…).
-               */
-              href?: string | null;
-              id?: string | null;
-            }[]
-          | null;
+        align?: ('left' | 'center') | null;
+        logos: {
+          image: number | Media;
+          href?: string | null;
+          id?: string | null;
+        }[];
         id?: string | null;
         blockName?: string | null;
         blockType: 'logoStrip';
@@ -5610,10 +5558,11 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              images?: T;
-              links?:
+              align?: T;
+              logos?:
                 | T
                 | {
+                    image?: T;
                     href?: T;
                     id?: T;
                   };
@@ -5919,10 +5868,11 @@ export interface StrankySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              images?: T;
-              links?:
+              align?: T;
+              logos?:
                 | T
                 | {
+                    image?: T;
                     href?: T;
                     id?: T;
                   };
@@ -6322,10 +6272,11 @@ export interface ProjektySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              images?: T;
-              links?:
+              align?: T;
+              logos?:
                 | T
                 | {
+                    image?: T;
                     href?: T;
                     id?: T;
                   };
@@ -6676,10 +6627,11 @@ export interface WorkshopySelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              images?: T;
-              links?:
+              align?: T;
+              logos?:
                 | T
                 | {
+                    image?: T;
                     href?: T;
                     id?: T;
                   };

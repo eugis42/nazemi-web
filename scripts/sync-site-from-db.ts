@@ -181,6 +181,33 @@ function remapIdsInArray(items: unknown[], collectionHint: string | null, maps: 
   })
 }
 
+function isFormishBlock(item: unknown): boolean {
+  if (!item || typeof item !== 'object') return false
+  const o = item as AnyDoc
+  const blockType = o.blockType ?? (o.fields as AnyDoc | undefined)?.blockType
+  if (blockType === 'form' || blockType === 'formEmbed') return true
+  // Lexical block node wrapping a form
+  if (o.type === 'block' && (o.fields as AnyDoc | undefined)?.form != null) return true
+  return false
+}
+
+/** Forms are not site-synced — drop form blocks / form FKs so create validates. */
+function stripFormRefs(value: unknown): unknown {
+  if (value == null) return value
+  if (Array.isArray(value)) {
+    return value.filter((item) => !isFormishBlock(item)).map(stripFormRefs)
+  }
+  if (typeof value !== 'object') return value
+
+  const obj = value as Record<string, unknown>
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(obj)) {
+    if (k === 'form') continue
+    out[k] = stripFormRefs(v)
+  }
+  return out
+}
+
 /** Pass-1 create: drop internal refs so docs can insert before siblings exist. */
 function stripInternalRefs(value: unknown): unknown {
   if (value == null) return value
@@ -652,7 +679,9 @@ async function runImport(siteSlug: string, outDir: string, mediaBaseUrl: string)
   for (const collection of order) {
     const docs = bundle.collections[collection] || []
     for (const src of docs) {
-      const data = stripInternalRefs(remapValue(stripMeta(src), maps)) as AnyDoc
+      const data = stripFormRefs(
+        stripInternalRefs(remapValue(stripMeta(src), maps)),
+      ) as AnyDoc
       data.site = localSiteId
       delete data.author // users FK — not synced
       // Internal link validation requires a reference — flip to external stub for pass 1.
@@ -681,47 +710,118 @@ async function runImport(siteSlug: string, outDir: string, mediaBaseUrl: string)
         })
         docMaps.get(collection)!.set(src.id as number, created.id)
       } catch (err) {
-        console.error(`  create fail ${collection} slug=${src.slug ?? src.title ?? src.id}`)
-        throw err
+        const detail =
+          err && typeof err === 'object' && 'data' in err
+            ? JSON.stringify((err as { data: unknown }).data)
+            : err instanceof Error
+              ? err.message
+              : String(err)
+        console.error(
+          `  create skip ${collection} slug=${src.slug ?? src.title ?? src.id}: ${detail}`,
+        )
       }
     }
-    console.log(`  created ${docs.length} ${collection}`)
+    console.log(
+      `  created ${docMaps.get(collection)!.size}/${docs.length} ${collection}`,
+    )
   }
 
   console.log('→ update docs (pass 2, full remap)')
   for (const collection of order) {
     const docs = bundle.collections[collection] || []
+    let updated = 0
     for (const src of docs) {
       const localId = docMaps.get(collection)!.get(src.id as number)
       if (localId == null) continue
-      const data = remapValue(stripMeta(src), maps) as AnyDoc
+      const data = stripFormRefs(remapValue(stripMeta(src), maps)) as AnyDoc
       data.site = localSiteId
       delete data.author
       const status = src._status === 'draft' ? 'draft' : 'published'
-      await payload.update({
-        collection,
-        id: localId,
-        data: { ...data, _status: status } as never,
-        draft: status === 'draft',
-        overrideAccess: true,
-      })
+      try {
+        await payload.update({
+          collection,
+          id: localId,
+          data: { ...data, _status: status } as never,
+          draft: status === 'draft',
+          overrideAccess: true,
+        })
+        updated++
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err)
+        console.error(
+          `  update skip ${collection} slug=${src.slug ?? src.title ?? src.id}: ${detail}`,
+        )
+      }
     }
-    console.log(`  updated ${docs.length} ${collection}`)
+    console.log(`  updated ${updated}/${docs.length} ${collection}`)
   }
 
   console.log('→ update site (menus, branding, contact)')
-  const siteData = remapValue(stripMeta(bundle.site), maps) as AnyDoc
+  const siteData = stripFormRefs(remapValue(stripMeta(bundle.site), maps)) as AnyDoc
   delete siteData.siteType
   delete siteData.slug
+  // Soften menus/CTAs: forms not synced; null internal refs → external.
+  const softenSiteLinks = (node: unknown): void => {
+    if (node == null || typeof node !== 'object') return
+    if (Array.isArray(node)) {
+      node.forEach(softenSiteLinks)
+      return
+    }
+    const o = node as Record<string, unknown>
+    const ref = o.reference as { relationTo?: string; value?: unknown } | null | undefined
+    if (o.linkType === 'internal') {
+      if (ref?.relationTo === 'forms' || ref == null || ref.value == null) {
+        o.linkType = 'external'
+        o.href = typeof o.href === 'string' && o.href ? o.href : '/'
+        delete o.reference
+      }
+    }
+    for (const v of Object.values(o)) softenSiteLinks(v)
+  }
+  softenSiteLinks(siteData)
   const siteStatus = bundle.site._status === 'draft' ? 'draft' : 'published'
-  await payload.update({
-    collection: 'sites',
-    id: localSiteId,
-    data: { ...siteData, _status: siteStatus } as never,
-    draft: siteStatus === 'draft',
-    overrideAccess: true,
-  })
-  console.log('  site updated')
+  try {
+    await payload.update({
+      collection: 'sites',
+      id: localSiteId,
+      data: { ...siteData, _status: siteStatus } as never,
+      draft: siteStatus === 'draft',
+      overrideAccess: true,
+    })
+    console.log('  site updated')
+  } catch (err) {
+    console.error(
+      `  full site update failed (${err instanceof Error ? err.message : err}); branding+bg+menus soft`,
+    )
+    const partial: AnyDoc = {
+      name: siteData.name,
+      logo: siteData.logo,
+      logoNavbarPadding: siteData.logoNavbarPadding,
+      favicon: siteData.favicon,
+      homepageBackground: siteData.homepageBackground,
+      primaryColor: siteData.primaryColor,
+      primaryBackgroundColor: siteData.primaryBackgroundColor,
+      accentColor: siteData.accentColor,
+      additionalColors: siteData.additionalColors,
+      mainMenu: siteData.mainMenu,
+      secondaryMenu: siteData.secondaryMenu,
+      footerMenu: siteData.footerMenu,
+      donateCta: siteData.donateCta,
+      metaTitle: siteData.metaTitle,
+      description: siteData.description,
+      sharingImage: siteData.sharingImage,
+      enabledCollections: siteData.enabledCollections,
+      _status: siteStatus,
+    }
+    await payload.update({
+      collection: 'sites',
+      id: localSiteId,
+      data: partial as never,
+      draft: siteStatus === 'draft',
+      overrideAccess: true,
+    })
+    console.log('  site partial updated (homepageBackground + branding + softened menus)')
+  }
 
   // Post-safety
   for (const other of ['nazemi', 'nanebi']) {

@@ -9,7 +9,8 @@ import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { IframeEmbedBlockView } from '@/components/frontend/IframeEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
-import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
+import { LogoStrip } from '@/components/frontend/LogoStrip'
+import { resolveLogoStripItems } from '@/lib/logo-strip'
 import { MediaAuthorshipTag } from '@/components/frontend/MediaAuthorshipTag'
 import { EmptyState } from '@/components/frontend/listing'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
@@ -599,6 +600,7 @@ export function PageBlocks({
           return (
             <div className="container max-lg:px-card" key={key}>
               <LogoStrip
+                align={(block as { align?: string | null }).align === 'center' ? 'center' : 'left'}
                 logos={resolveLogoStripItems(block)}
                 title={block.title ? String(block.title) : null}
               />
@@ -744,6 +746,7 @@ export function WorkshopContentBlocks({
           return (
             <div className="container max-lg:px-card" key={key}>
               <LogoStrip
+                align={(block as { align?: string | null }).align === 'center' ? 'center' : 'left'}
                 logos={resolveLogoStripItems(block)}
                 title={block.title ? String(block.title) : null}
               />

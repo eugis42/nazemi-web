@@ -17,7 +17,8 @@ import { FilterLinkBlockView } from '@/components/frontend/FilterLinkBlock'
 import { FormEmbedBlockView } from '@/components/frontend/FormEmbedBlock'
 import { IframeEmbedBlockView } from '@/components/frontend/IframeEmbedBlock'
 import { GalleryBlock } from '@/components/frontend/GalleryBlock'
-import { LogoStrip, resolveLogoStripItems } from '@/components/frontend/LogoStrip'
+import { LogoStrip } from '@/components/frontend/LogoStrip'
+import { resolveLogoStripItems } from '@/lib/logo-strip'
 import { NazemiRichText } from '@/components/frontend/NazemiRichText'
 import { PillarsBlock } from '@/components/frontend/PillarsBlock'
 import { resolveBlockActions } from '@/lib/block-actions'
@@ -110,6 +111,7 @@ export async function HomepageBlocks({
       case 'logoStrip':
         rendered.push(
           <LogoStrip
+            align={(block as { align?: string | null }).align === 'center' ? 'center' : 'left'}
             key={key}
             logos={resolveLogoStripItems(block)}
             title={block.title ? String(block.title) : null}

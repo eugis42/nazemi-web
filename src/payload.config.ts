@@ -78,6 +78,14 @@ export default buildConfig({
       })
     : undefined,
   admin: {
+    // Local only — never set PAYLOAD_AUTO_LOGIN in staging/prod.
+    autoLogin:
+      process.env.PAYLOAD_AUTO_LOGIN === 'true'
+        ? {
+            email: 'admin@nazemi.local',
+            password: 'payload-demo-password',
+          }
+        : false,
     dateFormat: 'd. M. yyyy, HH:mm',
     user: Users.slug,
     components: {
