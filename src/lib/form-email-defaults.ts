@@ -119,7 +119,8 @@ export const nazemiFormBeforeEmail: BeforeEmail = async (emails, { data, req }) 
         depth: 0,
         overrideAccess: true,
       })
-      formDoc = form && typeof form === 'object' ? (form as Record<string, unknown>) : null
+      formDoc =
+        form && typeof form === 'object' ? (form as unknown as Record<string, unknown>) : null
       labels = formFieldLabelMap(
         formDoc && 'fields' in formDoc ? formDoc.fields : null,
       )
