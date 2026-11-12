@@ -114,12 +114,16 @@ export const workshopOrderAfterChange: CollectionAfterChangeHook = async ({
     return doc
   }
 
+  // Must pass `req` so this update joins the create/update transaction.
+  // Without it, Postgres can't see the uncommitted row → NotFound ("Nenalezeno").
   await req.payload.update({
     collection: 'workshopy',
     id: doc.id,
     context: { skipWorkshopOrderSync: true },
     data: { mainSiteOrder: order },
+    draft: doc._status === 'draft',
     overrideAccess: true,
+    req,
   })
 
   return doc
