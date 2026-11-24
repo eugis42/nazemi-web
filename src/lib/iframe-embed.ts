@@ -1,6 +1,6 @@
 /**
- * Secure iframe embeds: never render pasted HTML / scripts.
- * Accept URL or <iframe src="…"> paste → keep https src (+ optional size attrs).
+ * Secure embeds: never render pasted HTML / inline JS.
+ * Accept https URL, <iframe src>, or allowlisted <script src> → controlled FE mount.
  */
 
 const IFRAME_TAG_RE = /<iframe\b[^>]*>/i
@@ -8,11 +8,22 @@ const IFRAME_TAG_RE = /<iframe\b[^>]*>/i
 const ATTR_RE = (name: string) =>
   new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i')
 
-const FORBIDDEN_IN_PASTE = /<\s*(script|object|embed|link|meta|base)\b/i
+/** Tags that must never appear except a lone allowlisted external <script>. */
+const FORBIDDEN_IN_PASTE = /<\s*(object|embed|link|meta|base)\b/i
+const ANY_SCRIPT_RE = /<\s*script\b/i
+const ANY_IFRAME_RE = /<\s*iframe\b/i
+
+/**
+ * Hosts allowed to load as external <script> (widget CDNs).
+ * Bare https URL on these hosts → script mode (not iframe).
+ * Extend only after reviewing the vendor.
+ */
+export const SCRIPT_EMBED_HOST_ALLOWLIST = new Set(['widget.proca.app'])
 
 export type SafeIframeEmbed = {
+  kind: 'iframe' | 'script'
   src: string
-  /** CSS length or bare px number from paste; omit → FE default */
+  /** CSS length or bare px number from paste; omit → FE default (iframe only) */
   width?: string
   height?: string
 }
@@ -62,23 +73,55 @@ function normalizeHttpsSrc(candidate: string): string | null {
   return url.toString()
 }
 
+function isAllowlistedScriptHost(src: string): boolean {
+  try {
+    const { hostname } = new URL(src)
+    return SCRIPT_EMBED_HOST_ALLOWLIST.has(hostname.toLowerCase())
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Lone external <script src="https://…"> (no inline body, no other markup).
+ * Self-closing and normal close tags both OK.
+ */
+function extractLoneExternalScriptSrc(trimmed: string): string | null {
+  const match = trimmed.match(/^<script\b([^>]*)(?:\/>|>([\s\S]*)<\/script>)$/i)
+  if (!match) return null
+  const attrs = match[1] ?? ''
+  const body = match[2]
+  if (body !== undefined && body.trim() !== '') return null
+  if (/\bsrcdoc\b/i.test(attrs)) return null
+  return readAttr(`<script${attrs}>`, 'src')
+}
+
 /**
  * Public https embed URL + optional paste sizes, or null if unsafe / invalid.
- * Browser loads the frame — we still refuse javascript:/data:/http: and userinfo.
+ * Allowlisted widget hosts → kind script; everything else → sandboxed iframe.
  */
 export function resolveSafeIframeEmbed(input: unknown): SafeIframeEmbed | null {
   if (typeof input !== 'string') return null
   const trimmed = input.trim()
   if (!trimmed) return null
 
-  // Refuse paste that includes executable / document-control tags.
   if (FORBIDDEN_IN_PASTE.test(trimmed)) return null
+
+  // Lone external <script src> on allowlist → script embed (never inline / never raw HTML).
+  if (ANY_SCRIPT_RE.test(trimmed)) {
+    if (ANY_IFRAME_RE.test(trimmed)) return null
+    const fromScript = extractLoneExternalScriptSrc(trimmed)
+    if (!fromScript) return null
+    const src = normalizeHttpsSrc(fromScript)
+    if (!src || !isAllowlistedScriptHost(src)) return null
+    return { kind: 'script', src }
+  }
 
   let candidate = trimmed
   let width: string | undefined
   let height: string | undefined
 
-  if (/<iframe\b/i.test(trimmed)) {
+  if (ANY_IFRAME_RE.test(trimmed)) {
     const tagMatch = trimmed.match(IFRAME_TAG_RE)
     if (!tagMatch) return null
     const tag = tagMatch[0]
@@ -92,7 +135,12 @@ export function resolveSafeIframeEmbed(input: unknown): SafeIframeEmbed | null {
   const src = normalizeHttpsSrc(candidate)
   if (!src) return null
 
-  return { src, width, height }
+  // Bare URL (or iframe src) on widget allowlist → load as script, not dead JS-in-iframe.
+  if (isAllowlistedScriptHost(src)) {
+    return { kind: 'script', src }
+  }
+
+  return { kind: 'iframe', src, width, height }
 }
 
 /** @deprecated Prefer resolveSafeIframeEmbed — kept for call sites that only need src. */
@@ -102,10 +150,10 @@ export function resolveSafeIframeSrc(input: unknown): string | null {
 
 export function validateIframeEmbedSource(value: unknown): true | string {
   if (typeof value !== 'string' || !value.trim()) {
-    return 'Vložte https URL nebo kód <iframe>.'
+    return 'Vložte https URL, <iframe>, nebo povolený <script src="https://…">.'
   }
   if (!resolveSafeIframeEmbed(value)) {
-    return 'Povolen jen bezpečný https odkaz (nebo <iframe src="https://…">). Skripty a http:// nejdou.'
+    return 'Povolen jen bezpečný https odkaz, <iframe>, nebo <script> z dovoleného hostitele (např. widget.proca.app). Inline skripty a http:// nejdou.'
   }
   return true
 }

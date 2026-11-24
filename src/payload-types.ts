@@ -1060,11 +1060,11 @@ export interface Stranky {
           }
         | {
             /**
-             * Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.
+             * https URL, &lt;iframe&gt;, nebo &lt;script src&gt; z dovoleného hostitele (např. widget.proca.app). Uloží se jen bezpečný src. Inline skripty a jiné HTML se nevykreslí.
              */
             source: string;
             /**
-             * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
+             * Popis obsahu pro čtečky obrazovky.
              */
             title?: string | null;
             id?: string | null;
@@ -1911,11 +1911,11 @@ export interface Stranky {
           }
         | {
             /**
-             * Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.
+             * https URL, &lt;iframe&gt;, nebo &lt;script src&gt; z dovoleného hostitele (např. widget.proca.app). Uloží se jen bezpečný src. Inline skripty a jiné HTML se nevykreslí.
              */
             source: string;
             /**
-             * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
+             * Popis obsahu pro čtečky obrazovky.
              */
             title?: string | null;
             id?: string | null;
@@ -3577,11 +3577,11 @@ export interface Workshopy {
           }
         | {
             /**
-             * Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.
+             * https URL, &lt;iframe&gt;, nebo &lt;script src&gt; z dovoleného hostitele (např. widget.proca.app). Uloží se jen bezpečný src. Inline skripty a jiné HTML se nevykreslí.
              */
             source: string;
             /**
-             * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
+             * Popis obsahu pro čtečky obrazovky.
              */
             title?: string | null;
             id?: string | null;
@@ -4707,11 +4707,11 @@ export interface Projekty {
       }
     | {
         /**
-         * Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.
+         * https URL, &lt;iframe&gt;, nebo &lt;script src&gt; z dovoleného hostitele (např. widget.proca.app). Uloží se jen bezpečný src. Inline skripty a jiné HTML se nevykreslí.
          */
         source: string;
         /**
-         * Popis obsahu pro čtečky obrazovky (atribut title u iframe).
+         * Popis obsahu pro čtečky obrazovky.
          */
         title?: string | null;
         id?: string | null;

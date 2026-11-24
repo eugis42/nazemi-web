@@ -4,8 +4,8 @@ import { BLOCK_GROUP_PAGE, blockPickerAdmin } from '@/blocks/blockMeta'
 import { validateIframeEmbedSource } from '@/lib/iframe-embed'
 
 /**
- * Secure embed — stores paste/URL, FE renders only a sandboxed https iframe.
- * Never persists or executes arbitrary HTML/JS on the page origin.
+ * Secure embed — stores paste/URL; FE mounts sandboxed iframe or allowlisted script.
+ * Never persists or executes arbitrary HTML / inline JS on the page origin.
  */
 export const IframeEmbedBlock: Block = {
   slug: 'iframeEmbed',
@@ -22,12 +22,12 @@ export const IframeEmbedBlock: Block = {
     {
       name: 'source',
       type: 'textarea',
-      label: 'URL nebo kód iframe',
+      label: 'URL nebo kód',
       required: true,
       validate: validateIframeEmbedSource,
       admin: {
         description:
-          'Vložte https URL, nebo celý &lt;iframe&gt;. Uloží se jen bezpečný src (a šířka/výška z kódu). Skripty a jiný HTML se nevykreslí.',
+          'https URL, &lt;iframe&gt;, nebo &lt;script src&gt; z dovoleného hostitele (např. widget.proca.app). Uloží se jen bezpečný src. Inline skripty a jiné HTML se nevykreslí.',
         rows: 4,
       },
     },
@@ -37,7 +37,7 @@ export const IframeEmbedBlock: Block = {
       label: 'Titulek (přístupnost)',
       defaultValue: 'Vložený obsah',
       admin: {
-        description: 'Popis obsahu pro čtečky obrazovky (atribut title u iframe).',
+        description: 'Popis obsahu pro čtečky obrazovky.',
       },
     },
   ],

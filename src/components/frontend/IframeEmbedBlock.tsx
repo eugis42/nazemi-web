@@ -3,6 +3,7 @@ import {
   IFRAME_SANDBOX,
   resolveSafeIframeEmbed,
 } from '@/lib/iframe-embed'
+import { ScriptEmbedClient } from '@/components/frontend/ScriptEmbedClient'
 
 export type IframeEmbedBlockData = {
   source?: string | null
@@ -24,8 +25,8 @@ function sizeToPx(value: string | undefined): number | null {
 }
 
 /**
- * Controlled sandboxed iframe — never dangerouslySetInnerHTML on paste.
- * Aspect box from paste dims (fallback 16/9) so mobile width doesn’t collapse height.
+ * Controlled embed — sandboxed iframe or allowlisted external script.
+ * Never dangerouslySetInnerHTML on paste.
  */
 export function IframeEmbedBlockView({ block }: { block: IframeEmbedBlockData }) {
   const embed = resolveSafeIframeEmbed(block.source)
@@ -33,6 +34,10 @@ export function IframeEmbedBlockView({ block }: { block: IframeEmbedBlockData })
 
   const title =
     (typeof block.title === 'string' && block.title.trim()) || 'Vložený obsah'
+
+  if (embed.kind === 'script') {
+    return <ScriptEmbedClient src={embed.src} title={title} />
+  }
 
   const wPx = sizeToPx(embed.width)
   const hPx = sizeToPx(embed.height) ?? DEFAULT_HEIGHT_PX
@@ -43,6 +48,7 @@ export function IframeEmbedBlockView({ block }: { block: IframeEmbedBlockData })
     <div
       className="not-prose relative w-full max-w-full overflow-hidden"
       data-block="iframeEmbed"
+      data-embed="iframe"
       style={{ aspectRatio: `${aspectW} / ${aspectH}` }}
     >
       <iframe
